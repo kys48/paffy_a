@@ -3,9 +3,7 @@
 class MainController < ApplicationController
   
   def index
-    
     #exec("ls -l")
-    #%x("ls -l")
     #system "ls -l"
     
     @item_type = params[:type]
