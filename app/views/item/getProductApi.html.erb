@@ -1,0 +1,128 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= render :partial => '/common/landing' %>
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+		<div style="padding:10px 20px 0px 30px;">
+			<h3><%= @searchKey%></h3>
+		</div>
+			
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+				    <ul id="itemList" class="portfolio_list">
+				    </ul>
+			    </div>
+			    <div id="loadingDiv" style="display:none;text-align:center;padding:20px;font-size:15px;">
+			    	loading more...
+			    	<img src="/images/common/loading5.gif">
+			    </div>
+			</div>
+		</div>
+	</div>
+	
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+	lastPostFunc();
+});
+
+
+// scroll event
+$(window).scroll(function(){
+	if($(window).scrollTop() == $(document).height() - $(window).height()){
+		if(chkGet) lastPostFunc();
+	}
+});
+
+var chkGet = true;
+var curPage = 0;
+function lastPostFunc(){
+	$('#loadingDiv').show();
+	
+	//curPage++;
+	var postData = new Object();
+	postData.page = curPage;
+	postData.searchKey = '<%= @searchKey%>';
+	postData.per_page = 16;
+	
+	chkGet = false;
+
+	// rails 에선 느려서 필요시 스크립트로만 가져오는 걸로 대체할것
+
+	var shopstyle_api_key = '<%=SHOPSTYLE_KEY%>';
+	var img_style = 'Large';
+	var per_page = 16;
+	var searchKey = '<%= @searchKey%>';
+	
+	// rails 에선 느려서 필요시 스크립트로만 가져오는 걸로 대체할것
+	var api_url = 'http://api.shopstyle.com/api/v2/products?pid='+shopstyle_api_key
+				+ '&fts='+encodeURIComponent(searchKey)
+				+ '&offset='+(curPage*per_page)
+				+ '&limit='+per_page;
+
+	$.ajax({
+	    url     : api_url,
+	    type    : 'get',
+	    dataType: 'json',
+	    async   : false,  
+	    success : function(json){
+	    	products = json.products;
+	    	if(products.length>0) {
+				curPage++;
+				$.each(products, function (index, product) {
+					var img_url = product["image"]["sizes"][img_style]["url"];
+					var retailer = product["retailer"]["name"];
+					var product_name = product.name;
+					product_name = cropByte(product_name,40);
+					
+					//var currency	= product["currency"];
+					//var price		= product["price"];
+					var priceLabel	= product["priceLabel"];
+					var li = ''
+					+ '<li>'
+					+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">'
+					+ '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">'
+					+ '<img src="'+img_url+'" onClick="goUrl(\''+product.clickUrl+'\')" style="cursor:pointer">'
+					+ '</div>'
+					+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+					+ '	<span style="color:#000000">'+product_name+'</span><br/>'
+					+ priceLabel + "&nbsp;"
+					+ '	<span style="color:#0088cc">'+retailer+'</span>'
+					+ '</div>'
+					//+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>'
+					+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">&nbsp;</div>';
+					+ '</div>'
+					+ '</li>';
+					
+					$('#itemList').append(li);
+				});
+				chkGet = true;
+				$('#loadingDiv').hide();
+	    	} else {
+	    		//notify('error', json.msg);
+	    		//$('#loadingDiv').html("no more result...")
+	    		$('#loadingDiv').hide();
+	    	}
+	    	
+	    },
+	    error   : function(e){
+	    	semafors['ajax'] = false;
+	        $('#loadingDiv').hide();
+	    }
+	});
+	
+}
+
+function goUrl(url){
+	if(CHKMOBILE=='Y'){
+		document.location.href = openurl;
+	} else {
+		window.open(url);
+	}
+}
+</script>
+
+
+

@@ -1,0 +1,80 @@
+<script language="JavaScript">
+function total_search(frm){
+	frm.searchKey.value = frm.searchKey.value.trim();
+	if(frm.searchKey.value==null || frm.searchKey.value==""){
+		alert("검색어를 입력하세요");
+		return false;
+	}
+	return true;
+}
+</script>
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <%= link_to image_tag("/images/common/logo.png", align: "absmiddle"), root_url, class: "brand", style: "padding:5px;", target: "_self" %>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li class="dropdown">
+          	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Everything<b class="caret"></b></a>
+          	<ul class="dropdown-menu">
+              <li><a href="/">Recommend</a></li>
+              <li><a href="/getProductApi?searchKey=Women">Global</a></li>
+              <li class="divider"></li>
+              <li><a href="/collections">Set&collection</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Items <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/getProductApi?searchKey=Women">Women</a></li>
+              <li><a href="/getProductApi?searchKey=Bags">Bags</a></li>
+              <li><a href="/getProductApi?searchKey=Shoes">Shoes</a></li>
+              <li><a href="/getProductApi?searchKey=Beauty">Beauty</a></li>
+              <li><a href="/getProductApi?searchKey=Jewelry">Jewelry</a></li>
+              <li><a href="/getProductApi?searchKey=Kids">Kids</a></li>
+              <li><a href="/getProductApi?searchKey=Home">Home</a></li>
+              <li><a href="/getProductApi?searchKey=Men">Men</a></li>
+            </ul>
+          </li>
+          <li><a href="/store/topstore">Stores</a></li>
+          <li><a href="/mypage/myfeed">Following</a></li>
+          <li class="dropdown active">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">POST <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/products/post">Product post</a></li>
+              <li class="divider"></li>
+              <li><a href="/collections/set">Set post</a></li>
+              <li><a href="/collections/collect">Collect post</a></li>
+              <!--li class="divider"></li>
+              <li class="active"><%= link_to '상품등록', new_product_path %></li-->
+            </ul>
+          </li>
+        </ul>
+        
+	    <ul class="nav pull-right">
+	        <li>
+		        <%= form_tag getProductApi_path, name: "searchFrm", method: "post", class: "navbar-form navbar-right", onsubmit: "return total_search(this)" do %>
+				<input id="searchKey" name="searchKey" type="text" class="form-control" placeholder="Search products, stores">
+				<% end %>
+	        </li>
+	        <li><a href="#">Messages</a></li>
+			<li><a href="/mypage">Profile</a></li>
+<% if current_user %>
+    <li>
+    	<%= link_to "Log out", log_out_path %>
+    </li>
+<% else %>
+    <li><%= link_to "Log in", log_in_path %></li>
+<% end %>
+			</li>
+	    </ul>
+
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>

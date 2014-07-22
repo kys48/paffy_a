@@ -1,0 +1,55 @@
+<%
+	price_type_str = "￦"
+	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+    case @product.price_type
+      when "KRW"
+        price_type_str = "￦"
+        price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+      when "USD"
+      	price_type_str = "$"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str)
+      when "JPY"
+      	price_type_str = "￥"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+      when "EUR"
+      	price_type_str = "€"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str)
+      when "GBP"
+      	price_type_str = "￡"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str)
+      when "CNY"
+      	price_type_str = "元"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+    end
+%>
+<!-- <p id="notice"><%= notice %></p> -->
+<div class="body_cont">
+	<p>
+	  
+	  <% if @product.url && @product.url.strip!="" %>
+	  	<%= link_to image_tag(@product.img.url), @product.url, target: "_blank" %>
+	  <% else %>
+	  	<%= image_tag @product.img.url %>
+	  <% end %>
+	  <!-- <%= image_tag @product.img.url(:thumb) %> -->
+	</p>
+	<br /><br />
+	<p style="font-size:23px;">
+	  <%= @product.subject %>
+	</p>
+	
+	<p>
+	  <strong><%= price_str %></strong>
+	</p>
+
+	<p>
+	  <%= link_to @product.url, @product.url, target: "_blank" %>
+	</p>
+
+<% if session[:user_id]==1 %>
+	<%= link_to '수정', edit_product_path(@product), class: 'btn btn-lg btn-primary' %>
+	<%= link_to '삭제', product_path(@product), :method => :delete, :confirm => '정말 삭제할까요?', class: 'btn btn-lg btn-danger' %>
+<% end %>
+
+<%= link_to '목록', products_path, class: "btn btn-lg btn-primary" %>
+</div>

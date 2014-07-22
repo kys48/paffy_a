@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Paffy</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= stylesheet_link_tag    "/css/fdw.css", :media => "all" %>
+  <%= stylesheet_link_tag    "/css/style.css", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= javascript_include_tag "/js/jquery.pageless.js" %>
+  <%= javascript_include_tag "/js/jquery-v1.7.1.js" %>
+  <%= javascript_include_tag "/js/checkMobile.js" %>
+  <%= javascript_include_tag "/js/common.js" %>
+  <%#= javascript_include_tag "/js/jquery-hover-effect.js" %>
+  <%= csrf_meta_tags %>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="<%= controller.controller_name%>" role="document">
+
+<%= render :partial => '/common/header_navibar' %>
+
+<div class="container" role="main">
+<%= yield %>
+</div>
+
+
+<div id="user_nav" style="display:none;">
+  <% if current_user %>
+    Signed in as <strong><%= current_user.user_name %></strong>!
+    <%= link_to "Sign out", log_out_path, id: "sign_out" %>
+  <% else %>
+    <%= link_to "Sign in with Facebook", "/auth/facebook", id: "sign_in" %>
+  <% end %>
+</div>
+
+</body>
+</html>

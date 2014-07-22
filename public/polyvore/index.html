@@ -1,0 +1,619 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>콜렉션등록</title>
+<link rel="stylesheet" href="/polyvore/css/cropping.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/datePicker.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/platform.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/jquery.Jcrop.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/jquery.colourPicker.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/jquery.selectbox.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/flat.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/flat-simo.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/flat-slav.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" type="text/css" media="screen"/>
+<!--link href='http://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400italic,400,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'-->
+<link rel="stylesheet" href="/polyvore/css/val.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/polyvore/css/jquery.tagsinput.css" type="text/css" media="screen"/>
+
+<script type="text/javascript">
+//siteURL = 'http://www.trickable.com//';
+//imgURL  = 'http://img.trickable.com/site/';
+siteURL = 'http://localhost:3000//';
+imgURL  = 'http://localhost:3000/';
+</script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquerypp.custom.js"></script>
+<script type="text/javascript" src="/polyvore/js/sprintf.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+
+<script type="text/javascript">
+$(function(){
+    TranslationLabels = new Object;
+    TranslationLabels['above_max_item_for_collection']	= 'above max item for collection';
+	TranslationLabels['below_max_item_for_collection']	= 'below max item for collection';
+	TranslationLabels['cannot_load_image']				= '이미지를 불러올 수 없습니다.';
+	TranslationLabels['could_not_complete_request']		= '요청을 완료할 수 없습니다.';
+	TranslationLabels['could_not_detect_carousel_for_plugin'] = 'could not detect carousel for plugin';
+	TranslationLabels['sorry_no_friends_using_app_found_we_recommend_the_following_users:'] = 'sorry no friends using app found we recommend the following users:';
+	TranslationLabels['are_you_sure_you_want_to_leave']	= '페이지를 벗어날까요?';
+	TranslationLabels['account_connection_failure']		= '계정 연결 실패';
+	TranslationLabels['account_connection_success']		= '계정 연결 성공';
+	TranslationLabels['account_added_for_sharing']		= '계정 공유 추가';
+	TranslationLabels['submitButton']					= '로딩중';
+	TranslationLabels['found']                          = 'Found';
+	TranslationLabels['friend']							= 'friend';
+	TranslationLabels['friends']                        = 'friends';
+	TranslationLabels['hint']                           = 'hint';
+	TranslationLabels['unknown_error']                  = '알수없는 오류';
+	TranslationLabels['crop_saved']                     = 'crop saved';
+	TranslationLabels['could_not_load']                 = '로드할 수 없습니다.';
+	TranslationLabels['tag']                            = 'Tag:';
+	TranslationLabels['must_have_valid_selection']		= 'Must have valid selection';
+	TranslationLabels['please_select_a_file']           = '파일을 선택하세요';
+	TranslationLabels['unknown_error']                  = 'unknown error';
+	TranslationLabels['image_uploaded_successfully']    = '이미지 업로드를 성공하였습니다.';
+	TranslationLabels['loading']                        = '로딩중';
+	TranslationLabels['follow_all']                     = 'follow all';
+	TranslationLabels['let_friends_find_me_too']        = 'let friends find me too';
+	TranslationLabels['previous']                       = '이전';
+	TranslationLabels['next']                           = '다음';
+	TranslationLabels['currently_sharing_to']           = 'currently sharing to';
+	TranslationLabels['stop']                           = 'stop';
+	TranslationLabels['not_available']                  = 'Not available';
+	TranslationLabels['start_quick_sharing_to']         = 'start quick sharing to';
+	TranslationLabels['cannot_load_cover']				= 'Cannot load cover';
+	TranslationLabels['cancel']                         = '취소';
+	TranslationLabels['drag_to_position_image']			= 'Drag to position image';
+	TranslationLabels['save_changes']					= 'save changes';
+	TranslationLabels['change_picture']                 = 'change picture';
+	TranslationLabels['view_less']                      = 'view less';
+	TranslationLabels['view_more']                      = 'view more';
+	TranslationLabels['share_failure']                  = 'share failure';
+	TranslationLabels['you_cannot_add_more_than_%d_tags_to_one_creation'] = 'you cannot add more than %d tags to one creation';
+	TranslationLabels['this_%s_is_already_in_the_collection'] = 'this %s is already in the collection';
+	TranslationLabels['pick_a_colour']					= 'pick a colour';
+	TranslationLabels['open_colour_picker']				= 'open colour picker';
+	TranslationLabels['no_%s_users_currently_available'] = 'no %s users currently available';
+	TranslationLabels['on_site']                        = 'on Trickable';
+	TranslationLabels['invalid_items_in_collection']    = 'invalid items in collection';
+	TranslationLabels['placeholder_accepts_only_products'] = 'placeholder accepts only products';
+	TranslationLabels['could_not_load_crops']           = 'could not load crops';
+	TranslationLabels['add_a_tag']                      = 'add a tag';
+});
+</script>
+<script type="text/javascript" src="/polyvore/js/jquery.infinitescroll.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.tabs.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.textareacounter.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.responsive.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.content.slider.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.scrollTo-1.4.0-min.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.scroll.top.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.form.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.jcarousel.js"></script>
+<script type="text/javascript" src="/polyvore/js/misc.js"></script>
+<script type="text/javascript" src="/polyvore/js/binds.js"></script>
+<script type="text/javascript" src="/polyvore/js/platform.js"></script>
+<script type="text/javascript" src="/polyvore/js/cropping.js"></script>
+<script type="text/javascript" src="/polyvore/js/rotatable.js"></script>
+<script type="text/javascript" src="/polyvore/js/slideshow.js"></script>
+<script type="text/javascript" src="/polyvore/js/infinite.js"></script>
+<script type="text/javascript" src="/polyvore/js/datePicker.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.colourPicker.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.truncate.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.selectbox-0.2.min.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.autosize.js"></script>
+<script type="text/javascript" src="/polyvore/js/jquery.tagsinput.min.js"></script>
+<script type="text/javascript" src="/polyvore/js/notify/jquery.noty.js"></script>
+<script type="text/javascript" src="/polyvore/js/notify/topCenter.js"></script>
+<script type="text/javascript" src="/polyvore/js/notify/default.js"></script>
+
+
+
+
+
+</head>
+<body class="unselectable">
+
+	<div id="mask"></div>
+                                                        
+	<!----------------------------start main_wrapper------------------------------->
+	<div id="main_wrapper">                                                                      
+		<div id="popupContainer" class="login-popup"></div>
+		<div id="LeftMenu">
+			<div class="top">
+				<a href="#" class="menuIcon"></a>
+				<a class="Logo" href="/">TRICKABLE</a>
+		    </div>
+		    <ul>
+		        <li class="browse tickToggle">
+		            <div class="selected"></div>
+		            <span>Browse</span>
+		            <div class="tickWrapper LT">
+		                <ul><li><a href="/shop?query=set">Set</a></li><li><a href="/shop?query=super">super</a></li></ul>
+		            </div>
+		        </li>
+		        <li class="trends tickToggle">
+		            <div class="selected"></div>
+		            <span>Trends</span>
+		            <div class="tickWrapper LT">
+		                <ul><li><a href="/trending/Nunn shoes">Nunn shoes</a></li></ul>
+		            </div>
+		        </li>
+		        <li class="colors tickToggle">
+		            <div class="selected"></div>
+		            <span>Colors</span>
+		            <div class="tickWrapper LT">
+		                <ul class="colorList noPadding">
+							<li>
+								<a style="background-color: #" title="star light" href="/shop?color%5B5%5D=131"></a>
+							</li>
+							<li>
+								<a style="background-color: #" title="black" href="/shop?color%5B5%5D=132"></a>
+							</li>
+						</ul>
+		            </div>
+		        </li>
+		        <li class="separator"></li>
+		        <li class="help">
+		            <div class="selected"></div>
+		            <span>Help</span>
+		        </li>
+		        <li class="terms">
+		            <div class="selected"></div>
+		            <span>Terms & Privacy</span>
+		        </li>
+		    </ul>
+		</div>
+
+
+
+
+    <!----------------------------start wrapper------------------------------->
+      <div id="wrapper">
+          <div id="wrapperShadow"></div>
+         <!----------------------------start page------------------------------->
+        <div id="page">
+          <!----------------------------start container------------------------------->                              
+<script type="text/javascript">
+var oPlatform;
+$(function() {
+	$('#Create').myTabs({
+		tabsholder : 'tabHolder',
+		tabinit : 4
+	});
+
+	$('#Products').on('click', 'li > .delete', function(e) {
+		e.preventDefault();
+		var $el = $(this);
+
+		deleteItem($el.attr('href'), function() {
+			var $parent = $el.parent();
+			$parent.fadeOut(200, function() {
+				$('#Create').myTabs('reload');
+			});
+		});
+
+	});
+
+	// 상품클릭
+	$('#Products').on('click', '.items:not(".unclickable") li', function(e) {
+		var itemId = $(this).find('input[name="itemId"]').val();
+		var itemOrigin = $(this).find('input[name="itemOrigin"]').val();
+		var itemImg = $(this).find('input[name="itemImg"]').val();
+//		loadItem(itemId, itemOrigin, $(this), $(this).parent().parent(), true);	// 왼쪽 상품 클릭시 상품정보 레이어 띄우기
+//		loadItem(itemId, itemOrigin, itemImg, $(this), $(this).parent().parent(), true);	// 왼쪽 상품 클릭시 상품정보 레이어 띄우기
+	});
+
+	// 페이징
+	$('#Products').on('click', '.pagging a', function(e) {
+		e.preventDefault();
+
+		if ($(this).parent().hasClass('active'))
+			return;
+
+		var contentDiv = $(this).closest('.tab_content');
+		var url = $(this).attr('href');
+		var postData = contentDiv.find('form').serialize();
+
+		$('#Create').myTabs({
+			'load' : url,
+			post : postData
+		});
+
+	});
+
+	// top 링크, about링크 
+	$('#Products').on('click', '.link', function(e) {
+		e.preventDefault();
+
+		var contentDiv = $(this).closest('.tab_content');
+		var url = $(this).attr('href');
+		var postData = contentDiv.find('form').serialize();
+
+		$('#Create').myTabs({
+			'load' : url,
+			post : postData
+		});
+
+	});
+
+	oPlatform = new platform('set');
+	oPlatform.cropURL = "/crop";
+	//oPlatform.productURL = "http://img.trickable.com/site/images/products/thumb_big/";
+	//oPlatform.embellishmentURL = "http://img.trickable.com/site/images/embellishments/thumb_big/";
+	oPlatform.productURL = "http://localhost:3000/imgs/";	// 상품 이미지 폴더
+	oPlatform.embellishmentURL = "http://localhost:3000/imgs/embellishments/";	// 꾸민 이미지 폴더
+	//oPlatform.publishURL = "/create";
+	//oPlatform.searchTagsURL = "/create";
+	oPlatform.publishURL = "/collections/publish";
+	oPlatform.searchTagsURL = "/collections/publish";
+	oPlatform.minItems = 2;
+	oPlatform.maxItems = 20;
+	oPlatform.init();
+
+});
+</script>
+    
+<div id="Create" class="unselectable">
+    
+    <!-- 공유하기 레이어 -->
+    <div id="Share" class="login-popup">
+    <form id="sharingForm">
+        <a href="#" class="close"></a> 
+        <h3>share your creations</h3>
+        <div id="sharingContent">
+                <h6>start quick sharing to</h6>
+                <ul id="socialNetworks" class="actionGrid cf">
+                    <li>
+                        <span class="largeIcon twitter">Twitter</span>
+                    </li>
+                </ul>
+				<br/>
+					<h6>currently sharing to</h6>
+				<ul id="sharingList" class="lineList cf">
+					<li id="facebook">
+						<a href="#" onclick="return false;"><img class="avatar" src="http://img.wmstore.com/site/images/icons/facebook.png" /></a>
+						<div class="info">
+							<span>Facebook</span>&nbsp;<a class="blue" href="http://www.facebook.com/1375172478">페북~</a>
+						</div>
+						<div class="action">
+							<a href="#" class="blue">Stop</a>
+						</div>
+					</li>
+				</ul>
+        </div>
+        <a href="#" id="shareBackBtn" class="bnt bBlue">Back</a>
+    </form>
+	</div>
+
+	<!-- 콜렉션 등록 레이어 -->
+    <div id="Publish" class="login-popup">
+        <form class="form" id="publishSetForm">
+            <h3>콜렉션 저장</h3>
+            <a href="#" class="close"></a>
+            <label for="name">제목</label>
+            <input id="name" class="login-input" name="name" type="text" value="" />
+            <div class="space"></div>
+            
+            <label for="description">내용</label>
+            <textarea id="description" class="login-input" name="description"></textarea>
+            <div class="space"></div>
+            
+            <label for="category_id">카테고리<span>*</span></label>
+            <select id="category_id" name="category_id" class="full">
+            	<option value="1">November</option>
+            	<option value="2">Bra</option>
+            	<option value="3">Skirt</option>
+            </select>
+            <span class="postTo">카테고리를 선택하세요</span>
+            <div class="space"></div>
+            
+            <label for="tags">태그</label>
+            <input id="tags" class="login-input" type="text" name="tags" />
+            <div class="space"></div>
+            
+            <label for="share">공유하기</label><br />
+            <input id="share" class="styled" type="checkbox" name="share" value="1" checked="checked" />
+            <span class="share">친구들과 공유하기</span>
+            <div>
+            	<span class="postTo">posting to: 페이스북</span>
+            	<a href="#" id="postToEdit" class="postTo blue">수정</a>
+            	<input type="hidden" name="oauth_providers[]" id="share_to_facebook" value="facebook" />
+            </div>
+            <div class="space"></div>
+            
+            <a href="#" id="PublishSubmit" class="bnt bBlue">
+                <span>콜렉션등록</span>
+                <input type="hidden" name="active" value="Publish" />
+                <input type="hidden" name="inactive" value="Loading..." />
+            </a>
+            <a href="#" id="PublishClose" class="bnt bGray">취소</a>
+        </form>
+    </div>
+    
+    <!-- 이미지 CROP 레이어 -->
+    <div id="Crop" class="login-popup">
+        <a href="#" class="close"></a>
+        <h3>image cropping</h3>
+        <a href="#" id="PolygonalCrop" class="active"></a>
+        <a href="#" id="RectangularCrop"></a>
+        <div class="clear"></div>
+        <div id="CropDashboard"></div>
+        <div id="QuickCrop"></div>
+        <div class="clear"></div>
+        <div class="devider"></div>
+        <a href="#" class="bBlue btn" id="cropImgBtn">
+            <span>Crop</span>
+            <input value="Crop" type="hidden" name="crop" />
+            <input value="Prcessing..." type="hidden" name="processing" />
+        </a>
+        <a href="#" class="bBlue btn" id="saveImgBtn">
+            <span>Save</span>
+            <input value="Save" type="hidden" name="save" />
+            <input value="Saving..." type="hidden" name="saving" />
+        </a>
+        <a href="#" class="bGray btn" id="closeCropBtn">Cancel</a>
+    </div>
+    
+    <!-- 오른쪽 상단 버튼 -->
+    <div id="Navigator">
+        <a href="#" class="publish bBlue small">콜렉션등록</a>
+        <a href="#" class="draft bGray small">
+            <span>작업저장</span>
+            <input type="hidden" name="active" value="Save draft" />
+            <input type="hidden" name="inactive" value="Saving..." />
+        </a>
+        <a href="#" class="restart bGray small">새로하기</a>
+        <div class="clear"></div>
+        <div class="icons"><a href="#" class="undo"><i>Undo</i></a><a href="#" class="redo"><i>Redo</i></a><a href="#" class="flop"><i>Flop</i></a><a href="#" class="flip"><i>Flip</i></a><a href="#" class="forward"><i>Forwards</i></a><a href="#" class="backward"><i>Backwards</i></a><a href="#" class="zoomIn"><i>Zoom in</i></a><a href="#" class="zoomOut" ><i>Zoom out</i></a><a href="#" class="remove"><i>Remove</i></a></div>
+    </div>
+    
+    <div id="ItemNavigator" class="cf">
+        <div class="noBackgroundHolder">
+            <div class="noBackground"></div>
+            <i>no background</i>
+        </div>
+        <div class="whiteBackgroundHolder">
+            <div class="whiteBackground"></div>
+            <i>white background</i>
+        </div>
+        <div class="crop">
+            <div class="mask"></div>
+            <i>crop image</i>
+        </div>
+    </div>
+            
+    <div class="whiteHeader tabHolder cf">
+        <ul id="tabHolder" class="tabs left">
+        	<li><a href="/products/my?platformType=set">나의상품</a></li>
+        	<li><a href="/sets/my">나의콜렉션</a></li>
+        	<li><a href="/templates?platformType=set">템플릿</a></li>
+        	<li><a href="#/items?platformType=set">전체</a></li>
+        </ul>
+    </div>
+                    
+    <div id="Dashboard">
+        <div id="Products">
+            <div id="tabscontent" class="tabContent" style="border: 1px solid red">
+            	
+            	
+            	
+<!-- 왼쪽 아이템리스트 시작 -->
+<script type="text/javascript">
+$(function() {
+	var form = $('#createSearchForm');
+	var searchField = form.find('input[name="query"]');
+	var url = form.attr('action');
+	form.find(':input').keypress(function(e) {
+		if (e.keyCode == 13) {
+			var contentDiv = $(this).closest('.tab_content');
+			var postData = contentDiv.find('form').serialize();
+			var addon = searchField.val();
+			$('#Create').myTabs({
+				'load' : url + '?query=' + addon,
+				post : postData
+			});
+		}
+	});
+	$('#jquery-colour-picker ul').on('click', 'li', function(e) {
+		e.preventDefault();
+		var colorId = $(this).attr("id");
+	});
+	$('select.medium2').selectbox({
+		speed : 200,
+		effect : 'slide',
+		classHolder : 'sbHolderMedium2'
+	});
+	$('#category_select').on('change', function(e) {
+		var contentDiv = $(this).closest('.tab_content');
+		var postData = contentDiv.find('form').serialize();
+		var addon = $(this).val();
+		if (addon == 0)
+			return;
+		$('#Create').myTabs({
+			'load' : url + '?category=' + addon,
+			post : postData
+		});
+	});
+	$.widget("custom.catcomplete", $.ui.autocomplete, {
+		_renderMenu : function(ul, items) {
+			var that = this, currentCategory = "";
+			$.each(items, function(index, item) {
+				if (item.category != currentCategory) {
+					ul.append("<li class='ui-autocomplete-category'>" + item.category + "</li>");
+					currentCategory = item.category;
+				}
+				that._renderItemData(ul, item);
+			});
+		},
+		_renderItem : function(ul, item) {
+			return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.formatted + "</a>").appendTo(ul);
+		}
+	});
+	searchField.bind("keydown", function(event) {
+		if (event.keyCode === $.ui.keyCode.TAB && $(this).data("ui-autocomplete").menu.active) {
+			event.preventDefault();
+		}
+	}).catcomplete({
+		source : function(request, response) {
+			$.getJSON("/autocomplete", {
+				query : request.term,
+				itemOrigin : 'product'
+			}, response);
+		},
+		focus : function() {
+			return false;
+		},
+		select : function(a, b) {
+			$(this).val(b.item.value);
+			var contentDiv = $(this).closest('.tab_content');
+			var postData = contentDiv.find('form').serialize();
+			var addon = searchField.val();
+			$('#Create').myTabs({
+				'load' : url + '?query=' + addon,
+				post : postData
+			});
+		}
+	});
+}); 
+</script>
+<div class="tabHead">
+	<!-- 
+	<form id="createSearchForm" action="/products/all/" class="form noPadding">
+		<select id="category_select" class="medium2">
+			<option value="0">Choose category</option>
+			<option value="1"> Fashion</option>
+			<option value="2">   Cloting</option>
+			<option value="3">   Dresses</option>
+			<option value="4">   Cocktail</option>
+			<option value="5">   Gowns</option>
+		</select>
+		<div id="createPicker" style="margin-bottom: 20px;">
+			
+			<select name="color" class="colorPicker">
+				<option value="#" id="131">#star light</option>
+				<option value="#E6798E" id="295">#nectar</option>
+			</select>
+		</div>
+		<div class="clear"></div>
+		<input type="text" name="query" class="login-input" id="searchInput" style="width: 92% !important;" value="검색하숑~"/>
+		<div class="space"></div>
+	</form>
+	<div class="devider"></div>
+	<div class="clear"></div>
+	 -->
+</div>
+
+<div class="tabBody">
+	<ul class="items">
+		
+		
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1401326356.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="34">
+			<input type="hidden" name="itemImg" value="1401326356.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1401326389.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="35">
+			<input type="hidden" name="itemImg" value="1401326389.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1401326411.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="36">
+			<input type="hidden" name="itemImg" value="1401326411.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1401326463.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="37">
+			<input type="hidden" name="itemImg" value="1401326463.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1400481523.png">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="33">
+			<input type="hidden" name="itemImg" value="1400481523.png">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1399619088.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="28">
+			<input type="hidden" name="itemImg" value="1399619088.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1399619020.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="27">
+			<input type="hidden" name="itemImg" value="1399619020.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1399618982.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="26">
+			<input type="hidden" name="itemImg" value="1399618982.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1399618911.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="25">
+			<input type="hidden" name="itemImg" value="1399618911.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1399618890.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="24">
+			<input type="hidden" name="itemImg" value="1399618890.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1399618845.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="23">
+			<input type="hidden" name="itemImg" value="1399618845.jpg">
+		</li>
+		<li class="ui-draggable">
+			<img src="/imgs/medium/1399618826.jpg">
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="22">
+			<input type="hidden" name="itemImg" value="1399618826.jpg">
+		</li>
+		
+
+	</ul>
+</div>
+<!-- 왼쪽 아이템리스트 끝 -->
+            	
+            	
+            	
+            	
+            	
+            </div>
+        </div>
+        <div id="Board">
+            <div class="message">
+                <span>여기에 이미지를 끌어다 놓으세요</span>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+          <!----------------------------end container------------------------------->
+        </div>
+         <!----------------------------end page------------------------------->    
+    </div>
+    <!----------------------------end wrapper------------------------------->
+    </div>
+    <!----------------------------end main_wrapper------------------------------->
+</body>
+</html>

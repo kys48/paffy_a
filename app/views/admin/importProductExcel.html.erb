@@ -1,0 +1,242 @@
+<br/>
+<h2>상품 등록</h2>
+<div style="border:1px solid black; padding:20px;">
+1. 엑셀파일로 상품등록
+<%= form_tag impProductProcess_path, multipart: true do %>
+  <%= file_field_tag :file %>
+  <%= submit_tag "Import" %>
+<% end %>
+</div>
+
+<script language="JavaScript">
+function productApi(){
+	$.ajax({
+	    url     : 'http://api.shopstyle.com/api/v2/products?pid=<%=SHOPSTYLE_KEY%>&fts=red+dress&offset=0&limit=10',
+	    type    : 'get',
+	    dataType: 'json',
+	    async   : false,
+	    success : function(json){
+	    	var data = json.metadata;
+	    	if(data){
+	    		offset = data.offset;
+	    		limit = data.limit;
+	    		total = data.total;
+	    		category = data.category;
+	    		
+	    		alert(category.id);
+
+	    	}
+	    },
+	    error   : function(e){
+	        //notify('error', TranslationLabels['could_not_complete_request']);
+	    }
+	});
+}
+
+function linkprice(){
+	var url = document.getElementById("url").value;
+
+	$.ajax({
+	    url     : '/getLinkpriceUrl?url='+encodeURIComponent(url),
+	    type    : 'get',
+	    dataType: 'json',
+	    success : function(json){
+			$('#result').html(json.result);
+			$('#lpurl').val(json.url);
+	    },
+	    error   : function(e){
+	        //notify('error', TranslationLabels['could_not_complete_request']);
+	    }
+	});
+}
+
+
+function getlookie(){
+	var url = '/getLookUrl';
+	
+	$.ajax({
+	    url     : url,
+	    type    : 'get',
+	    dataType: 'json',
+	    success : function(json){
+			alert('성공~')
+			$('lookieDv').html("성공~");
+			
+	    },
+	    error   : function(e){
+	        //notify('error', TranslationLabels['could_not_complete_request']);
+	    }
+	});
+}
+
+function getNaverNext(){
+	page = parseInt($("#naver_page").val());
+	if(page>11){
+		alert("종료~!");
+	} else {
+		$("#naver_page").val(page+1);
+		getNaver();
+	}
+	
+}
+
+function getNaver(){
+	page = $("#naver_page").val();
+	per_page = $("#naver_per_page").val();
+	search_key = $("#naver_search_key").val();
+	search_domain = $("#naver_mall_domain").val();
+	cate_code = $("#naver_cate_code").val();
+	
+	chkpass = true;
+	if(search_key==""){
+		alert("검색어를 입력하세요.");
+		chkpass = false;
+		$("#naver_search_key").focus();
+	}
+	if(search_domain==""){
+		alert("도메인명을 입력하세요.");
+		chkpass = false;
+		$("#naver_mall_domain").focus();
+	}
+	if(cate_code==""){
+		alert("카테고리 코드를 입력하세요.");
+		chkpass = false;
+		$("#naver_cate_code").focus();
+	}
+	if(page==""){
+		alert("시작값을 입력하세요.");
+		chkpass = false;
+		$("#naver_page").focus();
+	}
+	if(per_page==""){
+		alert("표시줄 수를 입력하세요.");
+		chkpass = false;
+		$("#naver_per_page").focus();
+	}
+	
+	if(chkpass){
+		var postData = new Object();
+		postData.page = page;
+		postData.searchKey = search_key;
+		postData.searchDomain = search_domain;
+		postData.cate_code = cate_code;
+		postData.per_page = per_page;
+		postData.sort = 'sim';
+		
+		chkGet = false;
+	
+		var img_style = 'Large';
+		
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+	
+		$.ajax({
+		    url     : '/getNaverShopApi',
+		    type    : 'post',
+		    data	: $.param(postData),
+		    async   : false,  
+		    success : function(json){
+		    	products = json.product_list;
+		    	rcnt = parseInt($("#naverDvCnt").val());
+		    	rcnt += products.length;
+		    	$("#naverDvCnt").val(rcnt);
+		    	$('#naverDv').append("--page("+page+")--");
+
+		    	if(products.length>0) {
+					$.each(products, function (index, product) {
+						var item_url = product.url;
+						var item_ori_url = product.ori_url;
+						var item_link_url = product.link_url;
+						var item_paffy_url = product.paffy_url;
+						var img_url = product.image;
+						var retailer = product.mallName;
+						var product_name = product.title;
+						//product_name = cropByte(product_name,40);
+
+						var li = ''
+						+ '<div style="font-size:12px;text-align:left; border-bottom:1px dashed #cccccc;">'
+						+ '<a href="'+item_link_url+'" target="_blank">(변환링크)</a>'
+						+ '<a href="'+item_paffy_url+'" target="_blank">(paffy링크)</a>'
+						+ '<input type="text" value="'+item_link_url+'">'
+						+ '	<font color="#000000">'+product_name+'</font>'
+						+ '	<font color="#0088cc">'+retailer+'</font>'
+						//+ '<input type="text" value="'+item_url+'">'
+						//+ '<input type="text" value="'+item_ori_url+'">'
+						//+ '<input type="text" value="'+item_link_url+'">'
+						+ '</div>';
+
+						//$('#naverDv').append(li);
+						
+
+						
+						
+					});
+					chkGet = true;
+		    	} else {
+		    		//notify('error', json.msg);
+		    		// the end
+		    		//alert("종료~!!!");
+		    	}
+		    	
+				setTimeout(function() {
+					
+					getNaverNext(); // 다음페이지 call
+				}, 100);
+		    	
+		    },
+		    error   : function(e){
+		    	$('#naverDv').append("----------error-------------");
+		    }
+		});
+		
+	}
+}
+</script>
+
+<div style="border:1px solid black; padding:20px; margin-top:5px;">
+	2. <a href="javascript:productApi()">Shop Sensw상품 API 호출</a>
+</div>
+
+<div style="border:1px solid black; padding:20px; margin-top:5px;">
+	3. Link Price 상품 API 호출<br/>
+	<br/>
+	원본 URL : <input type="text" id="url" name="url" value="http://item2.gmarket.co.kr/Item/DetailView/Item.aspx?goodscode=401037859" style="width:100%">
+	<br/>
+	결과 : <strong id="result" style="color:red"></strong><br/>
+	변환된 URL : <input type="text" id="lpurl" name="lpurl" value="" style="width:100%">
+	<br/>
+	<%= button_tag "호출하기", onclick: "linkprice()" %>
+</div>
+
+<div style="border:1px solid black; padding:20px; margin-top:5px;">
+	4. Lookie 상품 API 호출(상품등록)<br/>
+	<br/>
+	<%= button_tag "호출하기", onclick: "getlookie()" %>
+	
+	<div id="lookieDv"></div>
+</div>
+
+<div style="border:1px solid black; padding:20px; margin-top:5px;">
+	5. Naver 상품 API 호출(상품등록)<br/>
+	<br/>
+	검색어 : <input type="text" id="naver_search_key" name="naver_search_key" value="" style="width:150px">,
+	도메인명 : <input type="text" id="naver_mall_domain" name="naver_mall_domain" value="" style="width:100px">,
+	내부카테고리코드 : <input type="text" id="naver_cate_code" name="naver_cate_code" value="" style="width:100px">,
+	시작 : <input type="text" id="naver_page" name="naver_page" value="1" style="width:50px">,
+	줄수 : <input type="text" id="naver_per_page" name="naver_per_page" value="16" style="width:50px">
+	<%= button_tag "호출하기", onclick: "$('#naverDvCnt').val(0);$('#naverDv').html('');getNaver();" %>
+	
+	<div id="naverDv"></div>
+	<%= button_tag "다음페이지", onclick: "getNaverNext()" %>
+	총상품수:<input type="text" id="naverDvCnt" name="naverDvCnt" value="0" style="width:40px;">
+</div>
+
+
+
+
+
+

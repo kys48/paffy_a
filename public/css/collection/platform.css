@@ -1,0 +1,756 @@
+#Create {
+    position: relative;
+}
+
+#Create #Navigator {
+    width: 650px;
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    z-index: 91;
+    
+}
+
+#Create #Dashboard {
+    padding: 0px;
+    display: block;
+}
+
+#Create #Dashboard #Products {
+    display: block;
+    padding: 0 670px 0 0px;
+}
+
+#Create #Navigator > a {
+    float:right;
+    margin: 0 0 0 10px;
+}
+
+#Create #Navigator > .icons {
+    margin-top: 39px;
+    background-color: #d7dcde;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+
+#Create #Navigator > .icons > a {
+    line-height: 40px;
+    height: 40px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background: url("/images/collection/NavigatorSprite.png") no-repeat;
+    border-left: 1px solid #e7ebec;
+    background-color: #d7dcde;
+    padding: 0px;
+    color: #333;
+    font-size: 11px;
+    position: relative;
+    width: 71px;
+}
+
+#Create #Navigator > .icons > a:hover {
+    background-color: #d0d7d8;
+}
+
+#Create #Navigator > .icons > a:first-child {
+    border: none;
+    box-shadow: none;
+    border-left: none;
+    border-top-left-radius: 2px;
+}
+
+#Create #Navigator > .icons > a:last-child {
+    border-top-right-radius: 2px;
+}
+
+#Create #Navigator > .icons > a:first-child,
+#Create #Navigator > .icons > a:last-child {
+    width: 72px;
+}
+
+
+#Create #Navigator > .icons > a > i {
+    background: #d7dcde;
+    border: 1px solid #d7dcde;
+    top: 50px;
+    color: #7c8792;
+    left: 50%;
+    margin-left: -52px;
+    opacity: 0;
+    position: absolute;
+    display: block;
+    z-index: 250;                     
+    text-align: center;
+    transition: opacity 0.25s linear 0s;
+    visibility: hidden;
+    width: 100px; 
+    white-space: nowrap;
+    line-height: 30px;
+    border-radius: 5px;
+    font-style: normal;
+}
+
+#Create #Navigator > .icons > a > i:before,
+#Create #Navigator > .icons > a > i:after {
+    border-left: 10px solid transparent !important;
+    border-right: 10px solid transparent !important;
+    content: "";
+    left: 50%;
+    margin-left: -10px;
+    position: absolute;
+    display: block;
+    z-index: 251 !important;                   
+}
+
+#Create #Navigator > .icons > a > i:before {
+    border-bottom: 9px solid #d7dcde !important;
+    top: -9px;        
+}
+#Create #Navigator > .icons > a > i:after {
+    border-bottom: 9px solid #d7dcde !important;
+    z-index: 252;
+    top: -8px;        
+}
+
+#Create #Navigator > .icons > a:hover > i {
+    opacity: 1;
+    visibility: visible;
+}
+
+#Create #Navigator > .icons > a.inactive {
+    color: #b1b1b1;
+    background-color: #d7dcde;
+    text-decoration: none;
+    cursor: default;
+}
+
+#Create #Navigator > .icons > a.undo {
+    background-position: 27px -316px;
+}
+
+#Create #Navigator > .icons > a.undo.inactive {
+    background-position: 27px -350px;
+}
+
+#Create #Navigator > .icons > a.redo {
+    background-position: 28px -384px;
+}
+
+#Create #Navigator > .icons > a.redo.inactive {
+    background-position: 28px -419px;
+}
+
+#Create #Navigator > .icons > a.zoomIn {
+    background-position: 28px -453px;
+}
+
+#Create #Navigator > .icons > a.zoomIn.inactive {
+    background-position: 28px -489px;
+}
+
+#Create #Navigator > .icons > a.zoomOut {
+    background-position: 28px -525px;
+}
+
+#Create #Navigator > .icons > a.zoomOut.inactive {
+    background-position: 28px -561px;
+}
+
+#Create #Navigator > .icons > a.flop {
+    background-position: 30px -190px;
+}
+
+#Create #Navigator > .icons > a.flop.inactive {
+    background-position: 30px -219px;
+}
+
+#Create #Navigator > .icons > a.flip {
+    background-position: 31px -250px;
+}
+
+#Create #Navigator > .icons > a.flip.inactive {
+    background-position: 31px -283px;
+}
+
+#Create #Navigator > .icons > a.forward {
+    background-position: 28px 13px;
+}
+
+#Create #Navigator > .icons > a.forward.inactive {
+    background-position: 28px -22px;
+}
+
+#Create #Navigator > .icons > a.backward {
+    background-position: 28px -58px;
+}
+
+#Create #Navigator > .icons > a.backward.inactive {
+    background-position: 28px -94px;
+}
+
+#Create #Navigator > .icons > a.remove {
+    background-position: 31px -128px;
+}
+
+#Create #Navigator > .icons > a.remove.inactive {
+    background-position: 31px -160px;
+}
+
+#Create #ItemNavigator {
+    display: none;
+    position: absolute;
+    right: 30px;
+    top: 149px;
+    z-index: 90;
+}
+
+#Create #ItemNavigator > div {
+    width: 55px;
+    height: 55px;
+    display: block;
+    float: left;
+    border: 3px solid #ececec;
+    margin: 0 0 0 10px;
+    position: relative;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+#Create #ItemNavigator > div > i {
+    background: #d7dcde;
+    border: 1px solid #d7dcde;
+    top: 80px;
+    color: #7c8792;
+    left: 50%;
+    margin-left: -62px;
+    opacity: 0;
+    position: absolute;
+    display: block;
+    z-index: 250;                     
+    text-align: center;
+    transition: opacity 0.25s linear 0s;
+    visibility: hidden;
+    width: 120px; 
+    white-space: nowrap;
+    line-height: 30px;
+    border-radius: 5px;
+    font-style: normal;
+    font-size: 11px;
+}
+
+#Create #ItemNavigator > div > i:before,
+#Create #ItemNavigator > div > i:after {
+    border-left: 10px solid transparent !important;
+    border-right: 10px solid transparent !important;
+    content: "";
+    left: 50%;
+    margin-left: -10px;
+    position: absolute;
+    display: block;
+    z-index: 251 !important;                   
+}
+
+#Create #ItemNavigator > div > i:before {
+    border-bottom: 9px solid #d7dcde !important;
+    top: -9px;        
+}
+#Create #ItemNavigator > div > i:after {
+    border-bottom: 9px solid #d7dcde !important;
+    z-index: 252;
+    top: -8px;        
+}
+
+#Create #ItemNavigator > div:hover > i {
+    opacity: 1;
+    visibility: visible;
+}
+
+#Create #ItemNavigator div img {
+    height: 55px;
+    max-width: 55px;
+}
+
+#Create #ItemNavigator div.noBackground {
+    background: url("/images/collection/platformPattern.png") no-repeat top center;
+}
+
+#Create #ItemNavigator div.whiteBackground {
+    background: #fff;
+}
+
+#Create #ItemNavigator div.crop {
+    background: #fff;
+}
+
+#Create #ItemNavigator div.crop .mask {
+    background: url("/images/collection/platformPatternCrop.png") no-repeat top center;
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    display: block;
+    top: 0;
+    left: 0;
+}
+
+#Create #HintNavigator {
+    display: block;
+    position: absolute;
+    top: 150px;
+    right: 20px;
+    background: #ececec;
+    padding: 5px 10px;
+    z-index: 91;
+    display: none;
+}
+
+#Create #HintNavigator label {
+    padding: 0 5px 0 0;
+}
+
+#Create #HintNavigator input {
+    width: 150px;
+    font-size: 12px;
+    line-height: 14px;
+    border: 1px solid #999;
+    padding: 2px;
+    outline: none;
+}
+
+#Create #Crop {
+    display: none;
+    width: 640px;
+    height: 505px;
+}
+
+#Create #Crop h3 {
+    font-size: 26px;
+    font-weight: 100;
+    color: #333;
+    line-height: 30px;
+    padding: 0 0 20px 0;
+    margin: 0 0 5px 0;
+    border-bottom: 1px solid #ececec;
+}
+
+#Create #Crop a#PolygonalCrop {
+    background: url('/images/collection/polygonalCrop.png') no-repeat center center #f1f1f1;
+    display: block;
+    float: left;
+    width: 35px;
+    height: 22px;
+    border: 1px solid #bbb;
+    -webkit-border-radius: 2px 0 0 2px;
+    -mox-border-radius: 2px 0 0 2px;
+    border-radius: 2px 0 0 2px;
+}
+
+#Create #Crop a#RectangularCrop {
+    background: url('/images/collection/rectangularCrop.png') no-repeat center center #f1f1f1;
+    display: block;
+    float: left;
+    width: 35px;
+    height: 22px;
+    border: 1px solid #bbb;
+    border-left: 0px;
+    -webkit-border-radius: 0 2px 2px 0;
+    -mox-border-radius: 0 2px 2px 0;
+    border-radius: 0 2px 2px 0;
+}
+
+#Create #Crop a#PolygonalCrop:hover, #Create #Crop a#RectangularCrop:hover {
+    background-color: #999;
+}
+
+#Create #Crop a#PolygonalCrop.active, #Create #Crop a#RectangularCrop.active {
+    background-color: #ccc;
+}
+
+#Create #Crop #CropDashboard {
+    width: 500px;
+    height: 380px;
+    /*border: 1px solid #ececec;*/
+    background: url('/images/collection/pattern.png') repeat;
+    text-align: center;
+    position: relative;
+    display: block;
+    float: left;
+    margin: 5px 0 0 0;
+}
+
+#Create #Crop #QuickCrop {
+    width: 125px;
+    height: 380px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    float: right;
+}
+
+#Create #Crop #QuickCrop div {
+    width: 100px;
+    margin-bottom: 10px;
+    border: 1px solid #ececec;
+    text-align: center;
+}
+
+#Create #Crop #QuickCrop div img {
+    max-width: 100%;
+    max-height: 120px;
+}
+
+#Create #Crop .lasoSelect {
+    position: absolute;
+    z-index: 6;
+    width: 505px;
+    height: 385px;
+    left: 0;
+    top: 0;
+}
+
+#CropDashboard #cropHolder {
+    width: 500px;
+    height: 380px;
+    background: transparent;
+    text-align: center;
+}
+
+#Create #Crop .lasoPoint, #Create #Crop .potentialPoint {
+    background-color: #ddd;
+    border: 1px solid #000;
+    height: 8px;
+    width: 8px;
+    position: absolute !important;
+    font-size: 1%;
+    display: block;
+    margin-left: -5px;
+    margin-top: -5px;
+}
+
+#Create #Crop #CropDashboard img {
+    height: inherit;
+    max-width: 500px; 
+}
+
+#Create #Crop .devider {
+    height: 20px;
+    display: block;
+}
+
+#Create #Crop .btn {
+    float: left;
+    margin-right: 10px;
+    padding: 0px 25px;
+    text-transform: uppercase;
+    line-height: 26px;
+}
+
+#Create #Crop .btn.bBasic {
+    padding: 0 5px;
+}
+
+#Create #Products .tabContent {
+    background: #fff;
+    border-radius: 2px;
+    min-height: 690px;
+}
+
+#Create #Products input:not(.jquery-color-picker-input) {
+    width: 100% !important;
+    line-height: 22px;
+    display: block;
+    float: left;
+    margin-left: 10px;
+    background: #fff;
+    border: 1px solid #d3d3d3;
+}
+
+#Create #Products .search {
+    width: 130px;
+    margin-left: 0px;
+}
+
+#Create #Products .tabHead {
+    padding: 10px 0px;
+    min-height: 20px;
+    margin-bottom: 0px;
+}
+
+#Create #Products .tabBody,
+#Create #Products .tabFoot {
+    border-top: 1px solid #dadada;
+}
+
+#Create #Products .tabBody *:first-child {
+    border-top: none;
+}
+
+#Create #Products .tabBody *:last-child {
+    border-bottom: none;
+}
+
+#Create #Products div:first-child {
+    border-top: none;
+}
+
+#Create #Products .tabHead ul.pagging {
+    display: block;
+    float: right;
+}
+
+#Create #Dashboard #Board {
+    display: block;
+    overflow: hidden;
+    width: 650px;
+    height: 650px;
+    z-index: 1;
+    top: 128px;
+    right: 10px;
+    background: #fff;
+    z-index: 89;
+    position: absolute;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+#Create #Dashboard #Board.collectionBoard {
+    top: 88px;
+    height: 690px;
+}
+
+#Board .image {
+    position: absolute;
+    display: block;
+    height: 250px;
+    border: 1px solid transparent;
+}
+
+#Board .image.unselectable {
+    pointer-events:none;
+}
+
+#Board .message {
+    font-size: 15px;
+    display: block;
+    text-align: center;
+    top: 45%;
+    position: absolute;
+    width: 300px;
+    left: 50%;
+    margin-left: -150px;
+}
+
+#Board .image.placeholder {
+    width: 150px;
+    height: 200px;
+    border: 1px dashed #ddd;
+    background: rgba(250,250,250,0.7);
+    position: absolute;
+}
+
+#Board .image.placeholder.unselectable{
+    overflow: hidden;
+    pointer-events: all;
+}
+
+#Board .image.placeholder.filled {
+    border: 1px dashed transparent;
+    background: none;
+}
+
+#Board .image.placeholder.filled:hover {
+    border: 1px dashed #ddd;
+    background: rgba(250,250,250,0.7);
+}
+
+#Board .image.placeholder.filled.childSelected {
+    border: 1px dashed #ddd;
+    background: rgba(250,250,250,0.7);
+}
+
+#Board .image.placeholder.ui-state-active {
+    background: rgba(255,0,0,0.5) !important;
+}
+
+#Board .image.placeholder.ui-state-active.ui-state-hover {
+    background: rgba(255,0,0,0.8) !important;
+}
+
+#Board .image.placeholder .hint{
+    font-size: 16px;
+    line-height: 30px;
+    text-align: center;
+    display: block;
+    cursor: default;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    margin-top: -15px;
+    overflow: hidden;
+    height: 50%;
+    color: #333;
+}
+
+#Board .image.whiteBackground {
+    background: #fff;
+}
+
+#Board .image:hover {
+    border: 1px solid #eee;
+}
+
+#Board .image.unselectable:hover {
+    border: 1px solid transparent;
+}
+
+#Board .image.placeholder:hover {
+    border: 1px solid #ddd;
+}
+
+
+#Board .image img { 
+    /*height: 100%;*/
+    height: inherit;
+    width: inherit;
+}
+
+#Board .selected {
+    border: 1px solid #999999 !important;
+}
+
+#Board .ui-resizable-handle {
+    width: 7px;
+    height: 7px;
+    background: #ddd;
+    border: 1px solid #000;
+}
+
+#Board .ui-resizable-handle.ui-resizable-se {
+    right: -5px;
+    bottom: -5px;
+}
+
+.ui-rotatable-handle {
+	background:    #ddd;
+	border:        1px solid #000;
+	border-radius: 6px;
+    -moz-border-radius:    6px;
+    -o-border-radius:      6px;
+    -webkit-border-radius: 6px;
+	cursor:        pointer;
+	height:        10px;
+	left:          50%;
+	margin:        0 0 0 -5px;
+	position:      absolute;
+	top:           -25px;
+	width:         10px;
+}
+
+.ui-widget-overlay {
+    z-index: 9998 !important;
+}
+
+.ui-dialog{
+    z-index: 9999 !important;
+}
+
+#Create .ui-widget {
+    z-index: 999;
+    pointer-events:none;
+}
+
+#Create .ui-autocomplete {
+    pointer-events: all;
+}
+
+.ui-state-disabled {
+    opacity: 1 !important;
+    filter: Alpha(Opacity=100) !important;
+}
+
+#Board .ui-resizable .ui-rotatable-handle.ui-draggable-dragging {
+    display: none;
+}
+
+.image.flop img {
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    transform: scaleX(-1);
+    -ms-transform: matrix(-1, 0, 0, 1, 0, 0);
+}
+
+.image.flip img {
+    -moz-transform: scaleY(-1);
+    -webkit-transform: scaleY(-1);
+    -o-transform: scaleY(-1);
+    transform: scaleY(-1);
+    -ms-transform: matrix(1, 0, 0, -1, 0, 0);
+}
+
+.image.flip.flop img {
+    -moz-transform: scaleX(-1) scaleY(-1);
+    -webkit-transform: scaleX(-1) scaleY(-1);
+    -o-transform: scaleX(-1) scaleY(-1);
+    transform: scaleX(-1) scaleY(-1);
+    -ms-transform: matrix(-1, 0, 0, -1, 0, 0); 
+}
+
+#Create #Share {
+    display: none;
+    width: 310px;
+}
+
+#Create .Publish h3 {
+    margin: 0 0 5px 0;
+}
+
+#Create .Publish > form > span {
+    color: #f00;
+}
+
+#Create .Publish > form > span.share {
+    color: #000;
+}
+
+#Create .Publish select {
+    border: 1px solid #d3d3d3;
+    line-height: 25px;
+    width: 300px;
+    background: transparent;
+    padding: 0px 5px 0px 5px;
+    outline: 0;
+}
+
+#Create .Publish input[type="checkbox"] {
+    width: auto !important;
+}
+
+#Create .Publish select {
+    padding: 0;
+    width: 310px;
+/*    background: url("/images/collection/selectArrow.png") no-repeat 290px center;*/
+}
+
+#Create .Publish .bnt, #confirmBlock #confirmBlockSubmit, #confirmBlock #confirmBlockClose {
+    display: block;
+    float: left;
+    text-transform: uppercase;
+    line-height: 26px;
+    margin-top: 20px;
+}
+
+#Create .Publish .bRed, #viewContent #confirmBlock .bRed, #Create #Share .bRed {
+    margin-right: 10px;
+    padding: 0 10px;
+}
+
+#Share #shareBackBtn {
+    display: block;
+    float: left;
+    text-transform: uppercase;
+    line-height: 26px;
+    margin-top: 20px;
+}

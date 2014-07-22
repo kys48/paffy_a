@@ -1,0 +1,90 @@
+<%= render :partial => '/common/header_top' %>
+<%= stylesheet_link_tag    "/css/signin.css", :media => "all" %>
+<%= javascript_include_tag "/js/kakao-1.0.8.min.js" %>
+<script language="JavaScript">
+Kakao.init('<%= KAKAO_JS_KEY%>');
+var refreshToken = Kakao.Auth.getRefreshToken();	// 로그인시 발급된 Token
+
+// 로그인 창을 띄웁니다.
+function loginWithKakao() {
+	Kakao.Auth.login({
+		success: function(authObj) {
+			//alert(JSON.stringify(authObj));
+			
+			refreshToken = Kakao.Auth.getRefreshToken();
+			//Kakao.Auth.setAccessToken(accessTokenFromServer);
+			
+			Kakao.API.request({
+				url: '/v1/user/me',
+				success: function(data) {
+					//alert(JSON.stringify(data));
+					authKakao(data);
+				}
+			});
+			
+		}
+	});
+};
+
+function authKakao(data){
+	var url = "/auth/kakao"
+	$.ajax(url+'?provider=kakao', {
+	    type: 'post',
+	    data: data,
+	    cache: false,
+	    dataType: "json",
+	    success : function(json){
+	        if(json.status == true){
+	            document.location.href = "/"; 
+	        }
+	    },
+	    error: function(){
+	        alert("로그인 오류입니다. 다시 시도해 주세요.");
+	    }
+	});
+}
+
+function authFB(){
+	window.open("/auth/facebook","페이스북 로그인","width=450,height=400,scrollbars=yes,resizeable=yes");
+}
+
+function reload(){
+	document.location.href = "/";
+}
+
+</script>
+<%= render :partial => '/common/header_bottom' %>
+
+<div class="form-signin">
+	<h2 class="form-signin-heading">로그인</h2>
+	
+	<%= form_tag sessions_path do %>
+	  <%= text_field_tag :email, params[:email], label: "이메일", class: "input-block-level", placeholder: "이메일을 입력하세요", help: "사용하시는 이메일 주소를 입력하세요", required: true, autofocus: true, pattern: '[^@]+@[^@]+\.[a-zA-Z]{2,6}' %>
+	  <%= password_field_tag :password, params[:password], label: "비밀번호", class: "input-block-level", placeholder: "비밀번호를 입력하세요", required: true %>
+	  <label class="checkbox">
+	    <input type="checkbox" value="remember-me"> Remember me
+	  </label>
+	  <div style="padding-top:10px;">
+	  	<%= submit_tag "로그인", class: "btn btn-primary", style: "width:100%" %>
+	  </div>
+	  <div style="padding-top:10px;">
+		  <%= link_to "Facebook 로그인", "javascript:authFB()", class: "btn btn-info", style: "width:40%" %>
+		  <%= link_to "카카오 로그인", "javascript:loginWithKakao()", id: "custom-login-btn", class: "btn btn-warning", style: "width:40%" %>
+	  </div>
+	  
+	<% end %>
+	
+<div id="kakao"></div>	
+
+	<div>
+	<%= link_to "회원가입", sign_up_path %>
+	</div>
+	
+	<% flash.each do |name, msg| %>
+	  <div style="border:1px solid black; background-color:#f4f4f4; padding:10px; font-weight: bold;">
+	  	<%= content_tag :div, msg, :id => "flash_#{name}" %>
+	  </div>
+	<% end %>
+
+</div>
+<%= render :partial => '/common/footer' %>

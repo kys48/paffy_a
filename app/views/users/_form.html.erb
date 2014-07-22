@@ -1,0 +1,28 @@
+
+<%= form_for(@user, :html => {:class => "form-signin"} ) do |f| %>
+<%#= bootstrap_form_for(@user, layout: :horizontal, label_col: "col-sm-2", control_col: "col-sm-10") do |f| %>
+
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.text_field :email, label: "이메일", class: "input-block-level", placeholder: "이메일을 입력하세요", help: "사용하시는 이메일 주소를 입력하세요" %>
+  <%= f.password_field :password, label: "비밀번호", class: "input-block-level", placeholder: "비밀번호를 입력하세요" %>
+  <%= f.password_field :password_confirmation, label: "비밀번호 확인", hide_label: true, class: "input-block-level", placeholder: "비밀번호 확인을 위해 한번 더 입력하세요" %>
+  <%= f.text_field :profile_id, label: "프로필ID", class: "input-block-level", placeholder: "프로필ID를 입력하세요" %>
+  <%= f.text_field :user_name, label: "이름", class: "input-block-level", placeholder: "이름을 입력하세요" %>
+  
+  
+  
+  <div class="actions">
+    <%= f.submit "회원등록", class: "btn btn-lg btn-primary btn-block" %>
+  </div>
+<% end %>

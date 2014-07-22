@@ -1,0 +1,134 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= render :partial => '/common/landing' %>
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+		<div style="padding:10px 20px 0px 30px;">
+			<h3><%= @searchKey%></h3>
+		</div>
+			
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+				    <ul id="itemList" class="portfolio_list">
+				    </ul>
+			    </div>
+			    <div id="loadingDiv" style="display:none;text-align:center;padding:20px;font-size:15px;">
+			    	loading more...
+			    	<img src="/images/common/loading5.gif">
+			    </div>
+			</div>
+		</div>
+	</div>
+	
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+	lastPostFunc();
+});
+
+
+// scroll event
+$(window).scroll(function(){
+	if($(window).scrollTop() == $(document).height() - $(window).height()){
+		if(chkGet) lastPostFunc();
+	}
+});
+
+var chkGet = true;
+var curPage = 1;
+function lastPostFunc(){
+	$('#loadingDiv').show();
+	
+	//curPage++;
+	var postData = new Object();
+	postData.page = curPage;
+	postData.searchKey = '<%= @searchKey%>';
+	postData.per_page = 16;
+	postData.sort = 'sim';
+	
+	chkGet = false;
+
+	var img_style = 'Large';
+	
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+	$.ajax({
+	    url     : '/getNaverShopApiCallback',
+	    type    : 'post',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+
+	    	products = json.product_list;
+	    	if(products.length>0) {
+				curPage++;
+				$.each(products, function (index, product) {
+					var item_url = product.url;
+					var item_ori_url = product.ori_url;
+					var item_link_url = product.link_url;
+					var img_url = product.image;
+					//var retailer = product["retailer"]["name"];
+					var retailer = product.mallName;
+					var product_name = product.title;
+					product_name = cropByte(product_name,40);
+					
+					//var currency	= product["currency"];
+					//var price		= product["price"];
+					var priceLabel	= product["priceLabel"];
+					var li = ''
+					+ '<li>'
+					+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">'
+					+ '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">'
+					+ '<img src="'+img_url+'" onClick="goUrl(\''+item_url+'\')" style="cursor:pointer; width:220px;height:220px;">'
+					+ '</div>'
+					
+					+ '<input type="text" value="'+item_url+'">'
+					+ '<input type="text" value="'+item_ori_url+'">'
+					+ '<input type="text" value="'+item_link_url+'">'
+					
+					+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+					+ '	<span style="color:#000000">'+product_name+'</span><br/>'
+					+ priceLabel + "&nbsp;"
+					+ '	<span style="color:#0088cc">'+retailer+'</span>'
+					+ '</div>'
+					//+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>'
+					+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">&nbsp;</div>';
+					+ '</div>'
+					+ '</li>';
+					
+					$('#itemList').append(li);
+				});
+				chkGet = true;
+				$('#loadingDiv').hide();
+	    	} else {
+	    		//notify('error', json.msg);
+	    		//$('#loadingDiv').html("no more result...")
+	    		$('#loadingDiv').hide();
+	    	}
+	    	
+	    },
+	    error   : function(e){
+	        $('#loadingDiv').hide();
+	    }
+	});
+	
+}
+
+function goUrl(url){
+	if(CHKMOBILE=='Y'){
+		document.location.href = openurl;
+	} else {
+		window.open(url);
+	}
+}
+</script>
+
+
+

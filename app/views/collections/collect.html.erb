@@ -1,0 +1,664 @@
+<%= render :partial => '/common/header_top' %>
+<%
+	request_host = "http://" + request.host_with_port
+%>
+<%= stylesheet_link_tag    "http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/cropping.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/datePicker.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/platform.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.Jcrop.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.colourPicker.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.selectbox.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/flat-simo.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/flat-slav.css", :media => "screen" %>
+<!--link href='http://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400italic,400,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'-->
+<%= stylesheet_link_tag    "/css/collection/val.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.tagsinput.css", :media => "screen" %>
+
+<%= javascript_include_tag "http://code.jquery.com/jquery-1.9.1.js" %>
+<%= javascript_include_tag "http://code.jquery.com/ui/1.10.2/jquery-ui.js" %>
+<%= javascript_include_tag "/js/collection/jquerypp.custom.js" %>
+<%= javascript_include_tag "/js/collection/sprintf.min.js" %>
+<script type="text/javascript">
+siteURL = '<%= request_host%>/';
+imgURL  = '<%= request_host%>/';
+$(function(){
+    TranslationLabels = new Object;
+    TranslationLabels['above_max_item_for_collection']	= 'above max item for collection';
+	TranslationLabels['below_max_item_for_collection']	= 'below max item for collection';
+	TranslationLabels['cannot_load_image']				= '이미지를 불러올 수 없습니다.';
+	TranslationLabels['could_not_complete_request']		= '요청을 완료할 수 없습니다.';
+	TranslationLabels['could_not_detect_carousel_for_plugin'] = 'could not detect carousel for plugin';
+	TranslationLabels['sorry_no_friends_using_app_found_we_recommend_the_following_users:'] = 'sorry no friends using app found we recommend the following users:';
+	TranslationLabels['are_you_sure_you_want_to_leave']	= '페이지를 벗어날까요?';
+	TranslationLabels['account_connection_failure']		= '계정 연결 실패';
+	TranslationLabels['account_connection_success']		= '계정 연결 성공';
+	TranslationLabels['account_added_for_sharing']		= '계정 공유 추가';
+	TranslationLabels['submitButton']					= '로딩중';
+	TranslationLabels['found']                          = 'Found';
+	TranslationLabels['friend']							= 'friend';
+	TranslationLabels['friends']                        = 'friends';
+	TranslationLabels['hint']                           = 'hint';
+	TranslationLabels['unknown_error']                  = '알수없는 오류';
+	TranslationLabels['crop_saved']                     = 'crop saved';
+	TranslationLabels['could_not_load']                 = '로드할 수 없습니다.';
+	TranslationLabels['tag']                            = 'Tag:';
+	TranslationLabels['must_have_valid_selection']		= 'Must have valid selection';
+	TranslationLabels['please_select_a_file']           = '파일을 선택하세요';
+	TranslationLabels['unknown_error']                  = 'unknown error';
+	TranslationLabels['image_uploaded_successfully']    = '이미지 업로드를 성공하였습니다.';
+	TranslationLabels['loading']                        = '로딩중';
+	TranslationLabels['follow_all']                     = 'follow all';
+	TranslationLabels['let_friends_find_me_too']        = 'let friends find me too';
+	TranslationLabels['previous']                       = '이전';
+	TranslationLabels['next']                           = '다음';
+	TranslationLabels['currently_sharing_to']           = 'currently sharing to';
+	TranslationLabels['stop']                           = 'stop';
+	TranslationLabels['not_available']                  = 'Not available';
+	TranslationLabels['start_quick_sharing_to']         = 'start quick sharing to';
+	TranslationLabels['cannot_load_cover']				= 'Cannot load cover';
+	TranslationLabels['cancel']                         = '취소';
+	TranslationLabels['drag_to_position_image']			= 'Drag to position image';
+	TranslationLabels['save_changes']					= 'save changes';
+	TranslationLabels['change_picture']                 = 'change picture';
+	TranslationLabels['view_less']                      = 'view less';
+	TranslationLabels['view_more']                      = 'view more';
+	TranslationLabels['share_failure']                  = 'share failure';
+	TranslationLabels['you_cannot_add_more_than_%d_tags_to_one_creation'] = 'you cannot add more than %d tags to one creation';
+	TranslationLabels['this_%s_is_already_in_the_collection'] = '이미 포함되어있습니다.';
+	TranslationLabels['pick_a_colour']					= 'pick a colour';
+	TranslationLabels['open_colour_picker']				= 'open colour picker';
+	TranslationLabels['no_%s_users_currently_available'] = 'no %s users currently available';
+	TranslationLabels['on_site']                        = 'on Trickable';
+	TranslationLabels['invalid_items_in_collection']    = 'invalid items in collection';
+	TranslationLabels['placeholder_accepts_only_products'] = 'placeholder accepts only products';
+	TranslationLabels['could_not_load_crops']           = 'could not load crops';
+	TranslationLabels['add_a_tag']                      = 'add a tag';
+});
+</script>
+<%= javascript_include_tag "/js/collection/jquery.infinitescroll.js" %>
+<%= javascript_include_tag "/js/collection/jquery.tabs.js" %>
+<%= javascript_include_tag "/js/collection/jquery.textareacounter.js" %>
+<%= javascript_include_tag "/js/collection/jquery.responsive.js" %>
+<%= javascript_include_tag "/js/collection/jquery.content.slider.js" %>
+<%= javascript_include_tag "/js/collection/jquery.scrollTo-1.4.0-min.js" %>
+<%= javascript_include_tag "/js/collection/jquery.scroll.top.js" %>
+<%= javascript_include_tag "/js/collection/jquery.form.js" %>
+<%= javascript_include_tag "/js/collection/jquery.jcarousel.js" %>
+<%= javascript_include_tag "/js/collection/misc.js" %>
+<%= javascript_include_tag "/js/collection/binds.js" %>
+<%= javascript_include_tag "/js/collection/platform.js" %>
+<%= javascript_include_tag "/js/collection/cropping.js" %>
+<%= javascript_include_tag "/js/collection/rotatable.js" %>
+<%= javascript_include_tag "/js/collection/slideshow.js" %>
+<%= javascript_include_tag "/js/collection/infinite.js" %>
+<%= javascript_include_tag "/js/collection/datePicker.js" %>
+<%= javascript_include_tag "/js/collection/collections.js" %>
+<%= javascript_include_tag "/js/collection/jquery.Jcrop.js" %>
+<%= javascript_include_tag "/js/collection/jquery.colourPicker.js" %>
+<%= javascript_include_tag "/js/collection/jquery.truncate.js" %>
+<%= javascript_include_tag "/js/collection/jquery.selectbox-0.2.min.js" %>
+<%= javascript_include_tag "/js/collection/jquery.autosize.js" %>
+<%= javascript_include_tag "/js/collection/jquery.tagsinput.min.js" %>
+<%= javascript_include_tag "/js/collection/notify/jquery.noty.js" %>
+<%= javascript_include_tag "/js/collection/notify/topCenter.js" %>
+<%= javascript_include_tag "/js/collection/notify/default.js" %>
+
+<%= render :partial => '/common/header_bottom' %>
+
+<div class="unselectable">
+
+	<div id="mask"></div>
+                                                        
+	<!----------------------------start main_wrapper------------------------------->
+
+
+
+    <!----------------------------start wrapper------------------------------->
+      <div id="wrapper">
+          <div id="wrapperShadow"></div>
+         <!----------------------------start page------------------------------->
+        <div id="page">
+          <!----------------------------start container------------------------------->                              
+<script type="text/javascript">
+var oCollection;
+$(function() {
+	$('#Create').myTabs({
+		tabsholder : 'tabHolder',
+		tabinit : 5
+	});
+
+	$('#Products').on('click', 'li > .delete', function(e) {
+		e.preventDefault();
+		var $el = $(this);
+
+		deleteItem($el.attr('href'), function() {
+			var $parent = $el.parent();
+			$parent.fadeOut(200, function() {
+				$('#Create').myTabs('reload');
+			});
+		});
+
+	});
+
+	// 상품클릭
+	$('#Products').on('click', '.items:not(".unclickable") li', function(e) {
+		var itemId = $(this).find('input[name="itemId"]').val();
+		var itemOrigin = $(this).find('input[name="itemOrigin"]').val();
+		var itemImg = $(this).find('input[name="itemImg"]').val();
+//		loadItem(itemId, itemOrigin, $(this), $(this).parent().parent(), true);	// 왼쪽 상품 클릭시 상품정보 레이어 띄우기
+//		loadItem(itemId, itemOrigin, itemImg, $(this), $(this).parent().parent(), true);	// 왼쪽 상품 클릭시 상품정보 레이어 띄우기
+	});
+
+	// 페이징
+/*	
+	$('#Products').on('click', '.pagging a', function(e) {
+		e.preventDefault();
+
+		if ($(this).parent().hasClass('active'))
+			return;
+
+		var contentDiv = $(this).closest('.tab_content');
+		var url = $(this).attr('href');
+		var postData = contentDiv.find('form').serialize();
+
+		$('#Create').myTabs({
+			'load' : url,
+			post : postData
+		});
+
+	});
+*/
+	// top 링크, about링크 
+	$('#Products').on('click', '.link', function(e) {
+		e.preventDefault();
+
+		var contentDiv = $(this).closest('.tab_content');
+		var url = $(this).attr('href');
+		var postData = contentDiv.find('form').serialize();
+
+		$('#Create').myTabs({
+			'load' : url,
+			post : postData
+		});
+
+	});
+
+    oCollection                         = new collection('collection');
+    oCollection.loadCollectionURL       = "/collections/collect";
+    oCollection.loadCollectionDraftURL  = "/collections/collect";
+    //oCollection.productURL              = "<%= request_host%>/data/product/";
+    //oCollection.setURL                  = "<%= request_host%>/data/product/embellishments/";
+    
+	oCollection.productURL = "";	// 상품 이미지 폴더
+	oCollection.setURL = "";	// 꾸민 이미지 폴더
+	oCollection.productStyleDirectory = ""
+	
+    oCollection.publishURL              = "/collections/publish";
+    oCollection.minItems                = 1;
+    oCollection.maxItems                = 30;
+    oCollection.init();
+    
+});
+</script>
+    
+<div id="Create" class="unselectable">
+    
+    <!-- 공유하기 레이어 -->
+    <div id="Share" class="login-popup">
+    <form id="sharingForm">
+        <a href="#" class="close"></a> 
+        <h3>share your creations</h3>
+        <div id="sharingContent">
+                <h6>start quick sharing to</h6>
+                <ul id="socialNetworks" class="actionGrid cf">
+                    <li>
+                        <span class="largeIcon twitter">Twitter</span>
+                    </li>
+                </ul>
+				<br/>
+					<h6>currently sharing to</h6>
+				<ul id="sharingList" class="lineList cf">
+					<li id="facebook">
+						<a href="#" onclick="return false;"><img class="avatar" src="http://img.wmstore.com/site/images/icons/facebook.png" /></a>
+						<div class="info">
+							<span>Facebook</span>&nbsp;<a class="blue" href="http://www.facebook.com/1375172478">페북~</a>
+						</div>
+						<div class="action">
+							<a href="#" class="blue">Stop</a>
+						</div>
+					</li>
+				</ul>
+        </div>
+        <a href="#" id="shareBackBtn" class="bnt bBlue">Back</a>
+    </form>
+	</div>
+
+	<!-- 콜렉션 등록 레이어 -->
+    <div id="Publish" class="login-popup">
+        <form class="form" id="publishSetForm">
+            <h3>콜렉션 저장</h3>
+            <a href="#" class="close"></a>
+            <label for="name">제목</label>
+            <input id="name" class="login-input" name="name" type="text" value="" />
+            <div class="space"></div>
+            
+            <label for="description">내용</label>
+            <textarea id="description" class="login-input" name="description"></textarea>
+            <div class="space"></div>
+            
+            <!--label for="category_id">카테고리<span>*</span></label>
+            <select id="category_id" name="category_id" class="full">
+            	<option value="1">November</option>
+            	<option value="2">Bra</option>
+            	<option value="3">Skirt</option>
+            </select>
+            <span class="postTo">카테고리를 선택하세요</span>
+            <div class="space"></div>
+            
+            <label for="tags">태그</label>
+            <input id="tags" class="login-input" type="text" name="tags" />
+            <div class="space"></div-->
+            
+            <label for="share">공유하기</label><br />
+            <input id="share" class="styled" type="checkbox" name="share" value="1" checked="checked" />
+            <span class="share">친구들과 공유하기</span>
+            <!--div>
+            	<span class="postTo">posting to: 페이스북</span>
+            	<a href="#" id="postToEdit" class="postTo blue">수정</a>
+            	<input type="hidden" name="oauth_providers[]" id="share_to_facebook" value="facebook" />
+            </div-->
+            <div class="space"></div>
+            
+            <a href="#" id="PublishSubmit" class="bnt bBlue">
+                <span>콜렉션등록</span>
+                <input type="hidden" name="active" value="Publish" />
+                <input type="hidden" name="inactive" value="Loading..." />
+            </a>
+            <a href="#" id="PublishClose" class="bnt bGray">취소</a>
+        </form>
+    </div>
+    
+    <!-- 오른쪽 상단 버튼 -->
+    <div id="Navigator" class="cf">
+        <a href="#" class="publish bGreen small" style="font-weight:bold">Publish</a>
+        <!--a href="#" class="draft bGray small">
+            <span>작업저장</span>
+            <input type="hidden" name="active" value="Save draft" />
+            <input type="hidden" name="inactive" value="Saving..." />
+        </a-->
+        <a href="#" class="restart bGray small">Refresh</a>
+        <div class="clear"></div>
+    </div>
+            
+    <div class="whiteHeader tabHolder cf" style="text-align:left; padding-left:20px; font-size:14px;">
+     	<a href="javascript:changeType(1)" id="menu1" class="publish bBlue small" style="width:150px">Items</a>   
+     	<a href="javascript:changeType(2)" id="menu2" class="publish bGray small" style="width:150px">Favorite</a>
+     	<a href="javascript:changeType(3)" id="menu3" class="publish bGray small" style="width:150px">My Items</a>
+        <!--ul id="tabHolder" class="tabs left">
+        	<li><a href="#" class="publish bBlue small" style="color:white">Items</a></li>
+        	<li><a href="#">Favorite</a></li>
+        	<li><a href="#">My Items</a></li>
+        </ul-->
+    </div>
+                    
+    <div id="Dashboard">
+        <div id="Products">
+            <div id="tabscontent" class="tabContent">
+            	
+            	
+<!-- 왼쪽 아이템리스트 시작 -->
+<script type="text/javascript">
+$(function() {
+	var form = $('#createSearchForm');
+	var searchField = form.find('input[name="query"]');
+	var url = form.attr('action');
+	form.find(':input').keypress(function(e) {
+		if (e.keyCode == 13) {
+			var contentDiv = $(this).closest('.tab_content');
+			var postData = contentDiv.find('form').serialize();
+			var addon = searchField.val();
+			$('#Create').myTabs({
+				'load' : url + '?query=' + addon,
+				post : postData
+			});
+		}
+	});
+	$('#jquery-colour-picker ul').on('click', 'li', function(e) {
+		e.preventDefault();
+		var colorId = $(this).attr("id");
+	});
+	$('select.medium2').selectbox({
+		speed : 200,
+		effect : 'slide',
+		classHolder : 'sbHolderMedium2'
+	});
+	$('#category_select').on('change', function(e) {
+		var contentDiv = $(this).closest('.tab_content');
+		var postData = contentDiv.find('form').serialize();
+		var addon = $(this).val();
+		if (addon == 0)
+			return;
+		$('#Create').myTabs({
+			'load' : url + '?category=' + addon,
+			post : postData
+		});
+	});
+	$.widget("custom.catcomplete", $.ui.autocomplete, {
+		_renderMenu : function(ul, items) {
+			var that = this, currentCategory = "";
+			$.each(items, function(index, item) {
+				if (item.category != currentCategory) {
+					ul.append("<li class='ui-autocomplete-category'>" + item.category + "</li>");
+					currentCategory = item.category;
+				}
+				that._renderItemData(ul, item);
+			});
+		},
+		_renderItem : function(ul, item) {
+			return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.formatted + "</a>").appendTo(ul);
+		}
+	});
+	searchField.bind("keydown", function(event) {
+		if (event.keyCode === $.ui.keyCode.TAB && $(this).data("ui-autocomplete").menu.active) {
+			event.preventDefault();
+		}
+	}).catcomplete({
+		source : function(request, response) {
+			$.getJSON("/autocomplete", {
+				query : request.term,
+				itemOrigin : 'product'
+			}, response);
+		},
+		focus : function() {
+			return false;
+		},
+		select : function(a, b) {
+			$(this).val(b.item.value);
+			var contentDiv = $(this).closest('.tab_content');
+			var postData = contentDiv.find('form').serialize();
+			var addon = searchField.val();
+			$('#Create').myTabs({
+				'load' : url + '?query=' + addon,
+				post : postData
+			});
+		}
+	});
+});
+
+var itemType = 1;	// 상품type
+var curPage = 0;
+
+// 상품 리스트를 가져온다
+function lastPostFunc(goPage){
+	curPage = goPage-1;
+	chkGet = false;
+	
+	var postData = new Object();
+
+	var shopstyle_api_key = '<%=SHOPSTYLE_KEY%>';
+	var per_page = 30;
+	var searchKey = $('#category').val();
+	
+	if(itemType!=3 && searchKey==""){
+		$('#itemList').html("");
+		$('#pagingDv').html("");
+	} else {
+		var api_url = '';
+		var method_type = 'get';
+
+		if(itemType==1){	// shop style 
+			method_type = 'get';
+			api_url = 'http://api.shopstyle.com/api/v2/products?pid='+shopstyle_api_key
+					+ '&fts='+encodeURIComponent(searchKey)
+					+ '&offset='+(curPage*per_page)
+					+ '&limit='+per_page;
+			
+		} else if(itemType==2){	// DB
+			method_type = 'post';
+			//api_url = '/products/productListCallback?page='+(curPage+1)+'&per_page='+per_page;
+			api_url = '/products/productListCallback';
+			
+			postData.page = curPage+1;
+			postData.cate_code = $('#category').val();
+			postData.per_page = 30;
+			
+		} else if(itemType==3){	// My items
+			method_type = 'post';
+			//api_url = '/mypage/itemListCallback?page='+(curPage+1)+'&type=P&per_page='+per_page;
+			api_url = '/products/myProductListCallback';
+			
+			postData.page = curPage+1;
+			postData.type = 'P';
+			//postData.searchKey = $('#category').val();
+			postData.per_page = 30;
+		}
+		
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+		
+		$.ajax({
+		    url     : api_url,
+		    type    : method_type,
+		    dataType: 'json',
+		    data	: $.param(postData),
+		    async   : false,
+		    success : function(json){
+		    	products = json.products;
+		    	$('#itemList').html("");
+		    	if(products.length>0) {
+					curPage++;
+					$.each(products, function (index, product) {
+						var item_api = "";
+						var item_img_url1 = "";
+						var item_img_url2 = "";
+						var item_url = "";
+						var item_id = "";
+						var file_path = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+						var img_directory1 = "original/"
+						var img_directory2 = "medium/"
+						
+						if(itemType==1){	// shop style
+							oCollection.productURL = "";	// 상품 이미지 폴더
+							oCollection.setURL = "";	// 꾸민 이미지 폴더
+							oCollection.productStyleDirectory = "";
+							
+							item_api = "shopstyle";
+							item_id = product.id;
+							item_img_url1 = product["image"]["sizes"]["IPhone"]["url"];
+							item_img_url2 = product["image"]["sizes"]["Large"]["url"];
+							item_url = product.clickUrl;
+						} else if(itemType==2){	// DB
+							oCollection.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+							oCollection.setURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+							oCollection.productStyleDirectory = "/original/";
+							
+							item_api = "";
+							item_id = product.id;
+							item_img_url1 = product.img_file_name;
+							item_img_url2 = file_path+img_directory2+product.img_file_name;
+							item_url = product.url;
+						} else if(itemType==3){	// My items
+							oCollection.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+							oCollection.setURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+							oCollection.productStyleDirectory = "/original/";
+							
+							item_api = "";
+							item_id = product.id;
+							item_img_url1 = product.img_file_name;
+							item_img_url2 = file_path+img_directory2+product.img_file_name;
+							item_url = product.url;
+						}
+						
+						var li = ''
+						+ '<li class="ui-draggable" style="border:1px solid #CCCCCC;text-align:center;vertical-align:middle">'
+						+ '	<img src='+item_img_url2+'>'
+						+ '	<input type="hidden" name="itemOrigin" value="product">'
+						+ '	<input type="hidden" name="itemAPI" value="'+item_api+'">'
+						+ '	<input type="hidden" name="itemURL" value="'+item_url+'">'
+						+ '	<input type="hidden" name="itemId" value="'+item_id+'">'
+						+ '	<input type="hidden" name="itemImg" value="'+item_img_url1+'">'
+						+ '</li>';
+	
+						$('#itemList').append(li);
+					});
+					//$('#loadingDiv').hide();
+					
+					// 페이징
+					var pageStr = '' 
+					+ '<ul class="pagging basic">'
+					+ '<li><a class="singleBack btl bbl" href="javascript:goPage(1)"></a></li>';
+					
+					for(i=1;i<=5;i++){
+						if (curPage==i){
+							pageStr += '<li class="active"><a href="javascript:goPage('+i+')">'+i+'</a></li>';
+						} else {
+							pageStr += '<li><a href="javascript:goPage('+i+')">'+i+'</a></li>';
+						}
+					}
+					pageStr += ''
+					+ '	<li>'
+					+ '		<a class="singleForward" href="javascript:goPage(5)"></a>'
+					+ '	</li>'
+					+ '	<div class="clear"></div>'
+					+ '</ul>';
+					
+					$('#pagingDv').html(pageStr);
+		    	} else {
+		    		//$('#loadingDiv').hide();
+		    	}
+		    },
+		    error   : function(e){
+		        //$('#loadingDiv').hide();
+		    }
+		});
+	}
+}
+
+// 메뉴선택
+function changeType(val){
+	beforeLeave(false);
+	curPage = 0;
+	itemType = val;
+	
+	for(i=1;i<=3;i++){
+		$("#menu"+i).removeClass();
+		$("#menu"+i).addClass("publish bGray small");
+	}
+	$("#menu"+val).removeClass();
+	$("#menu"+val).addClass("publish bBlue small");
+	$('#itemList').html("");
+	$('#pagingDv').html("");
+	
+	var selectStr = ''
+	if(val==3){
+		lastPostFunc(1);
+	} else {
+		selectStr = ''
+		+ '<select id="category" class="medium2" onchange="lastPostFunc(1)">'
+		+ '	<option value="">Choose category</option>'
+		+ '	<option value="Women">Women</option>'
+		+ '	<option value="Bags">Bags</option>'
+		+ '	<option value="Shoes">Shoes</option>'
+		+ '	<option value="Beauty">Beauty</option>'
+		+ '	<option value="Jewelry">Jewelry</option>'
+		+ '	<option value="Kids">Kids</option>'
+		+ '	<option value="Home">Home</option>'
+		+ '	<option value="Men">Men</option>'
+		+ '</select>';
+	}
+	$('#selectDv').html(selectStr);
+	
+	
+}
+
+function goPage(val){
+	lastPostFunc(val);
+}
+
+</script>
+
+
+<div class="tabHead">
+	<!-- 
+	<form id="createSearchForm" action="/products/all/" class="form noPadding">
+		<select id="category_select" class="medium2">
+			<option value="0">Choose category</option>
+			<option value="1"> Fashion</option>
+			<option value="2">   Cloting</option>
+			<option value="3">   Dresses</option>
+			<option value="4">   Cocktail</option>
+			<option value="5">   Gowns</option>
+		</select>
+		<div id="createPicker" style="margin-bottom: 20px;">
+			
+			<select name="color" class="colorPicker">
+				<option value="#" id="131">#star light</option>
+				<option value="#E6798E" id="295">#nectar</option>
+			</select>
+		</div>
+		<div class="clear"></div>
+		<input type="text" name="query" class="login-input" id="searchInput" style="width: 92% !important;" value="검색하숑~"/>
+		<div class="space"></div>
+	</form>
+	<div class="devider"></div>
+	<div class="clear"></div>
+	 -->
+	<div id="selectDv" style="padding-left:20px;">
+		<select id="category" onchange="lastPostFunc(1)">
+			<option value="">Choose category</option>
+			<option value="Women">Women</option>
+			<option value="Bags">Bags</option>
+			<option value="Shoes">Shoes</option>
+			<option value="Beauty">Beauty</option>
+			<option value="Jewelry">Jewelry</option>
+			<option value="Kids">Kids</option>
+			<option value="Home">Home</option>
+			<option value="Men">Men</option>
+		</select>
+	</div>
+</div>
+
+<div class="tabBody">
+	<ul id="itemList" class="items">
+	</ul>
+</div>
+
+<div id="pagingDv" class="tabFoot"></div>
+
+<!-- 왼쪽 아이템리스트 끝 -->
+            	
+            	
+            	
+            	
+            	
+            </div>
+        </div>
+        <div id="Board" class="collectionBoard">
+            <div class="message">
+                <strong style="font-size:20px">Create a collection</strong>
+                <br>
+                start by dragging items here
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+          <!----------------------------end container------------------------------->
+        </div>
+         <!----------------------------end page------------------------------->    
+    </div>
+    <!----------------------------end wrapper------------------------------->
+    </div>
+    <!----------------------------end main_wrapper------------------------------->
+</div>

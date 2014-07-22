@@ -1,0 +1,132 @@
+.sbHolder, .sbHolderMedium2, .sbHolderBig, .sbHolderFull, .sbHolder200 {
+    height: 38px !important;
+    position: relative;
+    border: 0 none;
+    width: 110px;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.sbHolderMedium2 {
+    width: 280px;
+}
+
+.sbHolderBig {
+    width: 336px;
+}
+
+.sbHolderFull {
+    width: 100%;
+}
+
+.sbHolder200 {
+    width: 200px;
+}
+
+.sbSelector{
+	display: block;
+    height: 38px !important;
+    line-height: 38px !important;
+	left: 0;
+	outline: none;
+	overflow: hidden;
+	text-indent: 10px;
+	top: 0;
+    min-width: inherit !important;
+	width: inherit !important;
+    color: #667686;
+    font-weight: 600;
+    background: 0 #d7dcde;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sbToggleOpen .sbSelector{
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    -moz-border-radius-bottomleft: 0;
+    -moz-border-radius-bottomleft: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+}
+
+.sbSelector:link, 
+.sbSelector:visited, 
+.sbSelector:hover{
+    color: #667686;
+	outline: none;
+	text-decoration: none;
+}
+.sbToggle {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+	display: block;
+	outline: none;
+    z-index: 1;
+    height: 38px;
+    width: 38px;
+    background: url("/images/collection/selectSeparator.png") 0px 0px no-repeat;
+    pointer-events: none;
+}
+
+.sbToggle:after {
+    border-top: 7px solid #667686; 
+    border-left: 5px solid transparent; 
+    border-right: 5px solid transparent;
+    width: 0;
+    height: 0;
+    left: 14px;
+    top: 16px;
+    display: block;
+    content: "";
+    position: absolute;
+}
+
+.sbToggleOpen:after{
+    border-top: 0px; 
+    border-bottom: 7px solid #667686; 
+}
+
+.sbOptions {
+	background-color: #fff;
+	border: solid 1px #d7dcde;
+	-webkit-border-bottom-right-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	border-bottom-right-radius: 3px;
+	border-bottom-left-radius: 3px;
+	list-style: none;
+	left: 0px;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	width: 100%;
+	z-index: 1;
+	overflow-y: auto;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    z-index: 10;
+}
+
+.sbOptions > li > a{
+	display: block;
+	outline: none;
+	padding: 0 0 0 3px;
+    color: #7c8792;
+    font-size: 13px;
+    line-height: 25px;
+    cursor: pointer;
+}
+
+.sbOptions > li > a:hover,
+.sbOptions > li > a:focus,
+.sbOptions > li > a.sbFocus{
+	color: #fff;
+    background: #3498db;
+}

@@ -1,0 +1,252 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= javascript_include_tag "/js/collection/binds.js" %>
+<div id="Profile" class="centerHolder" style="padding-top:20px;width:100%;">
+	<div class="userInfoBox">
+		<br/>
+		<div class="row-fluid">		
+			<div class="span2">
+		<% if @user.img_file_name %>
+				<%= image_tag("/data/user/medium/"+@user.img_file_name) %>
+		<% else %>
+			<% if @user.user_type=="U" %>
+				<%= image_tag("/images/common/profile_u.png") %>
+			<% elsif @user.user_type=="S" %>
+				<%= image_tag("/images/common/profile_s.png") %>
+			<% else%>
+				<%= image_tag("/images/common/profile_u.png") %>
+			<% end %>
+		<% end %>
+				<!--img src="<%= @user.img_file_name%>" style="width:150px;height:100px"-->
+				
+			</div>
+			<div class="span6">
+				<h4>@<%= @user.profile_id%></h4>
+				<%= @user.user_name%>
+				<br/>
+<% if @session_user_id %>
+				<div onclick="alert('프로필수정');" class="bGreen" style="cursor:pointer; width:120px; margin-top:5px;">프로필</div>
+	<% if @session_user_id != @user.id %>
+		<% if @follow_count>0 %>
+				<div id="cnt_scrap" onclick="follow();" class="bGray" style="cursor:pointer; width:150px; margin-top:5px;">팔로잉</div>
+		<% else %>
+				<div id="cnt_scrap" onclick="follow();" class="bBlue" style="cursor:pointer; width:150px; margin-top:5px;">팔로우하기</div>
+		<% end %>
+	<% end %>
+<% end %>
+				<!--p>
+					<a class="btn btn-success" href="#">프로필</a>
+					<a class="btn btn-primary" href="#">팔로우</a>
+				</p-->
+			</div>
+			<div class="span4">
+				<ul class="right">
+					<li class="icon views">
+						<p>스토어 : 1</p>
+					</li>
+					<li class="icon place">
+						<p>팔로워 : 0</p>
+					</li>
+					<li class="icon gender">
+						<p>팔로잉 : 0</p>
+					</li>
+					<li class="icon age">
+						<p>콜렉션 : 0</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+		<ul>
+			<li>
+				<a href="/mypage/<%=@profile_id%>" <% if @item_type!='C' && @item_type!='P'  %> class="active" <% end %> >전체</a>
+			</li>
+			<li>
+				<a href="/mypage/<%=@profile_id%>?type=P" <% if @item_type=='P' %> class="active" <% end %> >상품</a>
+			</li>
+			<li>
+				<a href="/mypage/<%=@profile_id%>?type=C" <% if @item_type=='C' %> class="active" <% end %> >콜렉션</a>
+			</li>
+		</ul>
+			
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+				    <ul id="itemList" class="portfolio_list">
+				    <% @collections.each do |collection| %>
+						<li>
+						<% if collection.item_type=='C'%>
+							<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">
+							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
+							 		<img src="/data/collection/thumb/<%= collection.img_file_name%>" onClick="document.location.href='/collections/<%= collection.id%>'" style="cursor:pointer">
+							 	</div>
+							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
+							 		<span style="color:#000000"><%=collection.subject%></span><br/>
+							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088cc"><%=collection.profile_id%></a>
+							 	</div>
+							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
+							</div>
+						    	
+					    <% elsif collection.item_type=='P'
+								price_type_str = "￦"
+								price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+							    case collection.price_type
+							      when "KRW"
+							        price_type_str = "￦"
+							        price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+							      when "USD"
+							      	price_type_str = "$"
+							      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+							      when "JPY"
+							      	price_type_str = "￥"
+							      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+							      when "EUR"
+							      	price_type_str = "€"
+							      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+							      when "GBP"
+							      	price_type_str = "￡"
+							      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+							      when "CNY"
+							      	price_type_str = "元"
+							      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+							    end
+					    %>
+							<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">
+							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
+							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/products/<%= collection.id%>'" style="cursor:pointer">
+							 	</div>
+							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
+							 		<span style="color:#000000"><%=collection.subject%></span><br/>
+							 		<%= price_str%>&nbsp;
+							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088cc"><%=collection.profile_id%></a>
+							 	</div>
+							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
+							</div>
+					    <% end %>
+						</li>
+				    <% end %>
+				    </ul>
+			    </div>
+			</div>
+		</div>
+		
+		
+	</div>
+	
+	
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+	
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("#mainMenu2").addClass("active");
+});
+
+
+// scroll event
+$(window).scroll(function(){
+	if($(window).scrollTop() == $(document).height() - $(window).height()){
+		lastPostFunc();
+	}
+});
+
+var nextPage = 2;
+function lastPostFunc(){
+	//nextPage++;
+	$.ajax({
+	    url     : '/mypage/itemListCallback?id=<%= @profile_id%>&page='+nextPage+'&type=<%= @item_type%>',
+	    type    : 'get',
+	    dataType: 'json',
+	    async   : false,  
+	    success : function(json){
+	    	collections = json.collections;
+
+	    	if(json.status){
+				if(collections.length>0) nextPage++;
+				$.each(collections, function (index, collection) {
+					var li = '<li>' 
+					+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+					
+					if(collection.item_type=='C'){
+						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+						+ '	<img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
+						+ '</div>'
+						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+						+ '</div>'
+						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+					}else if(collection.item_type=='P'){
+						var priceStr = getMoneyType(collection.price,collection.price_type);
+						
+						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+						+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+						+ '</div>'
+						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+						+ priceStr + "&nbsp;"
+						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+						+ '</div>'
+						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+					}
+					li += '</div>'
+					+ '</li>';
+					
+					$('#itemList').append(li);
+				});
+				
+	    	} else {
+	    		notify('error', json.msg);
+	    	}
+	    	
+	    },
+	    error   : function(e){
+	        semafors['ajax'] = false;
+	        //notify('error', TranslationLabels['could_not_complete_request']);
+	    }
+	});
+}
+
+
+// 팔로우하기
+function follow(){
+    var postData = new Object();
+    postData.follow_id = "<%= @user.id%>";
+    postData.follow_type = "U";
+
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+    $.ajax({
+        url     : '/follows/put',
+        type    : 'post',
+        dataType: 'json',
+        data	: $.param(postData),
+        async   : false,  
+        success : function(json){
+        	$('#cnt_scrap').removeClass();
+
+    		if(json.follow_status=='Y'){
+    			$('#cnt_scrap').html("팔로잉");
+    			$('#cnt_scrap').addClass('bGray');
+    		}else{
+    			$('#cnt_scrap').html("팔로우");
+    			$('#cnt_scrap').addClass('bBlue');
+    		}
+        },
+        error   : function(e){
+        }
+    });
+}
+
+</script>

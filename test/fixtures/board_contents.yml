@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  subject: MyString
+  contents: MyText
+  hit_no: 9.99
+  reg_id: MyString
+  reg_name: MyString
+  reg_passwd: MyString
+
+two:
+  subject: MyString
+  contents: MyText
+  hit_no: 9.99
+  reg_id: MyString
+  reg_name: MyString
+  reg_passwd: MyString

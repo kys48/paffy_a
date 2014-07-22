@@ -1,0 +1,18 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+ko:
+  helpers:
+    actions: "Actions"
+    links:
+      back: "이전"
+      cancel: "취소"
+      confirm: "Are you sure?"
+      destroy: "삭제"
+      new: "등록"
+      edit: "수정"
+    titles:
+      edit: "수정 %{model}"
+      save: "저장 %{model}"
+      new: "등록 %{model}"
+      delete: "삭제 %{model}"

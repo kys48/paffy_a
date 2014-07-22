@@ -1,0 +1,27 @@
+<script>
+void ((function(url) {
+	
+document.write("url : " + url);
+document.write("<br>");
+document.write('//wanelo.com/bookmarklet/3/setup?*=' + cacheBuster + '&url=' + productURL);
+
+
+
+		if (!window.waneloBookmarklet) {
+			var productURL = encodeURIComponent(url)
+			, cacheBuster = Math.floor(Math.random() * 1e3)
+			, element = document.createElement('script');
+			
+			element.setAttribute('src', '//wanelo.com/bookmarklet/3/setup?*=' + cacheBuster + '&url=' + productURL)
+			, element.onload = init
+			, element.setAttribute('type', 'text/javascript')
+			, document.getElementsByTagName('head')[0].appendChild(element)
+		} else
+			init();
+		function init() {
+			window.waneloBookmarklet()
+		}
+
+	})(window.location.href))
+</script>
+

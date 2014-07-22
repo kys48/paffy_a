@@ -1,0 +1,35 @@
+<%
+	request_host = "http://" + request.host_with_port
+%>
+<style>
+.clip_image{border:0;height:auto;width:auto;max-height:200px;max-width:200px;vertical-align:middle;}
+#paffy_wrap .layer{position:absolute;font-size:12px;width:700px;z-index:9999;background-color:#FFFFFF;}
+#paffy_wrap .layer .layer_hd{height:35px;}
+#paffy_wrap .layer .layer_fn{height:39px;}
+#paffy_wrap .layer .close{position:absolute;top:5px;right:5px;}
+#paffy_wrap .layer .close a{display:block;width:26px;height:25px;background:url(<%= request_host%>/images/common/clip_close.png) no-repeat;}
+#paffy_wrap .layer_cnt{padding:0px;}
+#paffy_wrap .layer_cnt .clipnd{display:block;width:68px;height:13px;}
+#paffy_wrap .layer_cnt .tit{font-size:17px;font-weight:bold;padding:5px 0px 5px 0px;}
+#paffy_wrap .layer_cnt .dec{width:100%;border:0;border-spacing:0;border-collapse:collapse;}
+#paffy_wrap .layer_cnt .dec td{height:145px;border:0;}
+#paffy_wrap .layer_cnt .dec td .tx{font-weight:bold;font-size:12px;padding-left:16px;line-height:16px;}
+#paffy_wrap .layer_cnt .dec td .tx span{display:block;margin-top:16px;}
+#paffy_wrap .layer_cnt .btn{clear:both;width:100%;padding-top:15px;text-align:center;}
+#paffy_wrap .layer_cnt .btn .bn{margin:0 1px;*margin: 0 3px;}
+</style>
+<dl class="layer_cnt">
+	<dt class="tit"><h5>PAFFY에 포스팅 되었습니다</h5></dt>
+	<dd class="cnt">
+		<table class="dec">
+			<tr>
+				<td width="210px">
+					<img id="item_img" class="clip_image" src="<%= request_host%>/data/product/medium/<%= @product.img_file_name%>" >
+				</td>
+				<td style="text-align:left; padding-left:10px; border-left:1px solid #CCCCCC; vertical-align: top;">
+					<h4><%= @product.subject%></h4>
+				</td>
+			</tr>
+		</table>
+	</dd>
+</dl>

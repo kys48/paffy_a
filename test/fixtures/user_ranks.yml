@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user_type: MyString
+  store_type: MyString
+  user_id: 1
+  rank: 1
+  follow_count: 1
+  product_count: 1
+
+two:
+  user_type: MyString
+  store_type: MyString
+  user_id: 1
+  rank: 1
+  follow_count: 1
+  product_count: 1

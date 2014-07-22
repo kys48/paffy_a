@@ -1,0 +1,31 @@
+<%- model_class = BoardContent -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:subject) %>:</strong></dt>
+  <dd><%= @board_content.subject %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:contents) %>:</strong></dt>
+  <dd><%= @board_content.contents %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:hit_no) %>:</strong></dt>
+  <dd><%= @board_content.hit_no %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:reg_id) %>:</strong></dt>
+  <dd><%= @board_content.reg_id %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:reg_name) %>:</strong></dt>
+  <dd><%= @board_content.reg_name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:reg_passwd) %>:</strong></dt>
+  <dd><%= @board_content.reg_passwd %></dd>
+</dl>
+
+<div class="form-actions">
+  <%= link_to t('.back', :default => t("helpers.links.back")),
+              board_contents_path, :class => 'btn'  %>
+  <%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_board_content_path(@board_content), :class => 'btn' %>
+  <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              board_content_path(@board_content),
+              :method => 'delete',
+              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+              :class => 'btn btn-danger' %>
+</div>

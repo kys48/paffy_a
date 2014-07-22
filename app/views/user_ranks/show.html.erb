@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>User type:</b>
+  <%= @user_rank.user_type %>
+</p>
+
+<p>
+  <b>Store type:</b>
+  <%= @user_rank.store_type %>
+</p>
+
+<p>
+  <b>User:</b>
+  <%= @user_rank.user_id %>
+</p>
+
+<p>
+  <b>Rank:</b>
+  <%= @user_rank.rank %>
+</p>
+
+<p>
+  <b>Follow count:</b>
+  <%= @user_rank.follow_count %>
+</p>
+
+<p>
+  <b>Product count:</b>
+  <%= @user_rank.product_count %>
+</p>
+
+
+<%= link_to 'Edit', edit_user_rank_path(@user_rank) %> |
+<%= link_to 'Back', user_ranks_path %>

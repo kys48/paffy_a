@@ -1,0 +1,373 @@
+<%
+	request_host = "http://" + request.host_with_port
+%>
+<style type="text/css">
+html,body{width:100%;height:100%;margin:0;padding:0;}
+#paffy_wrap_layer{z-index:999999;position:absolute;left:0;top:0;width:100%;height:100%;}
+#paffy_wrap{z-index:999999;position:absolute;left:0;top:0;width:100%;height:100%;}
+#paffy_wrap p,#paffy_wrap h1,#paffy_wrap ul,#paffy_wrap li,#paffy_wrap dl,#paffy_wrap dt,#paffy_wrap dd,#paffy_wrap form,#paffy_wrap fieldset,#paffy_wrap legend,#paffy_wrap input,#paffy_wrap textarea,#paffy_wrap button,#paffy_wrap select{margin:0;padding:0;}
+body,#paffy_wrap button,#paffy_wrap h1{font-size:12px;color:#333;}
+#paffy_wrap img,#paffy_wrap fieldset{border:0;}
+#paffy_wrap ul{list-style:none;}
+#paffy_wrap img,#paffy_wrap li{vertical-align:top;}
+#paffy_wrap a{color:#333;text-decoration:none;}
+#paffy_wrap a:hover,#paffy_wrap a:active,#paffy_wrap a:focus{text-decoration:underline;}
+#paffy_wrap legend{display:none;}
+#paffy_wrap button{overflow:visible;margin:0;padding:0;border:0;background:none;vertical-align:top;cursor:pointer;}
+#paffy_wrap button::-moz-focus-inner{padding:0;border:0;}
+#paffy_wrap .blind{overflow:hidden;position:absolute;top:0;left:0;width:0;height:0;font-size:0;line-height:0;}
+#paffy_wrap .dimmed{z-index:1;position:absolute;left:0;top:0;width:100%;height:100%;background:#000;opacity:0.5;filter:alpha(opacity='50');}
+#clip{position:relative;z-index:99;height:100%;}
+#clip_header{overflow:hidden;position:relative;height:40px;border-bottom:1px solid #000;background-color:#000000;text-align:center;}
+#clip_header .clip_logo{width:120px;height:30px;margin:5px auto 0;padding:0;background:url(<%= request_host%>/images/common/logo.png) no-repeat ;font-size:0;line-height:0;}
+#clip_header .b_clipccl{position:absolute;top:8px;right:15px;width:26px;height:25px;background:url(<%= request_host%>/images/common/clip_close.png) no-repeat;}
+#clip_header .b_clipccl:hover{background:url(<%= request_host%>/images/common/clip_close_on.png) no-repeat;}
+#container_clip{position:relative;}
+#container_clip .cliplist{overflow:hidden;width:100%;text-align:center;}
+#container_clip .cliplist a{display:inline-block;overflow:hidden;position:relative;width:215px;height:215px;margin:23px 12px 0;border:1px solid #dbdbdb;background:#fff;text-align:center;vertical-align:top;}
+#container_clip .cliplist a img{position:absolute;border:0;height:auto;width:auto;max-height:200px;max-width:200px;vertical-align:middle;}
+#container_clip .cliplist a strong{display:none;position:absolute;left:0px;top:0px;width:215px;height:215px;background:url(<%= request_host%>/images/common/logo_clip.png) no-repeat;}
+#container_clip .cliplist a:hover{border-color:#0a0a0a;}
+#container_clip .cliplist a:hover strong{display:block;}
+.clip_image{border:0;height:auto;width:auto;max-height:200px;max-width:200px;vertical-align:middle;}
+#paffy_wrap .layer{position:absolute;font-size:12px;width:700px;z-index:99999;background-color:#FFFFFF;}
+#paffy_wrap .layer .layer_hd{height:35px;}
+#paffy_wrap .layer .layer_fn{height:39px;}
+#paffy_wrap .layer .close{position:absolute;top:5px;right:5px;}
+#paffy_wrap .layer .close a{display:block;width:26px;height:25px;background:url(<%= request_host%>/images/common/clip_close.png) no-repeat;}
+#paffy_wrap .layer_cnt{padding:0 32px 0 30px;}
+#paffy_wrap .layer_cnt .clipnd{display:block;width:68px;height:13px;}
+#paffy_wrap .layer_cnt .tit{font-size:17px;font-weight:bold;padding:5px 0px 5px 0px;}
+#paffy_wrap .layer_cnt .dec{width:100%;border:0;border-spacing:0;border-collapse:collapse;}
+#paffy_wrap .layer_cnt .dec td{height:145px;border:0;}
+#paffy_wrap .layer_cnt .dec td .tx{font-weight:bold;font-size:12px;padding-left:16px;line-height:16px;}
+#paffy_wrap .layer_cnt .dec td .tx span{display:block;margin-top:16px;}
+#paffy_wrap .layer_cnt .btn{clear:both;width:100%;padding-top:15px;text-align:center;}
+#paffy_wrap .layer_cnt .btn .bn{margin:0 1px;*margin: 0 3px;}
+</style>
+<script language="JavaScript">
+var M;
+var v = 210;
+var Q = 210;
+var N = navigator.appName.charAt(0);
+var ITEM_LIST;
+var S;
+var ITEM_TITLE;
+var V;
+
+document.onkeydown = function(){
+	if(event.keyCode==27){
+		CloseNoImgLayer();
+	}
+}
+
+function GetHeight() {
+	return Math.max(Math.max(document.body.scrollHeight, document.documentElement.scrollHeight), Math.max(document.body.offsetHeight, document.documentElement.offsetHeight), Math.max(document.body.clientHeight, document.documentElement.clientHeight));
+}
+
+function onOverItem(AF) {
+	AF.style.backgroundPosition = "top left";
+}
+
+function onOutItem(AF) {
+	AF.style.backgroundPosition = "left -190px";
+}
+
+function onThumbImgLoadComplete(AH) {
+	var AG = AH.width;
+	var AF = AH.height;
+	if (AG >= v || AF >= Q) {
+		B(AH, v, Q, true);
+	} else {
+		B(AH, AG, AF, true);
+	}
+}
+
+function onThumbImgStateChange(AH) {
+	if (AH.readyState == "complete" || AH.readyState == "loading") {
+		if (N == "M") {
+			var AG = AH.width;
+			var AF = AH.height;
+			if (AG >= v || AF >= Q) {
+				B(AH, v, Q, true);
+			} else {
+				B(AH, AG, AF, true);
+			}
+		}
+	}
+}
+
+function B(AJ, AN, AK, AF) {
+	var AO = AJ.width;
+	var AM = AJ.height;
+	var AI = Math.min(AN / AO, AK / AM);
+	var AG = (AI * AO);
+	var AP = (AI * AM);
+	AJ.setAttribute("width", AG);
+	AJ.setAttribute("height", AP);
+	if (AF) {
+		var AL = Math.floor((v - AG) / 2) + "px";
+		var AH = Math.floor((Q - AP) / 2) + "px";
+		if (N == "M") {
+			AJ.style.cssText = "position:absolute;left:" + AL + ";top:" + AH + ";";
+		} else {
+			AJ.style.left = AL;
+			AJ.style.top = AH;
+		}
+	}
+}
+
+function CloseNoImgLayer() {
+	if ($("#paffy_wrap_layer")) {
+		//$("#paffy_wrap_layer").remove();
+		$("#paffy_wrap_layer").hide();
+	}
+}
+
+
+function frmcheck(){
+	document.frm.url.value = document.frm.url.value.trim();
+	if(document.frm.url.value == ""){
+		alert("URL을 입력하세요");
+		document.frm.url.focus();
+	} else {
+	
+		$("#paffy_wrap_layer").show();
+		$("#container_clip").html("");
+		
+		var AH = ''
+		+ '		<div class="layer_hd"></div>'
+		+ '		<dl class="layer_cnt">'
+		+ '			<dt class="tit">'
+		+ '				<strong class="tt note"><span class="blind">alarm</span></strong>'
+		+ '			</dt>'
+		+ '			<dd class="cnt">'
+		+ '				<table class="dec">'
+		+ '					<tr>'
+		+ '						<td style="text-align:center">'
+		+ '							<strong>페이지를 분석하는 중입니다. 잠시만 기다려 주세요.</strong>'
+		+ '							<br/><br/>'
+		+ '							<img src="/images/common/loading5.gif">'
+		+ '						</td>'
+		+ '					</tr>'
+		+ '				</table>'
+		+ '			</dd>'
+		+ '		</dl>'
+		+ '		<div class="layer_fn"></div>';
+		
+		$("#post").html(AH);
+		$("#post").show();
+		
+		setTimeout(function() {
+			postProduct();
+		}, 100);
+	}
+}
+
+function postProduct(){
+	document.frm.url.value = document.frm.url.value.trim();
+	S = document.frm.url.value;
+	
+	var postData = new Object();
+	postData.url = document.frm.url.value;
+
+	if (S.indexOf("http://")<0){
+		CloseNoImgLayer();
+		alert("잘못된 형식의 주소입니다.");
+	} else {
+		$("#paffy_wrap_layer").show();
+		$("#container_clip").html("");
+		$("#post").show();
+		$.ajax({
+		    url     : '/products/postCallback',
+		    type    : 'post',
+		    dataType: 'json',
+		    data	: $.param(postData),
+		    async   : false,
+		    success : function(json){
+		    	if(json.status){
+		    		
+		    		$("#postDiv").hide();
+		    		$("#postDiv").html(json.item_img);
+		    		ITEM_TITLE = json.item_title;
+		    		
+		    		V = json.product_domain;
+		    		OpenItemList();
+		    	} else {
+		    		alert("페이지 분석을 실패하였습니다. 다시 시도해 주세요.");
+		    		CloseNoImgLayer();
+		    		//notify('error', TranslationLabels['could_not_complete_request']);
+		    	}
+		    },
+		    error   : function(e){
+		        //notify('error', TranslationLabels['could_not_complete_request']);
+		        alert("페이지 분석을 실패하였습니다. 다시 시도해 주세요.");
+		        CloseNoImgLayer();
+		    }
+		});
+
+	} // else
+	
+
+}
+
+
+// 이미지 선택 레이어를 띄운다
+function OpenItemList() {
+	var cnt_item = 0;
+	ITEM_LIST = new Array();
+	$("#postDiv img").each(function(){
+		var img = new Image();
+		img.src = $(this).attr("src");
+		
+		if(img.width>=100 && img.width<=700 && img.height>=100 && img.height<=1000){
+			ITEM_LIST[cnt_item] = img.src;
+			cnt_item++;
+		}
+    });
+    
+	var AH = '<div class="cliplist">';
+	for (var i=0; i<cnt_item; i++) {
+		AH += '<a href="javascript:OpenPost('+i+');" onmouseover="onOverItem(this);"'
+		+ ' onmouseout="onOutItem(this);" style="border:1px solid blue">'
+		+ '<img onload="onThumbImgLoadComplete(this)"'
+		+ ' onreadystatechange="onThumbImgStateChange(this)"'
+		+ ' src="' + ITEM_LIST[i] + '" />'
+		+ '<strong class="p24"><span class="blind">clip</span></strong></a>';
+	}
+	AH += '</div>';
+
+	$("#container_clip").html(AH);
+	
+	AH = '<div id="post" class="layer layersize" style="display:none;top:70px;left:50%;margin-left:-350px">';
+	if (cnt_item == 0) {
+		AH += '<div class="layer_hd"></div>';
+		AH += '<dl class="layer_cnt">';
+		AH += '<dt class="tit"><strong class="tt note"><span class="blind">alarm</span></strong></dt>';
+		AH += '<dd class="cnt">';
+		AH += '<table class="dec">';
+		AH += '<tr>';
+		AH += '<td>';
+		AH += '이미지를 찾을 수 없습니다.';
+		AH += '</td>';
+		AH += '</tr>';
+		AH += '</table>';
+		AH += '</dd>';
+		AH += '<dd class="btn">';
+		AH += '<button class="bn2 b_clip" onclick="CloseNoImgLayer();" ><span class="blind">request clip</span></button>';
+		AH += '</dd>';
+		AH += '</dl>';
+		AH += '<div class="layer_fn"></div>';
+		AH += '<div class="close"><a href="javascript:CloseNoImgLayer();" class="bn"><span class="blind">close</span></a></div>';
+	}
+	AH += '</div>';
+
+	$("#post").html(AH);
+	$("#container_clip").show();
+	$("#paffy_wrap_layer").show();
+
+}
+
+
+// 포스팅레이어를 띄운다
+function OpenPost(AF) {
+	var clipObj = document.getElementById("container_clip");
+	var postObj = document.getElementById("post");
+	
+	clipObj.style.display="none";
+	postObj.style.display="block";
+	
+	var HOST_URL = "<%= request_host%>";
+	var CLIP_URL = HOST_URL + "/clip";
+	
+	var AG = CLIP_URL + "?domain="+V;
+	AG += "&url=" + encodeURIComponent(S);
+	AG += "&imgurl=" + encodeURIComponent(ITEM_LIST[AF]);
+	AG += "&subject=" + encodeURIComponent(ITEM_TITLE);
+	
+ 	var objStr = ''
+	+ '<div class="layer_hd"></div>'
+	+ '<dl class="layer_cnt">'
+	+ '<iframe src="'+AG+'" style="width:100%;height:320px;" frameborder="0" ></iframe>'
+	+ '</dl>'
+	+ '<div class="layer_fn"></div>'
+	+ '<div class="close">'
+	+ '	<a href="javascript:CloseNoImgLayer();" class="bn"><span class="blind">close</span></a>'
+	+ '</div>';
+
+	postObj.innerHTML = objStr;
+	//alert(postObj.innerHTML);
+	// 포스팅 저장위해 encodeURIComponent
+
+}
+</script>
+
+
+
+
+<div id="paffy_wrap_layer" style="display:none">
+	<div id="paffy_wrap" style="height:100%;">
+		<div class="dimmed"></div>
+		<div id="clip">
+			<div id="clip_header">
+				<h1 class="clip_logo"><span class="blind">PAFFY</span></h1>
+				<a href="javascript:CloseNoImgLayer();" class="bn b_clipccl"><span class="blind">cancel</span></a>
+			</div>
+			<div id="container_clip"></div>
+		</div>
+
+		<div id="post" class="layer layersize" style="display:none;top:70px;left:50%;margin-left:-350px">
+			<div class="layer_hd"></div>
+			<dl class="layer_cnt">
+				<dt class="tit">
+					<strong class="tt note"><span class="blind">alarm</span></strong>
+				</dt>
+				<dd class="cnt">
+					<table class="dec">
+						<tr>
+							<td style="text-align:center">
+								<strong>페이지를 분석하는 중입니다. 잠시만 기다려 주세요.</strong>
+								<br/><br/>
+								<%= image_tag "/images/common/loading5.gif"%>
+							</td>
+						</tr>
+					</table>
+				</dd>
+				
+			</dl>
+			<div class="layer_fn"></div>
+			<div class="close">
+				<a href="javascript:CloseNoImgLayer();" class="bn"><span class="blind">close</span></a>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<center>
+<div style="width:500px;text-align:left">
+	<div class="form-signin">
+	<form method="post" name="frm" action="/products/postProcess" onsubmit="return false;">
+	<input type="hidden" id="domain" name="domain" value="">
+		<h3 class="form-signin-heading">포스팅할 상품 URL을 입력하세요</h3>
+		<%= text_field_tag :url, "", class: "input-block-level", placeholder: "상품 URL 입력"  %>
+		
+		<div style="padding-top:10px;">
+			<%= button_tag "포스팅하기", class: "btn btn-primary", style: "width:100%", onclick: "frmcheck();" %>
+		</div>
+		<br/>
+		<div style="background-color:#F4F4F4;padding:15px 15px 20px 15px;font-size:12px;">
+		<h5 class="form-signin-heading">북마클릿을 사용하여 더 쉽게 상품을 포스팅하세요</h5>
+		<a href="javascript:(function(){document.body.appendChild(document.createElement('script')).src='http://<%= request.host_with_port%>/clip/js/bookmarklet.js?v=' + Math.random()*999999;})();"><%= image_tag "/images/common/bookmarklet.png", alt: "Post to Paffy"%></a>
+		← 브라우저의 즐겨찾기바(북마크바)로 드래그 하세요
+		</div>
+  	</form>
+	</div>
+	<div id="postDiv" style="display:none;width:0px;height:0px;"></div>
+	<%#= link_to 'Back', products_path %>
+</div>
+</center>
+
+
+
+

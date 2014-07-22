@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Get type:</b>
+  <%= @get.get_type %>
+</p>
+
+<p>
+  <b>Item type:</b>
+  <%= @get.item_type %>
+</p>
+
+<p>
+  <b>Ref:</b>
+  <%= @get.ref_id %>
+</p>
+
+<p>
+  <b>User:</b>
+  <%= @get.user_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_get_path(@get) %> |
+<%= link_to 'Back', gets_path %>

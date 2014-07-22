@@ -1,0 +1,6 @@
+		<li class="ui-draggable">
+			<%= image_tag(product.img.url(:medium)) %>
+			<input type="hidden" name="itemOrigin" value="product">
+			<input type="hidden" name="itemId" value="<%= product.id%>">
+			<input type="hidden" name="itemImg" value="<%= product.img_file_name%>">
+		</li>

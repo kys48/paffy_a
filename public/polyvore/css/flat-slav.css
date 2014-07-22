@@ -1,0 +1,1277 @@
+.menuIcon {
+    background: url('/polyvore/images/icon-sprite.png') no-repeat 0px 21px;
+    width: 24px;
+    height: 100%;
+    position: absolute;
+    left: 20px;
+}
+.menuIcon:hover, .menuIcon.active {
+    background-position: 0px -54px;    
+}
+
+.login-popup .login-input,
+#registerLoginForm .login-input,
+#Navigation #searchBar {
+    margin-top: 10px;
+}
+#Navigation #searchBar, .login-input, .search-input, input[type="text"].styled {
+    display: block;
+    position: relative;  
+    box-sizing: border-box;        
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box; 
+    border-radius: 5px;
+    border: 2px solid #ddd;
+    padding: 5px 30px 5px 30px;
+    width: 310px;
+    height: 40px;
+    background: transparent  url("/polyvore/images/icon-sprite.png") no-repeat scroll 5px -3141px !important;
+    overflow: hidden;
+}
+.login-input, input[type="text"].styled {
+    width: 345px;
+    background: transparent !important;
+    background-image: none !important;
+    padding: 7px 30px 7px 10px;
+    font-size: 13px;
+    color: #7c8792; 
+}
+
+input[type="text"].styled.small {
+    margin: 0 15px 0 0;
+    width: 90px;
+    display: inline-block;
+    height: 30px;
+    padding: 5px 30px 5px 10px;            
+}
+
+.login-input.password {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 315px -2240px !important;
+}
+.login-input.email {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 315px -2087px !important;
+}
+.login-input.user {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 316px -1939px !important;
+}
+.login-input.password.error {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 315px -2240px !important;    
+}
+.login-input.email.error {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 315px -2087px !important;   
+}
+.login-input.user.error {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 316px -1939px !important;
+}
+.login-input.placeholder.password:focus {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 315px -2315px !important;
+}
+.login-input.placeholder.email:focus {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 315px -2162px !important;
+}
+.login-input.placeholder.user:focus {
+    background: transparent url("/polyvore/images/icon-sprite.png") no-repeat scroll 316px -2014px !important;
+}
+.registerForm .login-input {
+    height: 42px;
+    margin-top: 15px;
+}
+
+textarea.login-input {
+    padding: 5px 6px;
+}
+#mainSearchForm {
+    overflow: inherit;
+    height: 26px;
+    width: 260px;
+    display: table;
+}
+#Navigation #searchBar label, #Navigation #searchBar input {
+    overflow: hidden;
+    text-overflow: clip ellipsis;
+    line-height: 28px;
+    height: inherit;
+    display: table-cell;
+    outline: none;
+    border: none;
+    color: #667686;
+    font-size: 12px;
+    vertical-align: middle;
+}
+#Navigation #searchBar label {
+    width: 1%;
+    padding-right: 10px;
+    cursor: pointer;
+}
+#Navigation #searchBar input {
+    width: 99%;
+    background: transparent;
+}
+#RightNavigation .searchDropdown {
+    box-sizing: border-box;        
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background-color: #FFF;
+    display: none;
+    position: absolute;
+    max-width: 200px;
+    min-width: 100%;
+    z-index: 1000;
+    border-radius: 0;
+    border: 2px solid #ddd;
+    border-top: 0 none;
+    margin-top: -7px;
+    z-index: 101;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px; 
+    -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-bottomright: 5px; 
+    -webkit-border-bottom-left-radius: 5px; 
+    -webkit-border-bottom-right-radius: 5px; 
+}
+ul#searchSectionSelect {
+    padding-top: 7px;
+}
+ul#searchSectionSelect li {
+    white-space: nowrap;
+    padding: 0 5px;    
+}
+ul#searchSectionSelect li > a {
+    display: block;
+    font-size: 13px;
+    line-height: 32px;
+    text-decoration: none;
+}
+ul#searchSectionSelect li:hover {
+    background: #3498DB;
+}
+ul#searchSectionSelect li:hover > a {
+    color: #FFF;    
+}
+#RightNavigation .select-arrow {
+    background: url('/polyvore/images/selectArrow.png') no-repeat scroll;
+    position: absolute;
+    top: 17px;
+    right: 10px;
+    width: 12px;
+    height: 8px;
+    cursor: pointer;
+}
+#RightNavigation .select-arrow:hover #RightNavigation .searchDropdown {
+    display: block;
+}
+#login-container {
+    width: 530px;
+    margin: 60px auto;
+}
+#login-container .login-holder {
+    padding: 0 0 0 120px;
+    background: url('/polyvore/images/loginIconBig.png') no-repeat scroll;
+    width: 410px;
+    min-height: 280px;
+    margin-top: 20px;
+}
+#login-container .divider-text {
+    padding: 0 0 0 140px;
+    width: 410px;
+}
+#login-container .login-holder.first {
+    background: url('/polyvore/images/loginSocialIcon.png') no-repeat scroll;
+    min-height: 130px;
+    margin-bottom: 20px;    
+} 
+#login-container .tickWrapper {
+    display: block;
+    width: inherit;
+    position: relative;    
+}
+#login-container .tickWrapper > div {
+    width: 100%;
+    padding: 0 20px 20px;
+    box-sizing: border-box;        
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+#login-container h3, .login-popup h3 {
+    color: #7c8792;
+    font-size: 13px;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.login-popup h3 {
+    font-size: 14px;
+}
+h3.register {
+    padding: 20px 0 0 0  !important;
+}
+.login-popup h3.divider-text {
+    margin: 0;
+}
+.login-popup h3.sign-up { 
+    color: #7c8792;
+    margin-top: 10px;
+}
+.login-holder .space, .form .space {
+    display: block;
+    width: 100%;
+    height: 15px;
+}
+.login-holder .space.small, .form .space.small {
+    height: 10px;
+}
+.bDarkBlue, .bLightBlue {
+    color: #fff !important;
+    font-weight: 600;
+    line-height: 40px;
+    font-size: 13px;
+    -moz-transition: none !important;
+    -webkit-transition: none !important;
+    -o-transition: none !important;
+    -ms-transition: none !important;
+    transition: none !important;
+    display: inline-block;
+    padding: 0px 10px;
+    position: relative;
+    border-radius: 5px;
+}
+.bDarkBlue { background: #3b5998; }
+.bDarkBlue.fb {
+    font-size: 14px;
+    line-height: 40px;
+    padding-left: 30px;
+    background: url('/polyvore/images/icon-sprite.png') no-repeat 12px -2763px scroll #3b5998;
+}
+.bDarkBlue:hover {
+    background-color: #2e4a86;
+}
+.bLightBlue { background: #00bff3; }
+.bLightBlue.tw {
+    font-size: 14px;
+    line-height: 40px;
+    padding-left: 30px;
+    background: url('/polyvore/images/icon-sprite.png') no-repeat 7px -2838px scroll #00bff3;
+}
+.bLightBlue:hover {
+    background-color: #00addc;
+}
+.login-holder .tw, .login-popup .tw {
+    margin-left: 20px;
+}
+.socialBtnsHolder > div {
+    float: left;
+    position: relative;
+    left: -50%;
+}
+.socialBtnsHolder {
+    float: left;
+    position: relative;
+    left: 50%;
+    margin-bottom: 10px;
+}
+#registerLoginForm, #loginForm {
+    width: inherit;
+    color: #7c8792;
+}
+input.placeholder {
+    background-color: rgba(255, 255, 255, 0);
+    transition: background-color 0.15s ease-in-out 0s;
+}
+input.placeholder:focus {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid #7CB5D8;
+}
+input.error, input.unvalidated, textarea.error, textarea.unvalidated {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid #e9594a;
+}
+#login-container .create {
+    width: 100%;    
+}
+#loginForm .create {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 10px;
+}
+#loginForm .login-input {
+    margin: 10px auto 0;
+}
+#registerLoginForm .errorBox, #loginForm .errorBox, .form .errorBox {
+    color: #e74c3c;
+    font-weight: 700;
+    text-align: center;
+    word-break: break-all;
+    word-wrap: break-word;
+    margin: 20px 0 0 0;
+    display: none;
+}
+#loginForm .errorBox {
+    margin: 0 0 20px 0;
+} 
+#mask {
+    display: none;
+    background: #000; 
+    position: fixed; left: 0; top: 0; 
+    z-index: 10;
+    width: 100%; height: 100%;
+    opacity: 0.5;
+    z-index: 999;
+}
+
+.login-popup a.close {
+    right: 10px;
+    position: absolute;
+    top: 10px;
+}
+a.grayLink{
+    text-decoration: underline;
+    color: #bfc5ca;
+}
+#joinBtn {
+    margin: 10px auto 0;
+    width: 60%;
+    display: block;
+}
+ul.userList {
+    display: block;
+    float: none;
+}
+ul.userList > li {
+    border-bottom: 2px solid #d9dbdc;
+    padding: 20px 0;
+    min-height: 140px;
+    color: #b0b7bb;
+}
+ul.userList li > .avatar {
+    display: block;
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+ul.userList li > .avatar img {
+    width: inherit;
+    height: inherit;
+}
+ul.userList .left {
+    display: block;
+    float: left;
+}
+ul.userList .left, ul.userList .right {
+    overflow: auto;    
+}
+ul.userList .left > * {
+    display: block;
+    float: left;
+    clear: both;
+}
+ul.userList .right .bigMessage {
+    display: block;
+    margin: 60px 300px 0px 0px;
+    font-size: 16px;
+}
+ul.itemLineList {
+    list-style: none;
+    overflow: auto;
+}
+ul.itemLineList del {
+    color: #999;
+}
+ul.itemLineList li {
+    margin: 4px 0px 4px 7px;
+    cursor: pointer;
+    display: block;
+    float: left;
+    position: relative;
+    background: none repeat scroll 0 0 #FFFFFF;
+    color: #333333;
+}
+ul.userList ul.itemLineList li {
+    margin: 0 0 0 5px;
+}
+ul.itemLineList .noMargin {
+    margin-left: 0px;
+}
+ul.itemLineList li:hover {
+    /*border-color: #ececec;*/
+}
+.itemLineList li .image {
+    width: 160px;
+    height: 160px;
+    display: block;
+    text-align: center;
+    position: relative;
+    vertical-align: bottom;
+    display: table-cell;
+}
+.itemLineList li .image img {
+    max-width: 100%;
+    max-height: 100%;
+}
+ul.userList .remoteLink, ul.userList a.blue {
+    font-size: 14px;
+}
+ul.userList .remoteLink.follow, ul.userList a.follow {
+    font-size: 12px;    
+}
+ul.userList .userIcon {
+    float: left;
+    display: block;
+    margin: 0 10px 0 0;
+}
+ul.userList .userIcon i {
+    top: -50px;
+}
+ul.userList .userIcon i:before {
+    left: 18px;
+}
+#searchPageForm {
+    padding-right: 50px;
+    display: block;
+    line-height: 68px;
+}
+.form select {
+    height: 38px;
+    padding: 10px;
+    width: 357px;
+    color: #667686;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    font-weight: 800;
+    border-radius: 4px;
+}
+.form select option {
+    background: #FFF;
+}
+#searchPageForm .search-input {
+    width: 200px;
+    display: inline-block;
+    margin: 0;
+    height: 30px;
+    color: #7C8792;
+    background: url("/polyvore/images/icon-sprite.png") no-repeat scroll 5px -3146px transparent !important;
+}
+span.resultCount {
+    font-size: 17px;
+    line-height: 68px;
+}
+#profileCoverPhoto .instructions, .infoMessage {
+    color: #FFFFFF;
+    display: inline;
+    font-size: 18px;
+    color: #7c8792;
+    font-weight: bold;
+    
+}
+.infoMessage {
+    display: table;
+    width: 270px; /* width of parent */
+    max-height: 150px; /* height of parent */
+    overflow: hidden;
+    clear: both;    
+}
+.infoMessage.centeredWidth {
+    margin: 0 auto;
+}
+
+.infoMessage.centered {
+    width: 270px;
+    max-height: 50px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -25px 0 0 -170px;
+}
+
+.infoMessage .innerMsgContainer {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+.infoMessage .innerMsgContainer p {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+#searchList li {
+    height: auto;
+}
+#searchGroupList li {
+    height: auto;
+    min-height: 300px;
+    float: left;    
+}
+ul.itemList .noMargin {
+    margin-left: 0;
+}
+/* Activity Page Style Start */
+#Activity .notifications h2 {
+    padding: 20px 0 20px 30px;
+}
+#Activity .notifications ul.userList li {
+    border-bottom: 1px solid #dadada;
+    padding-left: 30px;
+    position: relative;
+}
+#Activity .notifications ul.userList li span.new {
+    background: #e74c3c;
+    position: absolute;
+    right:-3px;
+    top: -1px;
+    color: #fff;
+    font-size:14px;
+    font-weight: 600;
+    padding: 0px 10px;
+    line-height: 25px;
+}
+#Activity .notifications ul.userList li span.new:after{
+    content: "";
+    border-bottom:   3px solid transparent;   
+    border-left:  3px solid #c0392b;
+    border-right: 3px solid transparent;
+    position:absolute;
+    bottom: -3px;
+    right:-3px;
+}
+#Activity .notifications ul.userList li:nth-child(even){
+    background: #f1f3f4;
+}
+#Activity .notifications ul.userList li a {
+    color: #3498db;
+}
+#Activity .notifications ul.userList li a:hover {
+    color: #333;
+}
+#Activity .notifications ul.userList .userIcon,
+#Activity .notifications ul.userList .notificationInfo,
+ul.sideItems .avatar,
+ul.sideItems .info {
+    display: table-cell;
+    vertical-align: top;
+}
+#Activity .notifications ul.userList .userIcon {
+    margin: 0 20px 0 0;
+}
+#Activity .notifications ul.userList .userIcon i {
+    top: -35px;
+}                                               
+#Activity .notifications ul.userList .userIcon i:before {
+    left: 17px;
+}
+#Activity .notifications ul.userList li .date {
+    color: #b0b7bb;
+}
+#Activity .notifications ul.userList li .description {
+    display: block;
+    float: none;
+    padding: 10px;
+    overflow: hidden;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+#Activity .navigator {
+    border-top: 1px solid #e7e7e7;
+    border-bottom: 1px solid #e7e7e7;
+    line-height: 30px;
+    padding: 0px 10px 0px 30px;
+    overflow: hidden;
+}
+#Activity .navigator.bottom {
+    border: 0 none;
+    height: auto;
+    width: auto;
+    float: none;
+}
+#Activity .navigator span {
+    color: #B0B7BB;
+}
+#Activity .navigator a, .sideContent h2 a {
+    float: right;
+    color: #B0B7BB;
+    font-size: 12px;
+}
+#Activity .navigator a:hover, .sideContent h2 a:hover {
+    color: #7C8792;
+}
+.avatarList {
+    -moz-box-sizing: border-box;
+    margin-top: 1px;
+    padding: 5px 10px !important;
+    width: inherit;
+}
+.avatarList li {
+    display: inline-block;
+    height: 60px !important;
+    margin: 3px !important;
+    width: 60px !important;
+}
+.avatarList .userIcon {
+    width: 60px;
+    height: 60px;
+}
+.avatarList .userIcon i {
+    top: -50px;
+}
+.avatarList .userIcon i:before {
+    left: 22px;
+}
+.sideContent {
+    float: left;
+    margin: 0 0 10px 0;
+    padding: 0;
+    width: 100%;
+    background: #FFF;
+}
+.sideContent h2 {
+    font-size: 14px;
+    line-height: 30px;
+    padding: 15px 20px 0;
+}
+ul.sideItems {
+    display: block;
+    float: none;
+    overflow: hidden;
+    padding: 10px 15px;
+}
+ul.sideItems li.margined {
+    margin: 0 0 25px 0;    
+}
+ul.sideItems .avatar {
+    padding-right: 10px;
+}
+ul.sideItems .info h3 a {
+    color: #7C8792;
+    font-size: 14px;    
+}
+ul.sideItems .info h3 a:hover {
+    color: #000;
+}
+ul.sideItems .info .members {
+    color: #B0B7BB;
+    font-size: 12px;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+#Activity.detailed .centerHolder {
+    width: 690px;    
+}
+#Activity.detailed .notifications {
+    margin: 0;
+    padding: 0;
+}
+#Activity.detailed .tickWrapper > ul.activityTypes, #Activity.detailed .tickWrapper > div.activityTypes {
+    width: 500px;
+}
+#Activity.detailed .tickWrapper > ul.activityTypes > li {
+    width: 250px;
+} 
+#Activity .setLikes {
+    background: url("/polyvore/images/statistics.png") no-repeat scroll 0 0 transparent;
+    line-height: 68px;
+    padding: 0 0 0 30px;
+    font-size: 17px;
+}
+#myComments #itemList .userIcon {
+    vertical-align: top;
+}
+#myComments #itemList .userIcon img, #inboxContent ul.lineList .userIcon img {
+    border: 1px solid #ccc;
+}
+#find-friends-box {
+    width: 346px;
+}
+#find-friends-box .link_box {
+    margin: 25px 0 15px 0;
+    text-align: center;
+    color: #7C8792;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+#find-friends-box .textbox {
+    display: block;
+    min-height: 240px;
+}
+#find-friends-box .textbox .container {
+    overflow: hidden;
+    /* text wrapping by element width */
+    word-wrap: break-word;
+    word-break: break-all;
+}
+#find-friends-box .largeIcon, #Share .largeIcon {
+    margin-bottom: 12px;
+    padding-top: 54px;
+    text-align: center;
+    width: 80px;
+    cursor: pointer;
+    color: #7C8792;
+}
+span.largeIcon {
+    display: inline-block;
+    transition: color 0.3s ease-out 0s;
+}
+.largeIcon.facebook {
+    background: url("/polyvore/images/icons/facebook.png") no-repeat scroll 50% 0 transparent;    
+}
+.largeIcon.twitter{
+    background: url("/polyvore/images/icons/twitter.png") no-repeat scroll 50% 0 transparent;    
+}
+ul#socialNetworks {
+    overflow: auto;
+    margin: 0 auto;
+    width: 160px;
+}
+ul.actionGrid li { 
+    display: inline;
+}
+ul.actionGrid li:hover span.largeIcon {
+    text-decoration: underline;
+    color: #3498db !important;
+}
+#socialContainer .loading {
+    margin: 0 auto;
+    width: 90px;    
+    height: 20px;
+    display: block;
+    color: #7C8792;
+}
+#socialContainer .loading > img {
+    vertical-align: middle;
+    margin-right: 5px;    
+}
+.find_friends {
+    margin-top: 20px;
+    position: relative;
+    text-align: left;
+    vertical-align: top;
+}
+.find_friends .friendTable {
+    border: 1px solid #CCCCCC;
+    height: 190px;
+    margin-top: 8px;
+    padding: 6px;
+}
+.friendTable table {
+    width: 100%;
+}
+.friendTable td {
+    float: left;
+    vertical-align: top;
+    width: 33%;
+    text-align: center;
+}
+.find_friends .rec_follow {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+}
+.find_friends .rec_follow .info {
+    width: 108px;
+}
+.find_friends .rec_follow .userIcon i {
+    top: -40px;
+}
+.find_friends .follow_action {
+    margin-top: 4px;
+    padding: 2px 8px;
+}
+.find_friends .friends_overlay, .find_friends #friends_overlay {
+    background-color: #F1F1F1;
+    height: 105%;
+    left: 0%;
+    opacity: 0.8;
+    position: absolute;
+    top: -5%;
+    width: 100%;
+}
+.find_friends .friends_allow_btn, .find_friends #friends_allow_btn {
+    left: 30%;
+    position: absolute;
+    top: 40%;
+    padding: 0 10px;
+    cursor: pointer;
+}
+.btn_action.disabled, .btn_action[disabled] {
+    background-color: #B3D0E5;
+    color: #333333;
+}
+.btn_action.disabled, .btn_action[disabled], .btn_action.disabled:hover, .btn_action[disabled]:hover, .btn_action[disabled]:active {
+    background-color: #F1F1F1;
+    cursor: default;
+    opacity: 0.5;
+    pointer-events: none;
+}
+.find_friends .bBlue {
+    line-height: 30px;
+    padding: 0;
+    min-width: 70px;
+}
+/* Activity Page Style End */
+
+/* Messages Style Start */
+#inboxContent ul.lineList > li > div.reply {
+    padding-bottom: 8px;
+    padding-top: 8px;
+    display: none;
+    overflow: auto;
+}
+#inboxContent ul.lineList > li > div.reply textarea {
+    max-width: 800px;
+    max-height: 600px;    
+}
+#inboxContent ul.lineList > li > .info, #viewContent ul.lineList > li > .info {
+    width: 800px;
+    word-wrap: break-word;
+    word-break: break-all;
+    color: #7C8792;
+    font-weight: 600;
+}
+#inboxContent ul.lineList > li > .info > .author, #viewContent ul.lineList > li > .info > .author {
+    font-size: 13px;
+}
+#inboxContent ul.lineList > li > .info > .time, #viewContent ul.lineList > li > .info > .time {
+    color: #b0b7bb;    
+}
+#inboxContent ul.lineList li .messageAction, ul.lineList li .action {
+    display: table-cell;
+    word-wrap: break-word;
+    word-break: break-all;
+    font-size: 13px;
+}
+#inboxContent ul.lineList .userIcon i, #viewContent ul.lineList .userIcon i {
+    top: -35px;    
+}
+#inboxContent ul.lineList .userIcon i:before,
+#viewContent ul.lineList .userIcon i:before {
+    left: 18px;
+}
+#viewContent .userInfoHeader {
+    padding: 0 0 0 25px;
+}
+.form label {
+    color: #7C8792;
+    font-size: 13px;
+}
+#composeMsgFormInline textarea {
+    height: 100px;
+    width: 55%;
+    max-width: 800px;
+    max-height: 600px;
+}
+#viewContent #confirmBlock {
+    display: none;
+    width: 310px;
+    margin-left: -182px;
+    left: 50%;
+    padding: 20px 40px 20px 40px;
+    z-index: 1000;
+}
+#viewContent #confirmBlock h3 {
+    padding: 0;
+}
+#confirmBlockClose, #ComposeClose {
+    margin-left: 10px;
+}
+#composeMsgForm .login-input {
+    width: 250px;
+}
+#composeMsgForm textarea {
+    height: 100px;
+    max-width: 255px;
+    max-height: 350px;    
+}
+/* Messages Style End */
+
+/* Profile Settings Style Start */
+#profileSettingsForm h1, #accountSettingsForm h1, #sharingContent h1 {
+    border-bottom: 2px solid #f1f3f4;
+    line-height: 18px;
+    font-size: 18px;
+    padding: 20px 0;
+    text-align: left;
+    margin: 0 30px 20px 30px;
+}
+#imageUploadForm, #imgUploadForm {
+    position: absolute;
+    top: 310px;
+    left: 430px;
+    width: 300px;
+}
+.profileLoaderHolder {
+    display: inline-block;
+    min-height: 100px;
+    vertical-align: top;
+}
+.form .profilePictureMedium {
+    vertical-align: top;
+    width: 140px;
+    height: 140px;
+    border-radius: 200px;
+}
+.form .profilePictureMedium img {
+     border: 1px solid #ccc;
+     border-radius: 200px;
+}
+.form #message,
+.form #result { 
+    color: red;
+    font-weight: bold;
+    font-size: 14px;
+    display: inline-block;
+    width: 560px;
+    margin: 0 0 0 20px;
+    vertical-align: top;
+    float: right;
+    word-break: break-all;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+.form .rightCbx {
+    display: block;
+    padding-left: 200px;
+}
+.form .rightCbx.withLabel {
+    display: inline-block;
+    padding-left: 0;
+    vertical-align: top;
+}
+.form .rightCbx.withLabel.compact label {
+    width: 100px !important;
+    padding: 0 10px 0 10px !important;    
+}
+.form .rightCbx input[type="checkbox"],
+form .rightCbx input[type="radio"] {
+    vertical-align: middle;
+}
+.form .rightCbx label {
+    display: inline-block;
+    text-align: left;
+    width: 200px;
+    font-size:12px;
+    line-height: 38px;
+    vertical-align: top !important;
+}
+.form .rightCbx label.twoLine {
+    line-height: 20px !important;
+}
+.wrapper-styledRadio + label {
+    line-height: 22px !important;
+}
+.form h6 {
+    background: none repeat scroll 0 0 transparent;
+    clear: both;
+    color: #b0b7bb;
+    font-size: 12px;
+    line-height: 20px;
+    margin: 0 0 5px;
+    padding-left: 275px;
+}
+.form h6.inline {
+    display: inline-block;
+    width: 300px;
+    padding: 0 10px;
+    margin: 0;
+}
+.form label.topAlign {
+    vertical-align: top !important;
+}
+.form .login-input.long {
+    width: 55%;
+}
+.form .btnHolder {
+    border-top: 2px solid #f1f3f4;
+    padding: 20px 0;
+    text-align: left;
+    margin: 20px 30px 0 30px;
+}
+#imageUploadForm #file {
+    cursor: pointer;
+}
+#profileSettingsForm #message, #profileSettingsForm #result {
+    max-height: 48px; 
+}
+#profileSettingsForm label, #imageUploadForm label, #accountSettingsForm label {
+    padding: 0 20px 0 30px;
+    width: 220px;
+    font-size: 13px;
+    color: #667686;
+    font-weight: 600;
+    vertical-align: middle;
+}
+#accountSettingsForm label.medium {
+    width: 133px;
+}
+#accountSettingsForm .wrapper-styledCheckbox {
+    margin-top: 10px;
+}
+#profileSettingsForm textarea {
+    max-height: 300px;
+    max-width: 720px;
+}
+.profileLoaderHolder {
+    display: inline-block;
+    min-height: 140px;
+    vertical-align: top;
+}
+.form #loader {
+    display: none;
+    margin: 0 0 0 5px;
+    vertical-align: top;
+}
+.fleft {
+    float: left; 
+}
+
+.fleft > img.profileimage {
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px; 
+    -moz-border-radius-topleft: 2px;
+    -moz-border-radius-topright: 2px; 
+    -webkit-border-top-left-radius: 2px; 
+    -webkit-border-top-right-radius: 2px; 
+}
+
+#sharingList, #sharingConnectedList {
+    padding: 0 30px;
+} 
+#sharingList .info > span, #sharingConnectedList .info > span {
+    color: #7C8792;
+    font-size: 13px;
+    font-weight: 600;
+    overflow: auto; 
+}
+#sharingList li > a, #sharingConnectedList li > a {
+    cursor: default;
+}
+img.bordered {
+    border: 1px solid #E6E6E6;
+    padding: 4px;
+}
+#sharingList li .action {
+    width: 160px;
+    padding-left: 10px;
+}
+/* Profile Settings Style End */
+#composeMsgForm .userIcon {
+    vertical-align: middle;
+}
+/* Create/Edit Collection Page Style Start */
+.collectionItem {
+    float: left;
+    margin: 5px;
+    background-color: #EEEEEE;
+    border: 1px solid #E6E6E6;
+    padding: 4px;
+    position: relative;
+    z-index: 100;
+    width: 100px;
+    height: 210px;
+    text-align: center;
+    cursor: move;
+}
+.collectionItem img {
+    max-width: 100px;
+    max-height: 160px;
+}
+.collectionItem textarea {
+    min-height: 50px;
+    min-width: 50px;
+    max-height: 50px;
+    max-width: 100px;
+    resize: none;
+    overflow: auto;
+    margin: 5px 0 0 0;
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background: #FFF !important;
+}
+.collectionBoard {
+    overflow: auto !important;
+}
+.collectionBoard li {
+    float: left;
+    list-style: none outside none;    
+}
+.reject {
+    display: none;
+}
+.collectionItem:hover .reject {
+    background: url("/polyvore/images/cross.png") no-repeat left top;
+    display: block;
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    z-index: 200;
+    right: 3px;
+    top: 3px;
+    cursor: pointer;
+}
+.collectionItem .reject:hover {
+    background: url("/polyvore/images/x.png") no-repeat left top;
+    width: 8px;
+    height: 9px;
+    right: 6px;
+    top: 5px;
+}
+span.postTo {
+    color: #888888 !important;
+    font-size: 10px;
+    margin: 0;
+}
+.postTo {
+    font-size: 11px;
+    margin-left: 5px;
+}
+#Create #Publish textarea {
+    max-width: 355px;
+    max-height: 200px;
+    min-height: 110px;
+}
+#Share #sharingList {
+    padding: 0;
+}
+#Share #sharingList .avatar {
+    width: 16px;
+    height: 16px;
+}
+#Share #sharingList .action {
+    width: 55px;    
+}
+#Share #sharingList .info {
+    width: 410px;
+}
+#Share #sharingContent h6 {
+    font-size: 12px;
+    color: #7C8792;    
+}
+/* Create/Edit Collection Page Style End */
+.smallForm textarea {
+    height: 100px;
+    max-width: 370px;
+    max-height: 350px;    
+}
+.smallForm h6 {
+    padding-left: 0;
+    margin-top: 5px;
+}
+#changePassoword label {
+    vertical-align: middle;
+    padding-right: 15px;
+}
+.centerHeading {
+    text-align: center;
+    color: #7C8792;
+}
+ul.inline {
+    display: inline;
+}
+ul.center {
+    text-align: center;
+}
+ul.lineList li {
+    color: #7C8792;
+}
+ul.lineList li .members {
+    color: #B0B7BB;
+}
+.tooltip.bottom i {
+    background: #d7dcde;
+    position: absolute;
+    top: 50px;
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 15px;
+    white-space: nowrap;
+    display: none;
+    color: #7c8792;
+    font-style: normal;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px; 
+}
+.tooltip.bottom:hover i {
+    display: block;
+}
+.tooltip.bottom i:before {
+    content: "";
+    border-bottom: 8px solid #d7dcde !important; 
+    border-top: 0 none; 
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    display: block;
+    top: -6px;
+    right: 20px;
+}
+/*************
+* ERROR PAGE
+*************/
+#HttpError {
+    text-align: center;                    
+    padding: 40px 0;
+    -webkit-font-smoothing: antialiased;
+     font-smoothing: antialiased;    
+}
+
+#HttpError * {                                       
+     font-family: 'Open Sans', sans-serif;
+}
+
+#HttpError h1 {
+    font-size: 48px;
+    line-height: 50px;   
+    color: #d7dbde;                          
+    text-shadow: 0px 1px 0px #bfc3c6;      
+    font-weight: 900;
+    background: transparent;
+}                                       
+#HttpError h2 {
+    font-size: 220px;   
+    line-height: 240px;   
+    color: #d7dbde;            
+    text-shadow: -1px -1px 0px #bfc3c6;     
+    font-weight: 900;
+}
+#HttpError h3 {
+    font-size: 26px;
+    line-height: 40px;  
+    color: #7c8792;   
+    font-weight: 100;
+    text-shadow: 0px 1px 0px #ffffff;                 
+}
+.form .instructionMessage{
+    text-align: center;
+    color: #7c8792;    
+}
+#inboxContent .topStrip .unread {
+    background-image: url("/polyvore/images/icon-sprite.png");
+    background-repeat: no-repeat;
+    background-position: 9px -5311px;
+    padding: 0 20px 0 30px;    
+}
+#inboxContent .topStrip .all {
+    background-image: url("/polyvore/images/icon-sprite.png");
+    background-repeat: no-repeat;
+    background-position: 9px -5163px;
+    padding: 0 20px 0 30px;    
+}
+#inboxContent .topStrip .sent {
+    background-image: url("/polyvore/images/icon-sprite.png");
+    background-repeat: no-repeat;
+    background-position: 9px -5013px;
+    padding: 0 20px 0 30px;    
+}
+#inboxContent .topStrip .unread:hover, #inboxContent .topStrip .unread.selected {
+    background-position: 9px -5386px;    
+}
+#inboxContent .topStrip .all:hover, #inboxContent .topStrip .all.selected {
+    background-position: 9px -5238px;    
+}
+#inboxContent .topStrip .sent:hover, #inboxContent .topStrip .sent.selected {
+    background-position: 9px -5088px;    
+}

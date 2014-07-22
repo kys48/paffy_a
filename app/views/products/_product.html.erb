@@ -1,0 +1,40 @@
+<%
+	price_type_str = "￦"
+	price_str = number_to_currency(product.price, :unit => price_type_str, :precision => 0)
+    case product.price_type
+      when "KRW"
+        price_type_str = "￦"
+        price_str = number_to_currency(product.price, :unit => price_type_str, :precision => 0)
+      when "USD"
+      	price_type_str = "$"
+      	price_str = number_to_currency(product.price, :unit => price_type_str)
+      when "JPY"
+      	price_type_str = "￥"
+      	price_str = number_to_currency(product.price, :unit => price_type_str, :precision => 0)
+      when "EUR"
+      	price_type_str = "€"
+      	price_str = number_to_currency(product.price, :unit => price_type_str)
+      when "GBP"
+      	price_type_str = "￡"
+      	price_str = number_to_currency(product.price, :unit => price_type_str)
+      when "CNY"
+      	price_type_str = "元"
+      	price_str = number_to_currency(product.price, :unit => price_type_str, :precision => 0)
+    end
+%>
+<li>
+    <%#= link_to image_tag(product.img.url(:medium), style: "width:220px;height:220px;"), product, class: "img-thumbnail", style: "width:230px;height:230px;" %>
+    <%#= link_to image_tag(product.img.url(:medium), style: "width:220px;height:220px;"), product, class: "thumbnail", style: "width:230px;height:230px;" %>
+    <%= link_to image_tag(product.img.url(:medium)), product, class: "thumbnail", style: "width:230px;height:230px;" %>
+    <article class="da-animate da-slideFromRight" style="display: block;">
+        <h4><%= product.subject %></h4>
+        <em><%= price_str %></em>
+        <span class="link_post"><a href="#"></a></span>
+        <span class="zoom"><%= link_to ' ', product %></span>
+    </article>
+</li>
+
+
+<!--div class="main_list">
+	<%#= link_to image_tag(product.img.url(:medium)), product, class: "img-thumbnail" %>
+</div-->

@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>P cd:</b>
+  <%= @cate.p_cd %>
+</p>
+
+<p>
+  <b>C cd:</b>
+  <%= @cate.c_cd %>
+</p>
+
+<p>
+  <b>C name:</b>
+  <%= @cate.c_name %>
+</p>
+
+<p>
+  <b>Use yn:</b>
+  <%= @cate.use_yn %>
+</p>
+
+
+<%= link_to 'Edit', edit_cate_path(@cate) %> |
+<%= link_to 'Back', cates_path %>

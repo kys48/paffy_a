@@ -1,0 +1,33 @@
+<%= form_for(@get) do |f| %>
+  <% if @get.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@get.errors.count, "error") %> prohibited this get from being saved:</h2>
+
+      <ul>
+      <% @get.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :get_type %><br />
+    <%= f.text_field :get_type %>
+  </div>
+  <div class="field">
+    <%= f.label :item_type %><br />
+    <%= f.text_field :item_type %>
+  </div>
+  <div class="field">
+    <%= f.label :ref_id %><br />
+    <%= f.number_field :ref_id %>
+  </div>
+  <div class="field">
+    <%= f.label :user_id %><br />
+    <%= f.text_field :user_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

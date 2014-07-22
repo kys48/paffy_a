@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="seo_profile_keywords"><meta name="description" content="seo_profile_description"><title>seo_profile_title_collections</title>
+<link rel="stylesheet" href="/css/collection/cropping.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/datePicker.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/platform.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/jquery.Jcrop.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/jquery.colourPicker.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/jquery.selectbox.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/flat.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/flat-simo.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/flat-slav.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/val.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="/css/collection/jquery.tagsinput.css" type="text/css" media="screen"/>
+
+<script type="text/javascript">
+
+
+siteURL = 'http://localhost:3000/';
+imgURL  = 'http://localhost:3000/';
+
+
+</script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/collection/jquerypp.custom.js"></script>
+<script type="text/javascript" src="/js/collection/sprintf.min.js"></script>
+
+
+<script type="text/javascript">
+	$(function(){
+	TranslationLabels = new Object;
+		TranslationLabels['above_max_item_for_collection'] = 'above max item for collection';
+		TranslationLabels['below_max_item_for_collection'] = 'below max item for collection';
+		TranslationLabels['cannot_load_image']             = 'Cannot load image';
+		TranslationLabels['could_not_complete_request']    = 'could not complete request';
+		TranslationLabels['could_not_detect_carousel_for_plugin'] = 'could not detect carousel for plugin';
+		TranslationLabels['sorry_no_friends_using_app_found_we_recommend_the_following_users:'] = 'sorry no friends using app found we recommend the following users:';
+		TranslationLabels['are_you_sure_you_want_to_leave']= 'are you sure you want to leave';
+		TranslationLabels['account_connection_failure']    = 'account connection failure';
+		TranslationLabels['account_connection_success']    = 'account connection success';
+		TranslationLabels['account_added_for_sharing']     = 'account added for sharing';
+		TranslationLabels['submitButton']                  = 'Loading';
+		TranslationLabels['found']                         = 'Found';
+		TranslationLabels['friend']                        = 'friend';
+		TranslationLabels['friends']                       = 'friends';
+		TranslationLabels['hint']                          = 'hint';
+		TranslationLabels['unknown_error']                 = 'unknown error';
+		TranslationLabels['crop_saved']                    = 'crop saved';
+		TranslationLabels['could_not_load']                = 'could not load';
+		TranslationLabels['tag']                           = 'Tag:';
+		TranslationLabels['must_have_valid_selection']     = 'Must have valid selection';
+		TranslationLabels['please_select_a_file']          = 'Please selec a file ';
+		TranslationLabels['unknown_error']                 = 'unknown error';
+		TranslationLabels['image_uploaded_successfully']   = 'Image uploaded successfully';
+		TranslationLabels['loading']                       = 'loading';
+		TranslationLabels['follow_all']                    = 'follow all';
+		TranslationLabels['let_friends_find_me_too']       = 'let friends find me too';
+		TranslationLabels['previous']                      = 'previous';
+		TranslationLabels['next']                          = 'next';
+		TranslationLabels['currently_sharing_to']          = 'currently sharing to';
+		TranslationLabels['stop']                          = 'stop';
+		TranslationLabels['not_available']                 = 'Not available';
+		TranslationLabels['start_quick_sharing_to']        = 'start quick sharing to';
+		TranslationLabels['cannot_load_cover']             = 'Cannot load cover';
+		TranslationLabels['cancel']                        = 'Cancel';
+		TranslationLabels['drag_to_position_image']        = 'Drag to position image';
+		TranslationLabels['save_changes']                  = 'save changes';
+		TranslationLabels['change_picture']                = 'change picture';
+		TranslationLabels['view_less']                     = 'view less';
+		TranslationLabels['view_more']                     = 'view more';
+		TranslationLabels['share_failure']                 = 'share failure';
+		TranslationLabels['you_cannot_add_more_than_%d_tags_to_one_creation'] = 'you cannot add more than %d tags to one creation';
+		TranslationLabels['this_%s_is_already_in_the_collection'] = 'this %s is already in the collection';
+		TranslationLabels['pick_a_colour']                 = 'pick a colour';
+		TranslationLabels['open_colour_picker']            = 'open colour picker';
+		TranslationLabels['no_%s_users_currently_available']      = 'no %s users currently available';
+		TranslationLabels['on_site']                       = 'on Trickable';
+		TranslationLabels['invalid_items_in_collection']   = 'invalid items in collection';
+		TranslationLabels['placeholder_accepts_only_products']    = 'placeholder accepts only products';
+		TranslationLabels['could_not_load_crops']          = 'could not load crops';
+		TranslationLabels['add_a_tag']                     = 'add a tag';
+});
+</script>
+<script type="text/javascript" src="/js/collection/jquery.infinitescroll.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.tabs.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.textareacounter.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.responsive.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.content.slider.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.scrollTo-1.4.0-min.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.scroll.top.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.form.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.jcarousel.js"></script>
+<script type="text/javascript" src="/js/collection/misc.js"></script>
+<script type="text/javascript" src="/js/collection/binds.js"></script>
+<script type="text/javascript" src="/js/collection/platform.js"></script>
+<script type="text/javascript" src="/js/collection/cropping.js"></script>
+<script type="text/javascript" src="/js/collection/rotatable.js"></script>
+<script type="text/javascript" src="/js/collection/slideshow.js"></script>
+<script type="text/javascript" src="/js/collection/infinite.js"></script>
+<script type="text/javascript" src="/js/collection/datePicker.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.colourPicker.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.truncate.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.selectbox-0.2.min.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.autosize.js"></script>
+<script type="text/javascript" src="/js/collection/jquery.tagsinput.min.js"></script>
+<script type="text/javascript" src="/js/collection/notify/jquery.noty.js"></script>
+<script type="text/javascript" src="/js/collection/notify/topCenter.js"></script>
+<script type="text/javascript" src="/js/collection/notify/default.js"></script>
+
+
+
+
+
+</head>
+<body>
+
+<div id="mask"></div>                                                        
+    <!----------------------------start main_wrapper------------------------------->
+    <div id="main_wrapper">                                                                      
+      
+      <!----------------------------start wrapper------------------------------->
+      <div id="wrapper">
+          <div id="wrapperShadow"></div>
+         <!----------------------------start page------------------------------->
+        <div id="page">
+          <!----------------------------start container------------------------------->                              
+
+
+
+<!--
+<ul id="profileItemList" class="itemList short responsive responsiveCenter"><li><a href="#" class="like"><input type="hidden" name="data" value="45,collection" /><span class="collection_45">No likes yet</span></a><a href="/collection/45" class="image"><div class="play" onclick="Redirect('/collection/45?view=slideshow'); return false;">Slideshow</div><div class="overlay"></div><img src="http://img.trickable.com/site/images/sets/thumb_medium/27.png" alt=""/></a><div class="detail"><div class="userProfile"><a href="/profile/344" title="" class="icon tooltip"><i><strong>0</strong> followers,&nbsp<strong>0</strong> followings<br /><strong>1</strong> sets,&nbspjoined over month ago</i><img class="circleBase" src="http://img.trickable.com/site/images/avatars/thumb_small/344.png"></a><a href="/profile/344" class="username">?ǿ???</a><a class="follow" title="" href="#"><input type="hidden" name="data" value="344"><span class="follow_344"><span>Follow</span></span></a></div><a href="/collection/45" class="name" title="scrap collection"><p>scrap collection</p></a></div></li><li><a href="#" class="like"><input type="hidden" name="data" value="43,collection" /><span class="collection_43">No likes yet</span></a><a href="/collection/43" class="image"><div class="play" onclick="Redirect('/collection/43?view=slideshow'); return false;">Slideshow</div><div class="overlay"></div><img src="http://img.trickable.com/site/images/products/thumb_medium/13976.png" alt=""/></a><div class="detail"><div class="userProfile"><a href="/profile/344" title="" class="icon tooltip"><i><strong>0</strong> followers,&nbsp<strong>0</strong> followings<br /><strong>1</strong> sets,&nbspjoined over month ago</i><img class="circleBase" src="http://img.trickable.com/site/images/avatars/thumb_small/344.png"></a><a href="/profile/344" class="username">?ǿ???</a><a class="follow" title="" href="#"><input type="hidden" name="data" value="344"><span class="follow_344"><span>Follow</span></span></a></div><a href="/collection/43" class="name" title="test collect"><p>test collect</p></a></div></li></ul>
+-->
+
+
+<ul id="profileItemList" class="itemList short responsive responsiveCenter">
+	<li>
+		<a href="#" class="like"><span class="collection_45">No likes yet</span></a>
+		<a href="/collection/45" class="image">
+			<div class="play" onclick="Redirect('/collection/45?view=slideshow'); return false;">Slideshow</div>
+			<div class="overlay"></div>
+			<img src="http://img.trickable.com/site/images/sets/thumb_medium/27.png" alt=""/>
+		</a>
+		<div class="detail">
+			<div class="userProfile" style="border:1px solid red">
+				<a href="/profile/344" title="" class="icon tooltip">
+					<i>
+						<strong>0</strong> followers, <strong>0</strong> followings<br />
+						<strong>1</strong> sets, joined over month ago
+					</i>
+					<img src="http://img.trickable.com/site/images/avatars/thumb_small/344.png">
+				</a>
+				<a href="/profile/344" class="username">공길동</a>
+				<a class="follow" title="" href="#">
+					<span class="follow_344"><span>Follow</span></span>
+				</a>
+			</div>
+			<a href="/collection/45" class="name" title="scrap collection"><p>scrap collection</p></a>
+		</div>
+	</li>
+	<li>
+		<a href="#" class="like"><span class="collection_43">No likes yet</span></a><a href="/collection/43" class="image"><div class="play" onclick="Redirect('/collection/43?view=slideshow'); return false;">Slideshow</div><div class="overlay"></div><img src="http://img.trickable.com/site/images/products/thumb_medium/13976.png" alt=""/></a><div class="detail"><div class="userProfile"><a href="/profile/344" title="" class="icon tooltip"><i><strong>0</strong> followers,&nbsp<strong>0</strong> followings<br /><strong>1</strong> sets,&nbspjoined over month ago</i><img class="circleBase" src="http://img.trickable.com/site/images/avatars/thumb_small/344.png"></a><a href="/profile/344" class="username">?ǿ???</a><a class="follow" title="" href="#"><input type="hidden" name="data" value="344"><span class="follow_344"><span>Follow</span></span></a></div><a href="/collection/43" class="name" title="test collect"><p>test collect</p></a></div>
+	</li>
+</ul>
+
+
+          <!----------------------------end container------------------------------->
+          <a href="#top" id="top-link" class="floatingLink">Back to top</a>
+          <a href="#top" id="about-link" class="floatingLink">About</a>
+        </div>
+         <!----------------------------end page------------------------------->    
+    </div>
+    <!----------------------------end wrapper------------------------------->
+    </div>
+    <!----------------------------end main_wrapper------------------------------->
+</body>
+</html>

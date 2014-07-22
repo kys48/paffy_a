@@ -1,0 +1,146 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= render :partial => '/common/landing' %>
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+		
+		<ul>
+			<li>
+				<a href="/store/topstore?store_type=F" <% if @store_type=="F" %> class="active" <% end %> >Global</a>
+			</li>
+			<li>
+				<a href="/store/topstore?store_type=I" <% if @store_type=="I" %> class="active" <% end %> >Recommend</a>
+			</li>
+		</ul>
+		
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div class="image_grid portfolio_2col" style="padding-left:60px;">
+				    <ul id="itemList" class="portfolio_list">
+<%
+	rcnt = 0
+	@store_list.each do | store_list |
+		store = store_list[0]
+		products = store_list[1]
+		follow_count = store_list[2].to_i
+%>
+<li>
+	<div style="width:480px;height:300px;border:1px solid #cccccc;padding:7px;">
+	 	<table style="height:45px;">
+	 		<tr>
+	 			<td style="width:60px;text-align:left">
+	 				<% if store.img_file_name %>
+		 			<a href="javascript:goUrl('<%= store.url%>');"><img src="/data/user/thumb/<%= store.img_file_name%>" style="width:45px;height:45px;"></a>
+		 			<% else %>
+		 			<a href="javascript:goUrl('<%= store.url%>');"><img src="/images/common/top_store.png" style="width:45px;height:45px;"></a>
+		 			<% end %>
+	 			</td>
+	 			<td style="width:320px;text-align:left">
+	 				<a href="/mypage/<%=store.profile_id%>"><strong style="font-size:17px"><%= store.user_name%></strong></a>
+		 			<br/>
+		 			<%= store.product_count%> products,
+		 			<%= store.follow_count%> followers
+	 			</td>
+	 			<td style="width:100px;text-align:right;padding-right:7px;">
+	 				<% if follow_count>0 %>
+	 				<div id="cnt_scrap_<%=store.user_id%>" onclick="follow('<%=store.user_id%>');" class="bGray small" style="cursor:pointer; width:100px;">팔로잉</div>
+	 				<% else %>
+	 				<div id="cnt_scrap_<%=store.user_id%>" onclick="follow('<%=store.user_id%>');" class="bBlue small" style="cursor:pointer; width:100px;">팔로우하기</div>
+	 				<% end %>
+	 			</td>
+	 		</tr>
+	 	</table>
+	 	<div style="padding-top:10px;">
+			<% products.each do |product| %>
+	 		<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">
+	 			<% if @store_type=="I" %>
+	 				<a href="/collections/pshow/<%=product.id%>"><img src="/data/product/medium/<%= product.img_file_name%>" style="width:110px; height:110px;"></a>
+	 			<% elsif @store_type=="F" %>
+	 				<a href="<%=product.url%>" target="_blank"><img src="<%= product.img_file_name%>" style="width:110px; height:110px;"></a>
+	 			<% end %>
+	 		</div>
+	 		<% end %>
+	 		<div style="clear:both"></div>
+	 	</div>
+	 	
+	</div>
+</li>
+<%
+		rcnt += 1
+	end
+%>
+
+				    </ul>
+			    </div>
+				<div id="loadingDiv" style="display:none; text-align:center;padding:10px;font-size:15px;">
+			    	loading more...
+			    	<img src="/images/common/loading5.gif">
+			    </div>
+			</div>
+		</div>
+		
+	</div>
+	
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+
+<script language="JavaScript">
+// 팔로우하기
+function follow(follow_id){
+    var postData = new Object();
+    postData.follow_id = follow_id;
+    postData.follow_type = "U";
+
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+    $.ajax({
+        url     : '/follows/put',
+        type    : 'post',
+        dataType: 'json',
+        data	: $.param(postData),
+        async   : false,  
+        success : function(json){
+        	$('#cnt_scrap_'+follow_id).removeClass();
+
+    		if(json.follow_status=='Y'){
+    			$('#cnt_scrap_'+follow_id).html("팔로잉");
+    			$('#cnt_scrap_'+follow_id).addClass('bGray');
+    		}else{
+    			$('#cnt_scrap_'+follow_id).html("팔로우");
+    			$('#cnt_scrap_'+follow_id).addClass('bBlue');
+    		}
+        },
+        error   : function(e){
+        }
+    });
+}
+
+// 제휴링크 변환
+function goUrl(url){
+	var openurl = url;
+	$.ajax({
+	    url     : '/getLinkpriceUrl?url='+encodeURIComponent(url),
+	    type    : 'get',
+	    dataType: 'json',
+	    success : function(json){
+			if (json.status){
+				var result = json.result;
+				var lp_url = json.url;
+				if (result=='S') openurl = lp_url;
+			}
+			if(CHKMOBILE=='Y'){
+				document.location.href = openurl;
+			} else {
+				window.open(openurl);
+			}
+			
+	    },
+	    error   : function(e){
+	    	window.open(openurl);
+	    }
+	});	
+}
+</script>

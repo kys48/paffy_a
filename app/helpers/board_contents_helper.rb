@@ -1,0 +1,2 @@
+module BoardContentsHelper
+end

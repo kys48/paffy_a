@@ -1,0 +1,50 @@
+<%= form_for(@product, :html => {:multipart => true,  :class => 'form-horizontal'}) do |f| %>
+  <% if @product.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
+
+      <ul>
+      <% @product.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <div class="control-group">
+    <%= f.label :subject, "상품명", :class => 'control-label' %>
+    <div class="controls">
+    	<%= f.text_field :subject, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :img, "상품이미지", :class => 'control-label' %>
+    <div class="controls">
+    	<%= f.file_field :img %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :price, "가격", :class => 'control-label' %>
+    <div class="controls">
+    	<%= f.text_field :price, :class => 'number_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :price_type, "통화구분", :class => 'control-label' %>
+    <div class="controls">
+    	<%= f.text_field :price_type, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :url, "상품url", :class => 'control-label' %>
+    <div class="controls">
+    	<%= f.text_field :url, :class => 'text_field' %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit "상품등록", :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                products_path, :class => 'btn' %>
+  </div>
+<% end %>

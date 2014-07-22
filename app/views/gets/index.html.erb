@@ -1,0 +1,29 @@
+<h1>Listing gets</h1>
+
+<table>
+  <tr>
+    <th>Get type</th>
+    <th>Item type</th>
+    <th>Ref</th>
+    <th>User</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @gets.each do |get| %>
+  <tr>
+    <td><%= get.get_type %></td>
+    <td><%= get.item_type %></td>
+    <td><%= get.ref_id %></td>
+    <td><%= get.user_id %></td>
+    <td><%= link_to 'Show', get %></td>
+    <td><%= link_to 'Edit', edit_get_path(get) %></td>
+    <td><%= link_to 'Destroy', get, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Get', new_get_path %>

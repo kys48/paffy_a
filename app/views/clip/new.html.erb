@@ -1,0 +1,98 @@
+<%
+	#request_host = "http://" + request.host+":"+request.port
+	request_host = "http://" + request.host_with_port
+%>
+<style type="text/css">
+.clip_image{border:0;height:auto;width:auto;max-height:200px;max-width:200px;vertical-align:middle;}
+.layer{position:absolute;font-size:12px;width:700px;z-index:9999;background-color:#FFFFFF;}
+.layer .layer_hd{height:35px;}
+.layer .layer_fn{height:39px;}
+.layer .close{position:absolute;top:5px;right:5px;}
+.layer .close a{display:block;width:26px;height:25px;background:url(<%= request_host%>/images/common/clip_close.png) no-repeat;}
+.layer_cnt{padding:0px;}
+.layer_cnt .clipnd{display:block;width:68px;height:13px;}
+.layer_cnt .tit{font-size:17px;font-weight:bold;padding:5px 0px 5px 0px;}
+.layer_cnt .cnt{padding:0px;margin:0px;}
+.layer_cnt .dec{width:100%;border:0;border-spacing:0;border-collapse:collapse;}
+.layer_cnt .dec td{height:145px;border:0;}
+.layer_cnt .dec td .tx{font-weight:bold;font-size:12px;line-height:16px;}
+.layer_cnt .dec td .tx span{display:block;margin-top:16px;}
+.layer_cnt .btn{clear:both;width:100%;padding-top:15px;text-align:center;}
+.layer_cnt .btn .bn{margin:0 1px;*margin: 0 3px;}
+</style>
+<script language="JavaScript">
+function postCheck(){
+	var f = document.frm;
+	var chkpass = true;
+	if(f.item_subject.value==""){
+		alert("상품명을 입력하세요");
+		f.item_subject.focus();
+		chkpass = false;
+	}
+	if(f.item_price.value==""){
+		alert("가격을 입력하세요");
+		f.item_price.focus();
+		chkpass = false;
+	}
+	if(f.item_url.value==""){
+		alert("상품URL을 입력하세요");
+		f.item_url.focus();
+		chkpass = false;
+	}
+	
+	if(chkpass){	
+<%	if session[:user_id] %>
+		frm.submit();
+<%	else %>
+		backurl = encodeURIComponent(document.location.href);
+		window.open("/login_pop?backurl="+backurl,"Paffy 로그인","width=450,height=400,scrollbars=no,resizeable=no,left=400,top=200");
+<%	end %>
+	}	
+}
+
+function reload(){
+	document.location.href = document.location.href;
+}
+</script>
+
+<dl class="layer_cnt">
+	<dt class="tit">PAFFY에 포스팅하기</dt>
+	<dd class="cnt">
+	
+	<%= form_tag "/clip/post", name: "frm", method: "post", onsubmit: "return false;" do %>
+	<input type="hidden" id="item_imgurl" name="item_imgurl" value="<%= @imgurl%>" />
+	<input type="hidden" id="item_domain" name="item_domain" value="<%= @domain%>" />
+	
+		<table class="dec">
+			<tr>
+				<td width="210px">
+					<img id="item_img" class="clip_image" src="<%= @imgurl%>" >
+				</td>
+				<td style="text-align:left; padding-left:10px; border-left:1px solid #CCCCCC; vertical-align: top;">
+					상품명<br/>
+					<input type="text" id="item_subject" name="item_subject" value="<%= @subject%>" style="width:100%;" />
+					<br />
+					가격 <br />
+					<input type="text" id="item_price" name="item_price" value="" style="width:150px;" />
+					<select id="item_price_type" name="item_price_type" style="width:100px;">
+						<option value="KRW">원(￦)</option>
+						<option value="USD">달러($)</option>
+						<option value="JPY">엔(￥)</option>
+						<option value="EUR">유로(€)</option>
+						<option value="GBP">파운드(￡)</option>
+						<option value="CNY">위안(元)</option>
+					</select>
+					<br />
+					URL<br/>
+					<input type="text" id="item_url" name="item_url" value="<%= @url%>" style="width:100%;" />
+					<br />
+					Quick share with friends <input type="checkbox" id="item_share" name="item_share" value="Y" checked />
+					<br /><br />
+					<a href="javascript:postCheck();"><img src="<%= request_host%>/images/common/clip_post.png"></a>
+				</td>
+			</tr>
+		</table>
+	<% end %>
+	<!--/form-->
+	</dd>
+</dl>

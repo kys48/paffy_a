@@ -1,0 +1,27 @@
+<%
+	landing_height = "230px"
+	if session[:user_id]
+		landing_height = "160px"
+	end
+%>
+  <div id="landingDv" style="margin-top:20px; padding:0px; background:url('/images/landing.png') repeat-x; height:<%=landing_height%>; width:100%;">
+  	<div style="padding:10px 10px 10px 150px; width:400px;">
+	    <h2>What's Your Style?</h2>
+	    <p style="padding-left:20px;">Find Great Fashion!!<br/>
+	    	Play Styles!!<br/>
+		    Share with Friends!!<br/>
+		    Get Items!
+	    </p>
+<%
+	if !session[:user_id]
+%>
+	    <p style="text-align:right">
+	    	<a href="/log_in" class="btn btn-primary btn-small" style="width:110px;">Join Now</a>
+	    	<br/>
+	    	(Facebook / Kakao)
+	    </p>
+<%
+	end
+%>
+    </div>
+  </div>

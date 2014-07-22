@@ -1,0 +1,29 @@
+<h1>Listing cates</h1>
+
+<table>
+  <tr>
+    <th>P cd</th>
+    <th>C cd</th>
+    <th>C name</th>
+    <th>Use yn</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @cates.each do |cate| %>
+  <tr>
+    <td><%= cate.p_cd %></td>
+    <td><%= cate.c_cd %></td>
+    <td><%= cate.c_name %></td>
+    <td><%= cate.use_yn %></td>
+    <td><%= link_to 'Show', cate %></td>
+    <td><%= link_to 'Edit', edit_cate_path(cate) %></td>
+    <td><%= link_to 'Destroy', cate, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Cate', new_cate_path %>

@@ -1,0 +1,28 @@
+
+<div id="products" class="products">
+	<a name="top"></a>
+	<div class="freshdesignweb">
+	    <div class="image_grid portfolio_4col">
+		    <ul id="list" class="portfolio_list da-thumbs">
+		    	<%= render(:partial => "product", :collection => @products) %>
+		    </ul>
+	    </div>
+	</div>
+</div>
+
+<%#= will_paginate(@products) %>
+<%#= will_paginate @products, renderer: BootstrapPagination::Rails %>
+
+<%= pageless(@products.total_pages, products_path, "#products") %>
+
+
+<script type="text/javascript">
+// Image Hover
+//<![CDATA[
+jQuery(document).ready(function(){
+	jQuery(function() {
+		jQuery('ul.da-thumbs > li').hoverdir();
+	});
+});
+//]]>
+</script>

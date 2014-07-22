@@ -1,0 +1,26 @@
+#Cropping {
+    width: 297px;
+    height: 598px;
+    position: relative;
+    text-align: center;
+    background: antiquewhite;
+}
+
+canvas.lasoCanvas {
+    position: absolute;
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+#qickCropLoader {
+    width: 32px;
+    margin: 0 auto;
+    display: block;
+}
+
+img.lasoImage {
+/*    height: inherit;*/
+}

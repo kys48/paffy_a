@@ -1,0 +1,33 @@
+<h1>Listing user_ranks</h1>
+
+<table>
+  <tr>
+    <th>User type</th>
+    <th>Store type</th>
+    <th>User</th>
+    <th>Rank</th>
+    <th>Follow count</th>
+    <th>Product count</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @user_ranks.each do |user_rank| %>
+  <tr>
+    <td><%= user_rank.user_type %></td>
+    <td><%= user_rank.store_type %></td>
+    <td><%= user_rank.user_id %></td>
+    <td><%= user_rank.rank %></td>
+    <td><%= user_rank.follow_count %></td>
+    <td><%= user_rank.product_count %></td>
+    <td><%= link_to 'Show', user_rank %></td>
+    <td><%= link_to 'Edit', edit_user_rank_path(user_rank) %></td>
+    <td><%= link_to 'Destroy', user_rank, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New User rank', new_user_rank_path %>

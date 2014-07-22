@@ -1,0 +1,44 @@
+<%= form_for @board_content, :html => { :class => 'form-horizontal' } do |f| %>
+  <div class="control-group">
+    <%= f.label :subject, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :subject, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :contents, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_area :contents, :class => 'text_area' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :hit_no, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.number_field :hit_no, :class => 'number_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :reg_id, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :reg_id, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :reg_name, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :reg_name, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :reg_passwd, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :reg_passwd, :class => 'text_field' %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                board_contents_path, :class => 'btn' %>
+  </div>
+<% end %>

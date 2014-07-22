@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title>하하하 호호호</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style>
+html,body{width:100%;height:100%;margin:0;padding:0;}
+#paffy_wrap_layer{z-index:10000;position:absolute;left:0;top:0;width:100%;height:100%;}
+#paffy_wrap{z-index:10000;position:absolute;left:0;top:0;width:100%;height:100%;}
+#paffy_wrap p,#paffy_wrap h1,#paffy_wrap ul,#paffy_wrap li,#paffy_wrap dl,#paffy_wrap dt,#paffy_wrap dd,#paffy_wrap form,#paffy_wrap fieldset,#paffy_wrap legend,#paffy_wrap input,#paffy_wrap textarea,#paffy_wrap button,#paffy_wrap select{margin:0;padding:0;}
+body,#paffy_wrap button,#paffy_wrap h1{font-size:12px;color:#333;}
+#paffy_wrap img,#paffy_wrap fieldset{border:0;}
+#paffy_wrap ul{list-style:none;}
+#paffy_wrap img,#paffy_wrap li{vertical-align:top;}
+#paffy_wrap a{color:#333;text-decoration:none;}
+#paffy_wrap a:hover,#paffy_wrap a:active,#paffy_wrap a:focus{text-decoration:underline;}
+#paffy_wrap legend{display:none;}
+#paffy_wrap button{overflow:visible;margin:0;padding:0;border:0;background:none;vertical-align:top;cursor:pointer;}
+#paffy_wrap button::-moz-focus-inner{padding:0;border:0;}
+#paffy_wrap .blind{overflow:hidden;position:absolute;top:0;left:0;width:0;height:0;font-size:0;line-height:0;}
+#paffy_wrap .dimmed{z-index:1;position:absolute;left:0;top:0;width:100%;height:100%;background:#000;opacity:0.5;filter:alpha(opacity="50");}
+#clip{position:relative;z-index:99;height:100%;}
+#clip_header{overflow:hidden;position:relative;height:40px;border-bottom:1px solid #000;background-color:#000000;text-align:center;}
+#clip_header .clip_logo{width:120px;height:30px;margin:5px auto 0;padding:0;background:url(http://203.228.244.59:3000/images/common/logo.png) no-repeat ;font-size:0;line-height:0;}
+#clip_header .b_clipccl{position:absolute;top:8px;right:15px;width:26px;height:25px;background:url(http://203.228.244.59:3000/images/common/clip_close.png) no-repeat;}
+#clip_header .b_clipccl:hover{background:url(http://203.228.244.59:3000/images/common/clip_close_on.png) no-repeat;}
+#container_clip{position:relative;}
+#container_clip .cliplist{overflow:hidden;width:100%;text-align:center;}
+#container_clip .cliplist a{display:inline-block;overflow:hidden;position:relative;width:215px;height:215px;margin:23px 12px 0;border:1px solid #dbdbdb;background:#fff;text-align:center;vertical-align:top;}
+#container_clip .cliplist a img{position:absolute;height:auto;border:0;width:auto; max-height:200px; max-width:200px; vertical-align: middle;}
+#container_clip .cliplist a strong{display:none;position:absolute;left:0px;top:0px;width:215px;height:215px;background:url(http://203.228.244.59:3000/images/common/logo_clip.png) no-repeat;}
+#container_clip .cliplist a:hover{border-color:#0a0a0a;}
+#container_clip .cliplist a:hover strong{display:block;}
+
+#paffy_wrap .layer{position:absolute;font-size:12px;width:700px;z-index:9999;background-color:#FFFFFF;}
+#paffy_wrap .layer .layer_hd{height:35px;}
+#paffy_wrap .layer .layer_fn{height:39px;}
+#paffy_wrap .layer .close{position:absolute;top:5px;right:5px;}
+#paffy_wrap .layer .close a{display:block;width:26px;height:25px;background:url(http://203.228.244.59:3000/images/common/clip_close.png) no-repeat;}
+#paffy_wrap .layer_cnt{padding:0 32px 0 30px;}
+#paffy_wrap .layer_cnt .clipnd{display:block;width:68px;height:13px;}
+#paffy_wrap .layer_cnt .tit{font-size:17px;font-weight:bold;padding:5px 0px 5px 0px;}
+#paffy_wrap .layer_cnt .dec{width:100%;border:0;border-spacing:0;border-collapse:collapse;}
+#paffy_wrap .layer_cnt .dec td{height:145px;border:0;}
+#paffy_wrap .layer_cnt .dec td .tx{font-weight:bold;font-size:12px;padding-left:16px;line-height:16px;}
+#paffy_wrap .layer_cnt .dec td .tx span{display:block;margin-top:16px;}
+#paffy_wrap .layer_cnt .btn{clear:both;width:100%;padding-top:15px;text-align:center;}
+#paffy_wrap .layer_cnt .btn .bn{margin:0 1px;*margin: 0 3px;}	
+</style>
+<body>
+<!--	
+<div id="paffy_wrap" style="height: 1018px; display: block;">
+	<div class="dimmed"></div>
+	
+	<div id="clip">
+		<div id="clip_header">
+			<h1 class="clip_logo"><span class="blind">PAFFY</span></h1>
+			<a class="bn b_clipccl" onclick="parent.ext.paffy.ClipClass.onClickCloseBtn();" href="#"><span class="blind">취소</span></a>
+		</div>
+		<div id="container_clip">
+			<div class="cliplist">
+				
+				<a href="#" onmouseover="parent.ext.paffy.ClipClass.onOverItem(this);" onmouseout="parent.ext.paffy.ClipClass.onOutItem(this);" onclick="parent.ext.paffy.ClipClass.submitData(' + AF + ');"><img onload="parent.ext.paffy.ClipClass.onThumbImgLoadComplete(this)" onreadystatechange="parent.ext.paffy.ClipClass.onThumbImgStateChange(this)" src="http://203.228.244.59:3000/data/medium/1401326463.jpg" alt="" /><strong class="p24"><span class="blind">clip</span></strong></a>
+				
+			</div>
+		</div>
+	</div>
+	
+
+		
+	<div id="post" class="layer layersize" style="top:20%;left:50%;margin-left:-350px;">
+		<div class="layer_hd"></div>
+		<dl class="layer_cnt">
+			<dt class="tit">PAFFY에 포스팅하기</dt>
+			<dd class="cnt">
+				<table class="dec">
+					<tr>
+						<td width="170px" style="text-align:center">
+							<img id="item_img" src="http://203.228.244.59:3000/data/original/a39f3e9e858dcba1e1457b7268816c09.png" style="width:150px;height:150px">
+						</td>
+						<td style="text-align:left; padding-left:10px; border-left:1px solid #CCCCCC; vertical-align: top;">
+							제목<br/>
+							<input type="text" id="item_subject" name="item_subject" value="" style="width:100%;" />
+							<br /><br />
+							가격 <br />
+							<input type="text" id="item_price" name="item_price" value="" style="width:150px;" />
+							<select id="item_price_type" name="item_price_type">
+								<option value="￦">원(￦)</option>
+								<option value="$">달러(＄)</option>
+								<option value="￥">엔(￥)</option>
+								<option value="€">유로(€)</option>
+								<option value="￡">파운드(￡)</option>
+								<option value="元">위안(元)</option>
+							</select>
+							<br /><br />
+							URL<br/>
+							<input type="text" id="item_url" name="item_url" value="" style="width:100%;" />
+							<br /><br />
+							페이스북 공유 <input type="checkbox" id="item_share" name="item_share" value="Y" checked />
+							<br /><br />
+							<a href="#"><img src="http://203.228.244.59:3000/images/common/clip_post.png"></a>
+							&nbsp;
+							<a href="#"><img src="http://203.228.244.59:3000/images/common/clip_cancel.png"></a>
+						</td>
+					</tr>
+				</table>
+			</dd>
+		</dl>
+		<div class="layer_fn"></div>
+		<div class="close">
+			<a href="#" class="bn" onclick="parent.ext.paffy.ClipClass.onClickCloseBtn();"><span class="blind">레이어 닫기</span></a>
+		</div>
+	</div>
+		
+
+
+
+
+
+</div>
+-->	
+	
+	
+<img src="http://203.228.244.59:3000/data/original/a39f3e9e858dcba1e1457b7268816c09.png?1401422990">
+
+<img src="http://203.228.244.59:3000/data/original/1399618734.jpg?1399618734">
+
+<img src="http://203.228.244.59:3000/data/original/1399538011.png?1399538011">
+<br>
+
+<br><br>
+<strong><a href="javascript:(function(){document.body.appendChild(document.createElement('script')).src='http://203.228.244.59:3000/clip/js/scoop.js?v=' + Math.random()*999999;})();">라피네스트</a></strong>
+
+
+<br><br>
+<strong><a href="javascript:(function(){function b(m){var e=window;if(e.PolyvoreClipper){e.PolyvoreClipper.run()}else{var l=m.createElement(&quot;script&quot;);e._polyvoreMode=&quot;prod&quot;;e._polyvoreHost=&quot;www.polyvore.com&quot;;var k=&quot;http://akwww.polyvorecdn.com/rsrc/clipper.js&quot;;var g=&quot;https://www.polyvore.com/rsrc/clipper.js&quot;;var f=&quot;?&quot;+Math.floor((new Date()).getTime()/86400000);l.src=(document.location.protocol===&quot;https&quot;?k:g)+f;m.body.appendChild(l)}}try{b(document)}catch(h){}for(var a=0;a&lt;frames.length;++a){var d=frames[a];try{if(d.frameElement.tagName==&quot;IFRAME&quot;){continue}if(d.innerWidth&lt;400||d.innerHeight&lt;400){continue}b(d.document)}catch(c){}}})();" onclick="alert(&quot;Add me to your bookmarks toolbar&quot;); return false" title="Clip to Polyvore">Clip to Polyvore</a></strong>
+
+<br><br>
+<strong><a href="javascript:(function(){function b(m){var e=window;if(e.PolyvoreClipper){e.PolyvoreClipper.run()}else{var l=m.createElement(&quot;script&quot;);e._polyvoreMode=&quot;prod&quot;;e._polyvoreHost=&quot;www.polyvore.com&quot;;var k=&quot;http://203.228.244.59:3000/clip/js/clipper.js&quot;;var g=&quot;http://203.228.244.59:3000/clip/js/clipper2.js&quot;;var f=&quot;?&quot;+Math.floor((new Date()).getTime()/86400000);l.src=(document.location.protocol===&quot;https&quot;?k:g)+f;m.body.appendChild(l)}}try{b(document)}catch(h){}for(var a=0;a&lt;frames.length;++a){var d=frames[a];try{if(d.frameElement.tagName==&quot;IFRAME&quot;){continue}if(d.innerWidth&lt;400||d.innerHeight&lt;400){continue}b(d.document)}catch(c){}}})();" onclick="alert(&quot;Add me to your bookmarks toolbar&quot;); return false" title="Clip to Polyvore">폴리보어</a></strong>
+
+<br><br>
+<strong><a href="javascript: (function(){     var latestVersion = '1.8.2';     var jQueryEnabled = false;     if(window.jQuery === undefined || window.jQuery.fn.jquery < latestVersion){         var script = document.createElement('script');         script.src = 'http://ajax.googleapis.com/ajax/libs/jquery/'+latestVersion+'/jquery.min.js';         script.onload = script.onreadystatechagne = initMyjQuery;         document.getElementsByTagName('HEAD')[0].appendChild(script);     }     else {         initMyBookmarklet();     }     function initMyjQuery(){         if($ === undefined){             $ = jQuery;         }         jQueryEnabled = true;         initMyBookmarklet();     }     function initMyBookmarklet(){         var ai = $('img');         for (i=0;              i<ai.length;              i++) {          var ii = $(ai[i]);          ii.attr('title', 'width : ' + (ii.attr('width')?ii.attr('width'):'----') + ' X height: ' + (ii.attr('height')?ii.attr('height'):'----') + '\n CSS ==> ' + (ii.css('width')?ii.css('width'):'----') + ' X ' + (ii.css('height')?ii.css('height'):'----:'));         }     } })();">이미지크기</a></strong>
+<br><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

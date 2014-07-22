@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Item type:</b>
+  <%= @wish.item_type %>
+</p>
+
+<p>
+  <b>Ref:</b>
+  <%= @wish.ref_id %>
+</p>
+
+<p>
+  <b>User:</b>
+  <%= @wish.user_id %>
+</p>
+
+<p>
+  <b>Subject:</b>
+  <%= @wish.subject %>
+</p>
+
+<p>
+  <b>Contents:</b>
+  <%= @wish.contents %>
+</p>
+
+
+<%= link_to 'Edit', edit_wish_path(@wish) %> |
+<%= link_to 'Back', wishes_path %>

@@ -1,0 +1,397 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= javascript_include_tag "/js/jquery.ui.widget.js" %>
+<%= javascript_include_tag "/js/jquery.rf.slideshow.js" %>
+
+<%= render :partial => '/common/landing' %>
+
+<style>
+.slideshow {
+  width: 170px;
+  height: 290px;
+  float: left;
+}
+</style>
+
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+		<div style="padding-top:30px;"></div>
+			
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+				    <ul id="itemList" class="portfolio_list">
+<%
+	@collections.each_with_index do |collection, i|
+		# 제휴 merchant site 노출
+		if i==3
+%>
+						<li>
+							<div class="thumbnail" style="width:230px;height:305px;">
+							 	<div style="text-align:left;font-size:12px;">
+						 			<div id="showPrevious" style="float:left; padding-top:150px;width:15px;font-weight:bold;font-size:15px;cursor:pointer;">＜</div>
+						 			<div id="slideshow" class="slideshow">
+								 		<div style="float:left;padding:5px;width:160px;">
+									 		<div style="font-size:14px;font-weight:bold;color:#000000;">
+									 			해외직구 Top 10
+									 		</div>
+									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
+									 			<% @store_list0.each_with_index do |store,i| %>
+										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<% end %>
+									 		</div>
+								 		</div>
+								 		<div style="float:left;padding:5px;width:160px;">
+									 		<div style="font-size:14px;font-weight:bold;color:#000000;">
+									 			오픈마켓&종합쇼핑몰
+									 		</div>
+									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
+										 		<% @store_list1.each_with_index do |store,i| %>
+										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<% end %>
+									 		</div>
+								 		</div>
+								 		<div style="float:left;padding:5px;width:160px;">
+									 		<div style="font-size:14px;font-weight:bold;color:#000000;">
+									 			여성패션 Store
+									 		</div>
+									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
+										 		<% @store_list2.each_with_index do |store,i| %>
+										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<% end %>
+									 		</div>
+								 		</div>
+								 		<div style="float:left;padding:5px;width:160px;">
+									 		<div style="font-size:14px;font-weight:bold;color:#000000;">
+									 			패션잡화&Kids Store
+									 		</div>
+									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
+										 		<% @store_list3.each_with_index do |store,i| %>
+										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<% end %>
+									 		</div>
+								 		</div>
+								 		<div style="float:left;padding:5px;width:160px;">
+									 		<div style="font-size:14px;font-weight:bold;color:#000000;">
+									 			Beauty&Home Store
+									 		</div>
+									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
+										 		<% @store_list4.each_with_index do |store,i| %>
+										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<% end %>
+									 		</div>
+								 		</div>
+						 			</div>
+						 			<div id="showNext" style="float:right;padding-top:150px;width:15px;font-weight:bold;font-size:15px;cursor:pointer;">＞</div>
+						 			<div style="clear:both"></div>
+							 		
+							 		
+							 	</div>
+							 	
+							</div>
+						</li>
+<%
+		else
+		
+%>
+						<li>
+<%
+			if collection.item_type=='C'
+%>
+							<div class="thumbnail" style="width:230px;height:305px;display:table-cell;text-align:center;vertical-align:middle">
+							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
+							 		<img src="/data/collection/thumb/<%= collection.img_file_name%>" onClick="document.location.href='/collections/<%= collection.id%>'" style="cursor:pointer">
+							 	</div>
+							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
+							 		<span style="color:#000000"><%= collection.subject%></span><br/>
+							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088cc"><%=collection.profile_id%></a>
+							 	</div>
+							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
+							</div>
+						    	
+<%
+			elsif collection.item_type=='P'
+				price_type_str = "￦"
+				price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+			    case collection.price_type
+			      when "KRW"
+			        price_type_str = "￦"
+			        price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+			      when "USD"
+			      	price_type_str = "$"
+			      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+			      when "JPY"
+			      	price_type_str = "￥"
+			      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+			      when "EUR"
+			      	price_type_str = "€"
+			      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+			      when "GBP"
+			      	price_type_str = "￡"
+			      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+			      when "CNY"
+			      	price_type_str = "元"
+			      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+			    end
+%>
+							<div class="thumbnail" style="width:230px;height:305px;display:table-cell;text-align:center;vertical-align:middle">
+							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
+							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/products/<%= collection.id%>'" style="cursor:pointer">
+							 	</div>
+							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
+							 		<span style="color:#000000"><%= collection.subject%></span><br/>
+							 		<%= price_str%>&nbsp;
+							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088CC"><%=collection.profile_id%></a>
+							 	</div>
+							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
+							</div>
+<%
+			end
+%>
+						</li>
+<%
+		end
+	end
+%>
+				    </ul>
+			    </div>
+				<div id="loadingDiv" style="text-align:center;padding:10px;font-size:15px;">
+			    	loading more...
+			    	<img src="/images/common/loading5.gif">
+			    </div>
+			</div>
+		</div>
+		
+	</div>
+	
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+
+<script type="text/javascript">
+/*
+$(document).ready(function(){
+	$(function() {
+		$('ul.da-thumbs > li').hoverdir();
+	});
+});
+*/
+// scroll event
+$(window).scroll(function(){
+	if($(window).scrollTop() == $(document).height() - $(window).height()){
+		lastPostFunc();
+	}
+});
+
+var nextPage = 2;
+function lastPostFunc(){
+	//nextPage++;
+	$('#loadingDiv').show();
+	$.ajax({
+	    url     : '/main/itemListCallback?page='+nextPage+'&type=<%= @item_type%>&order=hit DESC',
+	    type    : 'get',
+	    dataType: 'json',
+	    async   : false,  
+	    success : function(json){
+	    	collections = json.collections;
+
+	    	if(json.status){
+
+				if(collections.length>0) nextPage++;
+				$.each(collections, function (index, collection) {
+					var li = '<li>'
+					+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+					
+					if(collection.item_type=='C'){
+						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+						+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
+						+ '</div>'
+						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+						+ '</div>'
+						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+					}else if(collection.item_type=='P'){
+						var priceStr = getMoneyType(collection.price,collection.price_type);
+						 
+						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+						+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+						+ '</div>'
+						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+						+ priceStr + "&nbsp;"
+						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+						+ '</div>'
+						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+					}
+					li += '</div>'
+					+ '</li>';
+					
+					$('#itemList').append(li);
+				});
+
+	    	} else {
+	    		notify('error', json.msg);
+	    	}
+	    	
+	    	$('#loadingDiv').hide();
+	    	
+	    },
+	    error   : function(e){
+	        semafors['ajax'] = false;
+	        //notify('error', TranslationLabels['could_not_complete_request']);
+	    }
+	});
+}
+
+
+
+
+
+
+
+
+$(function() {
+	// 추천 store list
+	var rs_cpage = 0;
+	var rs_tot = 3;
+	
+	function getRecommendStore(pType){
+		//var options = {};
+		//$("#rsDv"+rs_cpage).slideUp(1000);
+		$("#rsDv"+rs_cpage).animate({left:'-=200px'}, 500);
+		
+		//$("#rsDv"+rs_cpage).toggle( "slide", 500 );
+		
+		if(pType=="P"){	// 이전페이지
+			rs_cpage -= 1;
+		} else if(pType=="N"){	// 이전페이지
+			rs_cpage += 1;
+		}
+		if(rs_cpage<0) rs_cpage=0;
+		if(rs_cpage>rs_tot) rs_cpage=rs_tot;
+		$("#rsDv"+rs_cpage).animate({left:'-=200px'}, 500);
+		//$("#rsDv"+rs_cpage).show();
+		//$("#rsDv"+rs_cpage).slide(500);
+		//$("#rsDv"+rs_cpage).toggle( "slide", 500 );
+	};
+	
+	$( ".recommendBtnP" ).click(function() {
+		getRecommendStore("P");
+	});
+	
+	$( ".recommendBtnN" ).click(function() {
+		getRecommendStore("N");
+	});
+	
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var slideshow = $('#slideshow').slideshow({
+  // every option
+  transition: 'push(left)', // blind(direction, fade, ease)
+  selector: '> *', // which elements in #slideshow to be the slides
+  initialIndex: 0, // index of element to show at first
+  autoStyle: true, // handle some basic styles for you
+  autoPlay: false, // don't cycle
+  delay: 1000, // ms between transitions when autoPlay is true
+  duration: 400, // duration of a transition
+  show: function(event, params){
+    //console.log( params );
+  },
+  showComplete: function(event, params){
+    //console.log(params);
+  }
+}).data('slideshow'); // get the instance out of the element data
+
+
+var slideshowElement = $('#slideshow'); // for demonstration
+
+$( '#showNext' ).click(function(){
+	slideshow.options.transition = 'push(left)';
+	slideshow.show( 'next' );
+});
+
+$( '#showPrevious' ).click(function(){
+	slideshow.options.transition = 'push(right)';
+	slideshow.show( 'previous' );
+});
+
+$( '#showIndex' ).click(function(){
+  slideshow.show( 2 );
+});
+
+$( '#showWithOptions' ).click(function(){
+  slideshow.show( 0, {
+    transition: 'fadeThroughBackground',
+    duration: 2000
+  });
+});
+
+$( '#play' ).click(function(){
+  slideshow.play( true ); // true plays and shows the next slide immediate rather than waiting for the timer
+  // or slideshowElement.slideshow( 'play' );
+});
+
+$( '#stop' ).click(function(){
+  slideshow.stop();
+  // or slideshowElement.slideshow( 'stop' );
+});
+
+// create custom transitions like so...
+jQuery.rf.slideshow.defineTransition( 'custom', function ( params, arg ){
+  // there is no arg, but if you wanted to pass an arg in, you'd
+  // set the transition option to "custom(dude)"
+  // and then `arg` would be `dude`, just like push(left), etc.
+  var half = params.duration / 2;
+  params.previous.hide();
+  params.next.hide();
+  for (var i = 0, l = 3; i < l; i++) {
+    setTimeout(function(){
+      params.previous.show();
+      setTimeout(function(){
+        params.previous.hide();
+      }, half / 6);
+    }, half / 3);
+  }
+
+  setTimeout(function(){
+    params.next.show();
+    for (var i = 0, l = 3; i < l; i++) {
+      setTimeout(function(){
+        params.next.hide();
+        setTimeout(function(){
+          params.next.show();
+        }, half / 6);
+      }, half / 3);
+    }
+  }, half);
+});
+
+$('#transition').bind('change', function(){
+  slideshow.options.transition = this.value;
+});
+</script>
+
+
+
+ 

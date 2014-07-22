@@ -1,0 +1,45 @@
+<h1>Listing collection_products</h1>
+
+<table>
+  <tr>
+    <th>Collection</th>
+    <th>Product</th>
+    <th>White bck</th>
+    <th>Flip</th>
+    <th>Flop</th>
+    <th>Height</th>
+    <th>Top</th>
+    <th>Left</th>
+    <th>Cssleft</th>
+    <th>Csstop</th>
+    <th>Zindex</th>
+    <th>Rotate</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @collection_products.each do |collection_product| %>
+  <tr>
+    <td><%= collection_product.collection_id %></td>
+    <td><%= collection_product.product_id %></td>
+    <td><%= collection_product.white_bck %></td>
+    <td><%= collection_product.flip %></td>
+    <td><%= collection_product.flop %></td>
+    <td><%= collection_product.height %></td>
+    <td><%= collection_product.top %></td>
+    <td><%= collection_product.left %></td>
+    <td><%= collection_product.cssleft %></td>
+    <td><%= collection_product.csstop %></td>
+    <td><%= collection_product.zindex %></td>
+    <td><%= collection_product.rotate %></td>
+    <td><%= link_to 'Show', collection_product %></td>
+    <td><%= link_to 'Edit', edit_collection_product_path(collection_product) %></td>
+    <td><%= link_to 'Destroy', collection_product, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Collection product', new_collection_product_path %>

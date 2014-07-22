@@ -1,0 +1,29 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  collection_id: 1
+  product_id: 1
+  white_bck: MyString
+  flip: MyString
+  flop: MyString
+  height: 1
+  top: MyString
+  left: MyString
+  cssleft: MyString
+  csstop: MyString
+  zindex: 1
+  rotate: 1.5
+
+two:
+  collection_id: 1
+  product_id: 1
+  white_bck: MyString
+  flip: MyString
+  flop: MyString
+  height: 1
+  top: MyString
+  left: MyString
+  cssleft: MyString
+  csstop: MyString
+  zindex: 1
+  rotate: 1.5

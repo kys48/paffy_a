@@ -1,0 +1,905 @@
+/*************************************** FOOTER ************************************/
+.footer{
+    display: none;
+    position: fixed;
+    width: 100%;
+    background:#000;
+    z-index: 1000;
+}
+
+#footer_wrapper {
+    width: 1000px;
+    margin: 0px auto;
+    padding: 0px;
+    height: 100%;
+}
+
+.footer_box{ 
+    float:left; 
+    width:100%; 
+    height:190px;
+    padding: 10px 0px 0px 0px;
+}
+#page2{ background:none;}
+
+.footer_link {
+    float: left;
+    margin: 0 2px 0 9px;
+    padding: 0;
+    width: 15%;
+}
+
+.footer_link:first-child {
+    padding-left: 25px;
+}
+
+.coll_09{ border:1px solid #e7e7e7;}
+
+.footer_link h2 {
+    color: #eeeeee;
+    float: left;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+    padding: 4px 0 6px;
+}
+.fotr_link{ float:left; width:100%; margin:0;}
+.fotr_link ul{ margin:0; padding:0;}
+.fotr_link ul li{ float:left; margin:0; display:inline;}
+.fotr_link li a{ text-decoration:none; color:#666666;}
+.fotr_link li a:hover{  text-decoration:underline; color:#ccc;}
+
+.footer_hr
+{
+    margin:22px 0 0 0;
+    padding:0;
+    float:left;
+    background:url("/polyvore/images/footrhr.png") repeat-x; height:1px; width:100%;
+}
+
+.sign{ float:left; margin:0; width:100%;}
+.sign p {
+    color: #3F3F3F;
+    float: left;
+    font-weight: normal;
+    text-align: center;
+    width: 100%;
+}
+/************************************* END FOOTER ************************************/
+
+
+
+/************************************* LEFT MAIN MENU *******************************/
+
+#LeftMenu {
+    padding: 60px 0 0 0;
+    position: fixed;
+    top: 0;
+    left: -220px;
+    height: 100%;
+    z-index: 200;
+    width: 210px !important;
+    -webkit-box-shadow: 5px 0px 3px rgba(50, 50, 50, 0.21);
+    -moz-box-shadow:    5px 0px 3px rgba(50, 50, 50, 0.21);
+    box-shadow:         5px 0px 3px rgba(50, 50, 50, 0.21);
+}
+
+#LeftMenu .top {
+    display: none;
+    top:0;
+    left:0;
+    height: 60px;
+    width: inherit;
+    position: absolute;
+    background: #fff;
+}
+
+#LeftMenu > ul {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    height: 100%;
+    background: #fff;
+}
+
+#LeftMenu > ul > li {
+    width: 153px;
+    height: 51px;
+    color: #b0b7bb;
+    position: relative;
+    padding: 0px 0px 0px 55px;
+    background: url("/polyvore/images/icon-sprite.png") no-repeat;
+    border-left: 2px solid #fff;
+}
+
+#LeftMenu > ul > li:hover {
+    border-left: 2px solid #3498db;
+}
+
+/* Style for icons */
+#LeftMenu > ul > li.browse {
+    background-position: 15px -134px;    
+}
+
+#LeftMenu > ul > li.browse:hover, #LeftMenu > ul > li.browse.active { 
+    background-position: 15px -209px;
+}
+#LeftMenu > ul > li.trends {
+    background-position: 17px -289px;    
+}
+
+#LeftMenu > ul > li.trends:hover, #LeftMenu > ul > li.trends.active { 
+    background-position: 17px -364px;
+}
+#LeftMenu > ul > li.colors {
+    background-position: 15px -437px;    
+}
+
+#LeftMenu > ul > li.colors:hover, #LeftMenu > ul > li.colors.active { 
+    background-position: 15px -512px;
+}
+#LeftMenu > ul > li.help {
+    background-position: 15px -585px;    
+}
+
+#LeftMenu > ul > li.help:hover, #LeftMenu > ul > li.help.active { 
+    background-position: 15px -660px;
+}
+#LeftMenu > ul > li.terms {
+    background-position: 17px -737px;    
+}
+
+#LeftMenu > ul > li.terms:hover, #LeftMenu > ul > li.terms.active { 
+    background-position: 17px -812px;
+}
+
+/* End style for icons*/
+
+#LeftMenu ul.colorList.noPadding > li {
+    padding: 0px;
+    border-left: 0px;
+}
+
+#LeftMenu ul.colorList.noPadding > li a {
+    width: 21px;
+}
+
+#LeftMenu > ul > li:hover, #LeftMenu > ul > li.active {
+    color: #3498db;
+    cursor: pointer;
+    background: url("/polyvore/images/icon-sprite.png") no-repeat #f1f3f4;     
+}
+
+#LeftMenu > ul > li span {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 17px;
+    display: block;
+    width: inherit;
+    padding: 18px 0px 0px 0px;
+}
+
+#LeftMenu > ul > li .selected {
+    display: none;
+    position: absolute;
+    width: 2px;
+    height: 51px;
+    background: #5aaae0;
+    left: 0px;
+}
+
+#LeftMenu > ul > li.separator {
+    display: block;
+    width: 210px;
+    height: 2px;
+    background: #f1f3f4;
+    margin: 1px 0px;
+    padding: 0px;
+    border: none;
+}
+
+/************************************* END LEFT MAIN MENU *******************************/
+
+
+/************************************* PRODUCT PAGE *******************************/
+
+/* Product actions */
+ul.productActions > li > a > p {
+    display: inline-block;
+    padding: 0px 5px;
+}
+
+ul.productActions > li > a > span {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -1px;
+    width: 25px !important;
+    height: 25px !important;
+}
+
+#productInfo {
+    width: 100%;
+    min-height: 410px;
+    float: left;
+}
+
+ #productInfo #productImage {
+    width: 690px;
+    background: #fff;
+    display: block;
+    float: left;
+    position: relative;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+
+#productInfo #productImage #imageContainer {
+    margin: 0px auto;
+    padding: 20px;
+    min-height: 650px;
+}
+
+#productInfo #productImage #imageContainer img {
+    max-width: 100%;
+    max-height: 100%;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#productInfo #productDetails {
+    width: 270px;
+    min-height: 380px;
+    margin-left: 10px;
+    padding: 15px;
+    background: #fff;
+    display: block;
+    float: left;
+    color: #7c8792;
+    position: relative;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+
+#productInfo #productDetails > h2 {
+    word-break: normal !important;
+}
+
+#productInfo #productDetails .price {
+    padding: 10px 0px 0px 0px;
+    color: #3498db !important;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+#productInfo #productDetails .price del {
+    color: #c0c5c9;
+    font-weight: normal;
+}
+
+#productInfo #productDetails .price a {
+    padding: 5px 0px 0px 0px;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+#productInfo #productDetails p {
+    min-height: 140px;
+    padding: 20px 0px 10px 0px;
+}
+      
+#productInfo #productDetails a.bBlue, #productInfo #productDetails a.bGray {
+    width: 100% !important;
+    text-align: center;
+    padding: 6px 0px;
+    cursor: pointer;
+    display: block;
+    margin-top: 10px;
+}
+
+/************************************* END PRODUCT PAGE *******************************/
+
+.centerHolder > div.left {
+    width: 690px;
+    float: left;
+    display: block;
+    margin-right: 10px;
+    color: #7c8792;
+}
+
+.centerHolder > div.left.tools {
+    width: 1000px;
+    margin-bottom: 10px;
+}
+
+.centerHolder > div.right {
+    width: 300px;
+    float: left;
+    display: block;
+    color: #7c8792;
+}
+
+.centerHolder > div.left > div.bottom {
+    border-top: 1px solid #dadada;
+    display: block;
+    float: left;
+    width: inherit;
+    height: 50px;
+    background: #fff;
+}
+
+/*************************************** GROUP PAGE DESIGN *******************************/
+
+#groupWrapper.centerHolder > div.left {
+    min-height: 320px;
+}
+
+#groupWrapper.centerHolder > div.left > div.groupImage {
+    display: block;
+    float: left;
+    width: 180px;
+    padding: 30px 0px 0px 30px;
+    height: 240px;
+}
+
+#groupWrapper.centerHolder > div.left .groupImage a.bBlue {
+    width: 136px !important;
+    margin: 20px 0px 0px 13px;
+}
+
+#groupWrapper.centerHolder > div.left > div.groupDetails {
+    display: block;
+    float: left;
+    width: 480px;
+    padding: 30px 0px ;
+    min-height: 210px;
+}
+
+#groupWrapper.centerHolder > div.left > div.groupDetails > p.description {
+    padding: 10px 0px 0px 0px;
+}
+
+#groupWrapper.centerHolder > div.left > div.groupDetails > a {
+    color: #3498db;
+}
+
+#groupWrapper.centerHolder > div.left > div.groupDetails > span.moderated {
+    font-size: 14px;
+}
+
+#groupWrapper.centerHolder > div.left > div.groupDetails > span.moderated a {
+    color: #3498db;
+}
+
+#groupWrapper.centerHolder > div.left > div.bottom > span {
+    display: block;
+    float: left;
+    padding-left: 20px;
+    background: url("/polyvore/images/icon-sprite.png") no-repeat;
+    margin: 15px 0px 0px 33px;
+    color: #7c8792 !important;
+    font-weight: normal;
+}
+
+#groupWrapper.centerHolder > div.left > div.bottom > span.groupSets {
+    background-position: 0px -2396px;
+}
+
+#groupWrapper.centerHolder > div.left > div.bottom > span.groupMembers {
+    background-position: 0px -2622px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests > h2 {
+    font-size: 14px;
+    line-height: 30px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests > h2 > a:hover {
+    color: #7C8792
+}
+
+#groupWrapper.centerHolder > div.right > div.contests > h2 > a {
+    float: right;
+    color: #B0B7BB;
+    font-size: 12px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests > ul {
+    padding: 10px 0px 0px 0px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests > ul > li {
+    margin: 10px 0px 0px 0px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests > ul > li .info {
+    color: #bfc3c6;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests > ul > li a {
+    color: #3498db;
+}
+
+#groupWrapper.centerHolder > div.right > div.activeMembers {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests ul.contestWinners {
+    padding-top: 10px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests ul.contestWinners li {
+    width: 75px;
+    height: 100px;
+    display: inline-block;
+    border: 1px solid #bfc3c6;
+    margin-left: 20px;
+    margin-bottom: 25px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests ul.contestWinners li.noMargin {
+    margin-left: 0px;
+}
+
+#groupWrapper.centerHolder > div.right > div.contests ul.contestWinners li a {
+    height: 100px;
+    width: 75px;
+    display: block;
+}
+
+#groupWrapper > div.right > div.sideContent > h2 {
+    padding-left: 10px;
+}
+
+
+/********************************* CREATE CONTEST PAGE *****************************/
+#createContestWrapper.centerHolder > div.left {
+    width: 1000px;
+    height: 750px;
+}
+
+#createContestWrapper.centerHolder > div.left > form {
+    padding: 30px;
+}
+
+form > div.space {
+    display: block;
+    width: 100%;
+    height: 20px;
+}
+
+form.labelForm {
+    display: block;
+}
+
+form.labelForm > label, form.labelForm input, form.labelForm textarea {
+    display: inline-block;
+}
+
+form.labelForm textarea {
+    max-height: 100px;
+}
+
+form.labelForm > input[type="text"], form.labelForm > input[type="password"] {
+    width: 35%;
+}
+
+form.labelForm > div.imageUploader {
+    margin-left: 240px;
+    position: relative;
+}
+
+form.labelForm > div.imageUploader > img#loader {
+    display: none;
+    position: absolute;
+    top: 137px;
+    left: -5px;
+}
+
+form.labelForm > div.imageUploader #uploadButton {
+    position: absolute;
+    left: 155px;
+    top: 50px;
+}
+
+form.labelForm > input.picker {
+    position: relative;
+}
+
+form.labelForm > input.picker > div.pickerIcon {
+    position: absolute;
+    right: -40px;
+}
+
+form.labelForm > input.small {
+    width: 90px;
+}
+
+form.labelForm > input.medium {
+    width: 200px;
+}
+
+form.labelForm > textarea {
+    height: 100px;
+    width: 55%;
+}
+
+form.labelForm > label {
+    text-align: left;
+    width: 25%;
+    line-height: 20px;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+form.labelForm .uploadButton {
+    display: none;
+}
+
+#createContestWrapper.centerHolder > div.left > div.bottom {
+    width: 920px;
+    height: 41px;
+    padding: 10px 20px 0px 20px;
+    margin-left: 20px;
+}
+
+#createContestWrapper.centerHolder > div.left > div.bottom .bBlue {
+    margin-right: 30px;
+}
+
+
+/********************************* CREATE GROUP PAGE *****************************/
+#createGroupWrapper.centerHolder > div.left {
+    width: 1000px;
+    height: 450px;
+}
+
+#createGroupWrapper.centerHolder > div.left > form {
+    padding: 30px;
+}
+
+#createGroupWrapper.centerHolder > div.left > div.bottom {
+    width: 920px;
+    height: 41px;
+    padding: 10px 20px 0px 20px;
+    margin-left: 20px;
+}
+
+#createGroupWrapper.centerHolder > div.left > div.bottom .bBlue {
+    margin-right: 30px;
+}
+
+
+/******************* GROUP ANNOUNCEMENTS PAGE ***********************/
+ul#announcementList > li > div.info span.info {
+    color: #999999;
+}
+
+ul#announcementList > li > div.info span.info a {
+    color: #3498db;
+}
+
+
+/************************* CONTEST PAGE ************************/
+#contestWrapper.centerHolder > div.left {
+    width: 1000px;
+    min-height: 270px;
+}
+
+#contestWrapper.centerHolder > div.left > div.contestImage {
+    display: block;
+    float: left;
+    width: 180px;
+    padding: 30px 0px 0px 30px;
+    height: 240px;
+}
+
+#contestWrapper.centerHolder > div.left .contestImage a.bBlue {
+    width: 136px !important;
+    margin: 20px 0px 0px 13px;
+}
+
+#contestWrapper.centerHolder > div.left > div.contestDetails {
+    display: block;
+    float: left;
+    width: 760px;
+    padding: 30px 0px ;
+    min-height: 210px;
+    margin: 0px 0px 0px 20px;
+}
+
+#contestWrapper.centerHolder > div.left > div.contestDetails > p.description {
+    padding: 10px 0px 0px 0px;
+}
+
+#contestWrapper.centerHolder > div.left > div.contestDetails > a {
+    color: #3498db;
+}
+
+#contestWrapper.centerHolder > div.left > div.contestDetails > span.moderated {
+    font-size: 14px;
+}
+
+#contestWrapper.centerHolder > div.left > div.contestDetails > span.moderated a {
+    color: #3498db;
+}
+
+
+
+/******************************* SHOP FRON ***********************************/
+ul.shopBrands > li {
+    display: inline-block;
+    margin: 0px 10px;
+}
+
+ul.shopBrands > li > a {
+    white-space: nowrap;
+}
+
+
+/******************************* CREATE PAGE *********************************/
+
+ul.items.createItems {
+    padding: 20px 0px 20px 20px;
+    border: none;
+}
+
+ul.items.createItems > li {
+    height: 100px;
+}
+
+ul.items.createItems > li > a > span {
+    word-break: normal;
+    font-size: 11px;
+    text-align: center;
+    color: #7c8792;
+}
+
+.createCategories > h4 {
+    border-top: 1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+    line-height: 38px;
+    padding: 0px 30px;
+    font-size: 14px;
+    color: #7c8792;
+}
+
+#createSearchForm > input#searchInput {
+    margin: 0px !important;
+    padding: 7px 7px 7px 40px;
+    background: url("/polyvore/images/icon-sprite.png") no-repeat scroll 10px -3141px !important;
+}
+
+#setSearchForm > input#setSearchInput {
+    padding: 7px 7px 7px 40px;
+    background: url("/polyvore/images/icon-sprite.png") no-repeat scroll 10px -3141px !important;
+}
+
+form#createSearchForm {
+    display: block;
+    float: left;
+    width: 100%;
+    padding-left: 20px;
+}
+/********************* SUBTMI SET POPUPS ****************/
+.submitSet {}
+
+.submitSet ul > li {}
+
+
+/****************************** SMALL PRODUCT POPUP *****************************/
+div.popup.product.small {
+    width: 470px;
+    min-height: 200px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background: #fff;
+    padding: 0px !important;
+    z-index: 100;
+    -webkit-box-shadow: 4px 4px 15px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    4px 4px 15px rgba(50, 50, 50, 0.75);
+    box-shadow:         4px 4px 15px rgba(50, 50, 50, 0.75);
+}
+
+div.popup.product.small > div.image {
+    width: 160px;
+    height: 160px;
+    padding: 20px;
+    display: block;
+    float: left;
+    position: relative;
+}
+
+div.popup.product.small > div.image > .ribbon.red {
+    right: 17px;
+    top: 17px;
+}
+
+div.popup.product.small > div.image > .ribbon.green {
+    left: 17px;
+    top: 17px;
+}
+
+div.popup.product.small > div.details {
+    width: 240px;
+    min-height: 180px;
+    display: block;
+    float: left;
+    padding: 10px 10px 10px 0px;
+}
+
+div.popup.product.small > div.details > h3 > a {
+    word-break: normal !important;
+}
+
+div.popup.product.small > div.details > div.price {
+    color: #3498db;
+    font-weight: 600;
+    margin: 10px 0px;
+}
+
+div.popup.product.small > div.details > div.bottomControls {
+    margin-top: 30px;
+    color: #e0e0e0 !important;
+}
+
+div.popup.product.small > div.details > div.bottomControls > a.like {
+    position: absolute;
+}
+
+
+/********************* RANDOM ELEMENTS *************************/
+#CommentListViewMore {
+    display: inline-block;
+    margin: 20px 0px 0px 100px;
+    color: #5dade2;
+}
+
+#inviteGroupPopup .infoMessage {
+    left: 38%;
+}
+
+
+/*********************** SUBMIT SET POPUP **********************/
+
+div.login-popup.setPopup {
+    padding: 30px 0px !important;
+}
+
+div.login-popup.setPopup > div.submitSet {
+    width: 840px !important;
+}
+
+div.submitSet {
+    width: 780px;
+    max-width: 840px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    color: #7c8792;
+}
+
+div.submitSet ul {
+    padding: 0px 0px 0px 30px;
+}
+
+div.submitSet > h2 {
+    padding-left: 6px;
+}
+
+div.login-popup.setPopup > div.submitSet > h2 {
+    padding-left: 36px;
+}
+
+div.submitSet > .bBlue {
+    margin: 0px 7px;
+}
+
+div.login-popup.setPopup > div.submitSet > .bBlue {
+    margin: 10px 7px 0px 31px;
+}
+
+div.submitSet ul:not(.pagging) > li {
+    width: 140px !important;
+    height: 140px !important;
+    margin: 10px 4px 10px 4px !important;
+    border: 2px solid #fff;
+}
+
+div.submitSet ul:not(.pagging) > li:hover {
+    background-color: transparent #fff !important;
+    opacity: 0.65 !important; 
+    -moz-opacity: 0.65 !important; 
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=65) !important;
+}
+
+div.submitSet ul:not(.pagging) > li.noMargin {
+    margin-left: 0px !important;
+}
+
+div.submitSet ul:not(.pagging) > li.active {
+    border: 2px solid #5dade2;
+    background-color: transparent #fff !important;
+    opacity: 0.65 !important; 
+    -moz-opacity: 0.65 !important; 
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=65) !important; 
+}
+
+div.submitSet div.popupPagging {
+    position: absolute; 
+    bottom: 30px; 
+    right: 45px;
+}
+
+div.login-popup.setPopup > div.submitSet div.popupPagging {
+    bottom: 30px;
+}
+
+div.submitSet h4 {
+    border-top: 1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+    line-height: 38px;
+    padding: 0px 30px;
+    font-size: 14px;
+    margin-top: 60px;
+}
+
+div.submitSet > div#selectedSets {
+    margin-top: 20px;
+}
+
+div.submitSet ul:not(.pagging) > li > div.removeSet {
+    width: 9px;
+    height: 9px;
+    background: url("/polyvore/images/x.png") no-repeat;
+    cursor: pointer;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+/*********************** INVITE GROUP POPUP ************************/
+#inviteGroupPopup.submitSet {
+    width: 790px !important;
+}
+
+#inviteGroupPopup.submitSet #noLoader {
+    display: inline-block;
+}
+
+#inviteGroupPopup.submitSet ul:not(.pagging) > li {
+    height: 170px !important;
+    margin-bottom: 20px !important;
+}
+
+#inviteGroupPopup.submitSet li > a > h3 {
+    font-size: 13px;
+}
+
+/*************** GROUP ANNOUNCEMENT POPUP ************/
+form#postAnnouncementForm {
+    width: 550px;
+}
+
+form#postAnnouncementForm > textarea {
+    width: 71%;
+    margin-top: 0px !important;
+}
+
+div.bottom.announcement > .bBlue {
+    margin: 0px 10px 0px 142px;
+}

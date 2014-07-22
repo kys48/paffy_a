@@ -1,0 +1,14 @@
+/* CSS reset */
+img { 
+	border:0;
+}
+header{
+	display: block;
+}
+/* General Demo Style */
+#products{
+	position: relative;
+}
+.clr{
+	clear: both;
+}

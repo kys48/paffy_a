@@ -1,0 +1,612 @@
+<%= render :partial => '/common/header_top' %>
+<%
+	request_host = "http://" + request.host_with_port
+%>
+<%= stylesheet_link_tag    "http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/cropping.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/datePicker.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/platform.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.Jcrop.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.colourPicker.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.selectbox.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/flat-simo.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/flat-slav.css", :media => "screen" %>
+<!--link href='http://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400italic,400,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'-->
+<%= stylesheet_link_tag    "/css/collection/val.css", :media => "screen" %>
+<%= stylesheet_link_tag    "/css/collection/jquery.tagsinput.css", :media => "screen" %>
+
+<%= javascript_include_tag "http://code.jquery.com/jquery-1.9.1.js" %>
+<%= javascript_include_tag "http://code.jquery.com/ui/1.10.2/jquery-ui.js" %>
+<%= javascript_include_tag "/js/collection/jquerypp.custom.js" %>
+<%= javascript_include_tag "/js/collection/sprintf.min.js" %>
+<%= javascript_include_tag "/js/kakao-1.0.8.min.js" %>
+<%= javascript_include_tag "/js/checkMobile.js" %>
+<!--script type="text/javascript" src="/vassets/b263/javascripts/tool/restapi.tool.js"></script-->
+
+<script type="text/javascript">
+siteURL = '<%= request_host%>/';
+imgURL  = '<%= request_host%>/';
+$(function(){
+    TranslationLabels = new Object;
+    TranslationLabels['above_max_item_for_collection']	= 'above max item for collection';
+	TranslationLabels['below_max_item_for_collection']	= 'below max item for collection';
+	TranslationLabels['cannot_load_image']				= '이미지를 불러올 수 없습니다.';
+	TranslationLabels['could_not_complete_request']		= '요청을 완료할 수 없습니다.';
+	TranslationLabels['could_not_detect_carousel_for_plugin'] = 'could not detect carousel for plugin';
+	TranslationLabels['sorry_no_friends_using_app_found_we_recommend_the_following_users:'] = 'sorry no friends using app found we recommend the following users:';
+	TranslationLabels['are_you_sure_you_want_to_leave']	= '페이지를 벗어날까요?';
+	TranslationLabels['account_connection_failure']		= '계정 연결 실패';
+	TranslationLabels['account_connection_success']		= '계정 연결 성공';
+	TranslationLabels['account_added_for_sharing']		= '계정 공유 추가';
+	TranslationLabels['submitButton']					= '로딩중';
+	TranslationLabels['found']                          = 'Found';
+	TranslationLabels['friend']							= 'friend';
+	TranslationLabels['friends']                        = 'friends';
+	TranslationLabels['hint']                           = 'hint';
+	TranslationLabels['unknown_error']                  = '알수없는 오류';
+	TranslationLabels['crop_saved']                     = 'crop saved';
+	TranslationLabels['could_not_load']                 = '로드할 수 없습니다.';
+	TranslationLabels['tag']                            = 'Tag:';
+	TranslationLabels['must_have_valid_selection']		= 'Must have valid selection';
+	TranslationLabels['please_select_a_file']           = '파일을 선택하세요';
+	TranslationLabels['unknown_error']                  = 'unknown error';
+	TranslationLabels['image_uploaded_successfully']    = '이미지 업로드를 성공하였습니다.';
+	TranslationLabels['loading']                        = '로딩중';
+	TranslationLabels['follow_all']                     = 'follow all';
+	TranslationLabels['let_friends_find_me_too']        = 'let friends find me too';
+	TranslationLabels['previous']                       = '이전';
+	TranslationLabels['next']                           = '다음';
+	TranslationLabels['currently_sharing_to']           = 'currently sharing to';
+	TranslationLabels['stop']                           = 'stop';
+	TranslationLabels['not_available']                  = 'Not available';
+	TranslationLabels['start_quick_sharing_to']         = 'start quick sharing to';
+	TranslationLabels['cannot_load_cover']				= 'Cannot load cover';
+	TranslationLabels['cancel']                         = '취소';
+	TranslationLabels['drag_to_position_image']			= 'Drag to position image';
+	TranslationLabels['save_changes']					= 'save changes';
+	TranslationLabels['change_picture']                 = 'change picture';
+	TranslationLabels['view_less']                      = 'view less';
+	TranslationLabels['view_more']                      = 'view more';
+	TranslationLabels['share_failure']                  = 'share failure';
+	TranslationLabels['you_cannot_add_more_than_%d_tags_to_one_creation'] = 'you cannot add more than %d tags to one creation';
+	TranslationLabels['this_%s_is_already_in_the_collection'] = 'this %s is already in the collection';
+	TranslationLabels['pick_a_colour']					= 'pick a colour';
+	TranslationLabels['open_colour_picker']				= 'open colour picker';
+	TranslationLabels['no_%s_users_currently_available'] = 'no %s users currently available';
+	TranslationLabels['on_site']                        = 'on Trickable';
+	TranslationLabels['invalid_items_in_collection']    = 'invalid items in collection';
+	TranslationLabels['placeholder_accepts_only_products'] = 'placeholder accepts only products';
+	TranslationLabels['could_not_load_crops']           = 'could not load crops';
+	TranslationLabels['add_a_tag']                      = 'add a tag';
+});
+</script>
+
+<%= javascript_include_tag "/js/collection/jquery.infinitescroll.js" %>
+<%= javascript_include_tag "/js/collection/jquery.tabs.js" %>
+<%= javascript_include_tag "/js/collection/jquery.textareacounter.js" %>
+<%= javascript_include_tag "/js/collection/jquery.responsive.js" %>
+<%= javascript_include_tag "/js/collection/jquery.content.slider.js" %>
+<%= javascript_include_tag "/js/collection/jquery.scrollTo-1.4.0-min.js" %>
+<%= javascript_include_tag "/js/collection/jquery.scroll.top.js" %>
+<%= javascript_include_tag "/js/collection/jquery.form.js" %>
+<%= javascript_include_tag "/js/collection/jquery.jcarousel.js" %>
+<%= javascript_include_tag "/js/collection/misc.js" %>
+<%= javascript_include_tag "/js/collection/binds.js" %>
+<%= javascript_include_tag "/js/collection/platform.js" %>
+<%= javascript_include_tag "/js/collection/cropping.js" %>
+<%= javascript_include_tag "/js/collection/rotatable.js" %>
+<%= javascript_include_tag "/js/collection/slideshow.js" %>
+<%= javascript_include_tag "/js/collection/infinite.js" %>
+<%= javascript_include_tag "/js/collection/datePicker.js" %>
+<%= javascript_include_tag "/js/collection/jquery.Jcrop.js" %>
+<%= javascript_include_tag "/js/collection/jquery.colourPicker.js" %>
+<%= javascript_include_tag "/js/collection/jquery.truncate.js" %>
+<%= javascript_include_tag "/js/collection/jquery.selectbox-0.2.min.js" %>
+<%= javascript_include_tag "/js/collection/jquery.autosize.js" %>
+<%= javascript_include_tag "/js/collection/jquery.tagsinput.min.js" %>
+<%= javascript_include_tag "/js/collection/notify/jquery.noty.js" %>
+<%= javascript_include_tag "/js/collection/notify/topCenter.js" %>
+<%= javascript_include_tag "/js/collection/notify/default.js" %>
+<%= javascript_include_tag "/js/collection/setItemsHighlighter.js" %>
+<%#= javascript_include_tag "/js/jquery.zclip.min.js" %>
+
+<script type="text/javascript">
+// 스크랩, 좋아요
+function getItem(get_type,item_type,ref_id){
+    if(semafors['ajax'] == true)
+        return;
+        
+    semafors['ajax'] = true;
+
+    $.ajax({
+        url     : '/gets/put?ref_id='+ref_id+'&get_type='+get_type+'&item_type='+item_type,
+        type    : 'get',
+        dataType: 'json',
+        async   : false,  
+        success : function(json){
+        	semafors['ajax'] = false;
+        	//notify('success', json.msg);
+        	
+        	if (get_type == 'S'){
+        		$('#cnt_scrap').html(json.cnt_item);
+        	} else if (get_type == 'L'){
+        		$('#cnt_like').html(json.cnt_item);
+        		$('#likeDv').removeClass();
+
+        		if(json.like_status=='Y'){
+        			$('#likeDv').addClass('bGreen');
+        		}else{
+        			$('#likeDv').addClass('bBlue');
+        		}
+        	}
+        },
+        error   : function(e){
+            semafors['ajax'] = false;
+            //notify('error', TranslationLabels['could_not_complete_request']);
+        }
+    });
+    
+    if (get_type == 'S'){
+	    var doc = document.body.createTextRange();
+	    doc.moveToElementText(document.getElementById("itemCaption"));
+	    doc.select();
+	    doc.execCommand('copy');
+	    alert("내용이 클립보드에 복사되었습니다. Ctrl+v를 눌러 사용하세요.");
+    }
+}
+
+// 찜하기
+function getItemWish(item_type,ref_id){
+    if(semafors['ajax'] == true)
+        return;
+        
+    semafors['ajax'] = true;
+    
+    var postData = new Object();
+    postData.subject = $('#wish_subject').val();
+    postData.contents = $('#wish_contents').val();
+
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+    $.ajax({
+        url     : '/wishes/put?ref_id='+ref_id+'&item_type='+item_type,
+        type    : 'post',
+        dataType: 'json',
+        data	: $.param(postData),
+        async   : false,  
+        success : function(json){
+        	semafors['ajax'] = false;
+        	
+        	if(json.status){
+        		notify('success', json.msg);
+        		$('#popupContainerWish').fadeOut(300);
+        	} else {
+        		notify('error', json.msg);
+        	}
+        	$('#cnt_wish').html(json.cnt_item);
+        	
+        },
+        error   : function(e){
+            semafors['ajax'] = false;
+            notify('error', TranslationLabels['could_not_complete_request']);
+        }
+    });
+}
+
+// 제휴링크 변환
+function goUrl(url){
+<%
+	if @product.merchant == 'shopstyle'
+%>
+	if(CHKMOBILE=='Y'){
+		document.location.href = url;
+	} else {
+		window.open(url);
+	}
+<%
+	elsif @product.merchant == 'linkprice'
+%>
+	if(CHKMOBILE=='Y'){
+		document.location.href = url;
+	} else {
+		window.open(url);
+	}
+<%
+	else
+%>
+
+	var openurl = url;
+	$.ajax({
+	    url     : '/getLinkpriceUrl?url='+encodeURIComponent(url),
+	    type    : 'get',
+	    dataType: 'json',
+	    success : function(json){
+			if (json.status){
+				var result = json.result;
+				var lp_url = json.url;
+				if (result=='S') openurl = lp_url;
+			}
+			if(CHKMOBILE=='Y'){
+				document.location.href = openurl;
+			} else {
+				window.open(openurl);
+			}
+			
+	    },
+	    error   : function(e){
+	    	window.open(openurl);
+	    }
+	});	
+<%
+	end
+%>
+}
+</script>
+<script type="text/javascript">
+	window.onload = function() {
+		$('.items').setItemsHighlighter();
+	};
+</script>
+
+<!-- 페이스북 -->
+<meta property="og:title"           content="<%= @product.subject%>"/>
+<meta property="og:site_name"       content="paffy.com"/>
+<meta property="og:description"     content="<%= @product.subject%>"/>
+<meta property="og:type"			content="paffy_share:fashion" />
+<meta property="og:image"     		content="<%= request_host%><%= @product.img.url(:original)%>"/>
+<%= render :partial => '/common/header_bottom' %>
+
+<%
+	price_type_str = "￦"
+	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+    case @product.price_type
+      when "KRW"
+        price_type_str = "￦"
+        price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+      when "USD"
+      	price_type_str = "$"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str)
+      when "JPY"
+      	price_type_str = "￥"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+      when "EUR"
+      	price_type_str = "€"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str)
+      when "GBP"
+      	price_type_str = "￡"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str)
+      when "CNY"
+      	price_type_str = "元"
+      	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
+    end
+%>
+
+<!-- 스크랩 -->
+<div id="popupContainerScrap" class="popup product small" style="position: absolute; width:400px; top: 200px; left: 392px;">
+	<a class="close" onclick="$('#popupContainerScrap').fadeOut(300); return false;" href="#"></a>
+
+	<div id="scrapDiv" style="padding:0px 20px 0px 20px;">
+		<form class="form smallForm" id="collectionAddForm">
+			<h3>스크랩</h3>
+			<div class="space"></div>
+<textarea id="itemCaption" class="login-input" name="collection_item[caption]">
+<div style='font-size:9pt;margin: 0px auto; width: 650px; text-align:center;'>
+<h3><%= @product.subject%></h3>
+<div>
+<a href='<%= request_host%>/products/<%= @product.id%>' target='_blank'><img src='<%= request_host%><%= @product.img.url(:original)%>'></a>
+<br />
+<h5>가격 : <%= price_str%></h5>
+<br />
+<%= @user.user_name%>님이 포스팅한 상품입니다.
+</div>
+</div>
+</textarea>
+			<h6>소스를 복사해서 붙여넣으세요</h6>
+		</form>
+		<div class="socialBtnsHolder">
+			<div>
+				<a href="#" class="bBlue create submitButton"
+				 onclick="getItem('S','P',<%= @product.id%>); return false;"
+				 id="btnCopy"> <span>클립보드에복사</span>
+				</a>&nbsp;&nbsp;&nbsp;
+				<a class="bGray" onclick="$('#popupContainerScrap').fadeOut(300); return false;" href="#">닫기</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- 찜하기 -->
+<div id="popupContainerWish" class="popup product small" style="position: absolute; width:400px; top: 200px; left: 392px;">
+	<a class="close" onclick="$('#popupContainerWish').fadeOut(300); return false;" href="#"></a>
+
+	<div style="padding:0px 20px 0px 20px;">
+		<form class="form smallForm" id="frmWish" name="frmWish">
+			<h3>찜하기</h3>
+제목
+<input type="text" class="login-input" id="wish_subject" name="wish_subject">
+			<div class="space"></div>
+내용
+<textarea class="login-input" id="wish_contents" name="wish_contents"></textarea>
+		</form>
+		<div class="socialBtnsHolder">
+			<div>
+				<a href="#" class="bBlue create submitButton"
+				 onclick="getItemWish('P',<%= @product.id%>); return false;"
+				 id="btnCopy"> <span>찜하기</span>
+				</a>&nbsp;&nbsp;&nbsp;
+				<a class="bGray" onclick="$('#popupContainerWish').fadeOut(300); return false;" href="#">닫기</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+      <!----------------------------start wrapper------------------------------->
+      <div id="wrapper">
+          <div id="wrapperShadow"></div>
+         <!----------------------------start page------------------------------->
+        <div id="page">
+          <!----------------------------start container------------------------------->                              
+          
+        
+    <div class="centerHolder cf">
+        <div class="left whiteBox">
+            <div class="mainImage">
+            	<div style="font-weight:bold;font-size:17px;color:#000000;"><%= @product.subject %></div>
+            	<div style="padding:5px 0px 5px 0px;">
+            		<%= link_to @user.user_name, '/mypage/'+@user.profile_id, class: "blue", target: "_blank"%>님이
+<%
+	createTime = (Time.zone.now - @product.created_at).to_i
+	createTimeStr =  (Time.zone.now - @product.created_at).to_i / 1.second
+	if createTime<60
+		createTimeStr =  ((Time.zone.now - @product.created_at).to_i / 1.second).to_s + "초" 
+	elsif createTime<60*60
+		createTimeStr =  ((Time.zone.now - @product.created_at).to_i / 1.minute).to_s + "분"
+	elsif createTime<60*60*24
+		createTimeStr =  ((Time.zone.now - @product.created_at).to_i / 1.hour).to_s + "시간"
+	elsif createTime<60*60*24*30
+		createTimeStr =  ((Time.zone.now - @product.created_at).to_i / 1.day).to_s + "일"
+	elsif createTime<60*60*24*365
+		createTimeStr =  ((Time.zone.now - @product.created_at).to_i / 1.month).to_s + "개월"
+	elsif createTime>=60*60*24*365
+		createTimeStr =  ((Time.zone.now - @product.created_at).to_i / 1.year).to_s + "년"
+	end
+		
+%>
+<%=createTimeStr%> 전에 포스팅하였습니다.
+            	</div>
+                <div class="items" style="text-align:center">
+					<a href="javascript:goUrl('<%= @product.url%>')"><%= image_tag @product.img.url(:original), id: "set#{@product.id}", class: "setImage" %></a>
+				</div>
+				
+				<div style="text-align:right;padding:5px 0px 5px 0px;">
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '<%=FACEBOOK_APP_ID%>',
+      xfbml      : true,
+      version    : 'v2.0'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/ko_KR/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+
+//stream publish method
+function streamPublish(){
+	var itemLink = "<%= request_host%>/collections/<%= @product.id%>";
+	var imgLink = "<%= request_host%>/data/collection/thumb/<%= @product.img_file_name%>";
+    FB.ui(
+    {
+        method: 'stream.share',
+        message: "<%= @product.subject%>",
+        type: "paffy_share:fashion",
+        attachment: {
+            name: "<%= @product.subject%>",
+            caption: "",
+            description: "",
+            media: [{  
+				type: "image", 
+				src: imgLink,    
+				href: itemLink
+			}], 
+            href: itemLink
+        },
+        action_links: [
+            { text: "<%= @product.subject%>", href: itemLink }
+        ]
+    },
+    function(response) {
+		if (response && response.post_id) {
+			alert('Post was published.');
+		} else {
+			//alert('Post was not published.');
+		}
+    });
+}
+
+function showStream(){
+    FB.api('/me/objects/paffy_share:fashion', function(response) {
+        //console.log(response.id);
+        streamPublish();
+    });
+}
+
+function share(){
+    var share = {
+        method: 'stream.share',
+        u: document.location.href
+    };
+    FB.ui(share, function(response) { console.log(response); });
+}
+
+
+// 카카오스토리 공유
+var chkKakaoLogin = false;
+function shareKakao(){
+    if(!chkKakaoLogin){
+    	Kakao.init('<%= KAKAO_JS_KEY%>');	// 다시한번 할경우 에러난다....!!!!
+    }
+
+	Kakao.Auth.login({
+		success: function(authObj) {
+			chkKakaoLogin = true;
+			// 로그인 성공시, API를 호출합니다.
+			Kakao.API.request( {
+				url : '/v1/api/story/linkinfo',
+				data : {
+					url : document.location.href
+				}
+			}).then(function(res) {
+				//alert(JSON.stringify(res));	// 이미지를 못 가져옴... 카카오 문의 후 수정할것
+				// 이전 API 호출이 성공한 경우 다음 API를 호출합니다.
+				return Kakao.API.request( {
+					url : '/v1/api/story/post/link',
+					data : {
+						link_info : res
+					}
+				});
+			}).then(function(res) {
+				return Kakao.API.request( {
+					url : '/v1/api/story/mystory',
+					data : { id : res.id }
+				});
+			}).then(function(res) {
+				alert("카카오 스토리에 포스팅하였습니다");
+				//document.getElementById('post-result').innerHTML = JSON.stringify(res);
+			}, function (err) {
+				alert(JSON.stringify(err));
+			});
+		}
+	});  
+
+}
+
+function shareKakaoLink(){
+    Kakao.init('<%= KAKAO_JS_KEY%>');
+
+    // 카카오톡 링크 버튼을 생성합니다. 처음 한번만 호출하면 됩니다.
+    Kakao.Link.createTalkLinkButton({
+      container: '#kakao-link-btn',
+      label: '카카오링크 샘플에 오신 것을 환영합니다.',
+      image: {
+        src: '<%= request_host%>/data/collection/thumb/<%= @product.img_file_name%>',
+        width: '300',
+        height: '200'
+      },
+      webButton: {
+        text: '카카오 디벨로퍼스',
+        url: 'https://dev.kakao.com/docs/js' // 앱 설정의 웹 플랫폼에 등록한 도메인의 URL이어야 합니다.
+      }
+    });
+
+}
+
+
+</script>
+<div class="fb-like" data-layout="button_count" data-send="false" data-width="450" data-show-faces="true"></div>
+<br><br>
+				
+<a href="javascript:showStream();">이건어때?</a> |
+<a href="javascript:share();">공유하기</a> | 
+<a href="javascript:shareKakao();">카카오스토리공유</a> | 
+<!--a id="kakao-link-btn" href="javascript:shareKakaoLink();">카카오톡링크공유</a-->
+
+				</div>
+				
+				
+			</div>
+            
+
+		
+			<h4>댓글이 없습니다</h4>
+			<ul class="comments cf" id="CommentList"></ul>
+<% if @session_user %>
+			<a href="#" id="CommentListViewMore" class="viewMore">더 많은 댓글 보기</a>
+			<div id="comment_84_set" class="commentForm cf">
+				<a href="/mypage/<%= @session_user.profile_id%>" class="userIcon"><img class="circleBase" src="/data/user/thumb/<%= @session_user.img_file_name%>" /></a>
+				<textarea name="comment" maxlength="500"></textarea>
+				<a href="#" class="bBlue post">댓글 입력</a>
+			</div>
+        	<!--h4 class="mt30"> no head likes yet </h4-->
+<% end %>
+		</div>
+		
+    	<div class="right transparent">
+			<div class="whiteBox cf">
+				<div class="padded">
+					<div class="bBlue" onclick="goUrl('<%= @product.url%>')" style="cursor:pointer;width:120px; margin-top:5px;">사러가기</div>
+					<div id="cnt_hit" class="bGray" style="font-weight:bold; width:150px; margin-top:5px;"><%= price_str%></div>
+					<div class="bBlue" onclick="$('#popupContainerScrap').fadeIn(300);" style="cursor:pointer; width:120px; margin-top:5px;">스크랩</div>
+					<div id="cnt_scrap" class="bGray" style="width:150px; margin-top:5px;"><%= @cnt_scrap%></div>
+					<div style="clear:both"></div>
+					<div class="bBlue" onclick="$('#popupContainerWish').fadeIn(300);" style="cursor:pointer; width:120px; margin-top:5px;">찜하기</div>
+					<div id="cnt_wish" class="bGray" style="width:150px; margin-top:5px;"><%= @cnt_wish%></div>
+					<div style="clear:both"></div>
+					
+				<% if @cnt_like_user>0 %>
+					<div id="likeDv" class="bGreen" onclick="getItem('L','P',<%= @product.id%>); return false;" style="cursor:pointer; width:120px; margin-top:5px;">좋아요</div>
+				<% else %>
+					<div id="likeDv" class="bBlue" onclick="getItem('L','P',<%= @product.id%>); return false;" style="cursor:pointer; width:120px; margin-top:5px;">좋아요</div>
+				<% end %>
+					
+					<div id="cnt_like" class="bGray" style="width:150px; margin-top:5px;"><%= @cnt_like%></div>
+					<div style="clear:both"></div>
+					
+					<div class="bBlue" style="width:120px; margin-top:5px;">조회</div>
+					<div id="cnt_hit" class="bGray" style="width:150px; margin-top:5px;"><%= @product.hit%></div>
+					<div style="clear:both"></div>
+				</div>
+				<div class="padded">
+					<!--관련상품-->
+				</div>
+				<ul class="itemList tiny" style="padding:0px; margin:0px;">
+
+				</ul>
+			</div>
+
+
+			<!--div class="whiteBox cf">
+				<h3>my tags <a href="#" class="blue small delete" onclick="showPopup('AddTags', false, true); return false;">add tags</a></h3>
+				<p style="padding-left: 15px;">
+					no tags
+				</p>
+			</div-->
+		</div>
+    </div>
+    
+      <!----------------------------end container------------------------------->
+      <a href="#top" id="top-link" class="floatingLink">top</a>
+      <!--a href="#top" id="about-link" class="floatingLink">About</a-->
+    </div>
+     <!----------------------------end page------------------------------->    
+</div>
+<!----------------------------end wrapper------------------------------->
+
+
+
+<hr>
+
+<!-- 
+<div class="form-actions">
+  <%= link_to t('.back', :default => t("helpers.links.back")),
+              collections_path, :class => 'btn'  %>
+  <%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_collection_path(@product), :class => 'btn' %>
+
+</div> -->
