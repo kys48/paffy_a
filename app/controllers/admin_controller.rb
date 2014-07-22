@@ -7,7 +7,7 @@ include ERB::Util
 
 class AdminController < ApplicationController
   after_filter :cors_set_access_control_headers
-  
+
   def importProductExcel
     respond_to do |format|
       format.html # importProductExcel.html.erb
