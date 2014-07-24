@@ -1,9 +1,7 @@
 <%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
 <%= javascript_include_tag "/js/jquery.ui.widget.js" %>
 <%= javascript_include_tag "/js/jquery.rf.slideshow.js" %>
-
 <%= render :partial => '/common/landing' %>
-
 <style>
 .slideshow {
   width: 170px;
@@ -36,7 +34,7 @@
 									 		</div>
 									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
 									 			<% @store_list0.each_with_index do |store,i| %>
-										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<div onClick="document.location.href='/mypage/<%=store.profile_id%>'" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
 										 		<% end %>
 									 		</div>
 								 		</div>
@@ -46,7 +44,7 @@
 									 		</div>
 									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
 										 		<% @store_list1.each_with_index do |store,i| %>
-										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<div onClick="document.location.href='/mypage/<%=store.profile_id%>'" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
 										 		<% end %>
 									 		</div>
 								 		</div>
@@ -56,7 +54,7 @@
 									 		</div>
 									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
 										 		<% @store_list2.each_with_index do |store,i| %>
-										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<div onClick="document.location.href='/mypage/<%=store.profile_id%>'" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
 										 		<% end %>
 									 		</div>
 								 		</div>
@@ -66,7 +64,7 @@
 									 		</div>
 									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
 										 		<% @store_list3.each_with_index do |store,i| %>
-										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<div onClick="document.location.href='/mypage/<%=store.profile_id%>'" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
 										 		<% end %>
 									 		</div>
 								 		</div>
@@ -76,7 +74,7 @@
 									 		</div>
 									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
 										 		<% @store_list4.each_with_index do |store,i| %>
-										 		<div onClick="window.open('<%=store.url%>')" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<div onClick="document.location.href='/mypage/<%=store.profile_id%>'" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
 										 		<% end %>
 									 		</div>
 								 		</div>
@@ -89,14 +87,9 @@
 							 	
 							</div>
 						</li>
-<%
-		else
-		
-%>
+<%		end %>
 						<li>
-<%
-			if collection.item_type=='C'
-%>
+<%		if collection.item_type=='C' %>
 							<div class="thumbnail" style="width:230px;height:305px;display:table-cell;text-align:center;vertical-align:middle">
 							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
 							 		<img src="/data/collection/thumb/<%= collection.img_file_name%>" onClick="document.location.href='/collections/<%= collection.id%>'" style="cursor:pointer">
@@ -109,29 +102,29 @@
 							</div>
 						    	
 <%
-			elsif collection.item_type=='P'
-				price_type_str = "￦"
-				price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-			    case collection.price_type
-			      when "KRW"
-			        price_type_str = "￦"
-			        price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-			      when "USD"
-			      	price_type_str = "$"
-			      	price_str = number_to_currency(collection.price, :unit => price_type_str)
-			      when "JPY"
-			      	price_type_str = "￥"
-			      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-			      when "EUR"
-			      	price_type_str = "€"
-			      	price_str = number_to_currency(collection.price, :unit => price_type_str)
-			      when "GBP"
-			      	price_type_str = "￡"
-			      	price_str = number_to_currency(collection.price, :unit => price_type_str)
-			      when "CNY"
-			      	price_type_str = "元"
-			      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-			    end
+		elsif collection.item_type=='P'
+			price_type_str = "￦"
+			price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+		    case collection.price_type
+		      when "KRW"
+		        price_type_str = "￦"
+		        price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+		      when "USD"
+		      	price_type_str = "$"
+		      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+		      when "JPY"
+		      	price_type_str = "￥"
+		      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+		      when "EUR"
+		      	price_type_str = "€"
+		      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+		      when "GBP"
+		      	price_type_str = "￡"
+		      	price_str = number_to_currency(collection.price, :unit => price_type_str)
+		      when "CNY"
+		      	price_type_str = "元"
+		      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
+		    end
 %>
 							<div class="thumbnail" style="width:230px;height:305px;display:table-cell;text-align:center;vertical-align:middle">
 							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
@@ -144,14 +137,9 @@
 							 	</div>
 							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
 							</div>
-<%
-			end
-%>
+<%		end %>
 						</li>
-<%
-		end
-	end
-%>
+<%	end %>
 				    </ul>
 			    </div>
 				<div id="loadingDiv" style="text-align:center;padding:10px;font-size:15px;">

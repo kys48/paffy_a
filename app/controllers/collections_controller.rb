@@ -76,6 +76,9 @@ class CollectionsController < ApplicationController
     @product = Product.find(product_id)
     @user = User.new
     
+    dataFilePath = "/public/data/product/"
+    puts %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ tool.png #{RAILS_ROOT+dataFilePath}removebg/}
+    
     if @product.user_id 
       @user = User.find(@product.user_id)
     else
