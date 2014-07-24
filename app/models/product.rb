@@ -151,6 +151,9 @@ puts("Complete!")
       tmpimg.resize!(75,75)
       tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
       
+      # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
+      %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+      
     end
     
     product = Product.new

@@ -75,10 +75,13 @@ class CollectionsController < ApplicationController
     product_id = params[:id]
     @product = Product.find(product_id)
     @user = User.new
-    
-    dataFilePath = "/public/data/product/"
-    puts %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ tool.png #{RAILS_ROOT+dataFilePath}removebg/}
-    
+=begin    
+    # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
+    if @product.img_file_name
+      dataFilePath = "/public/data/product/"
+      %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{@product.img_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+    end
+=end    
     if @product.user_id 
       @user = User.find(@product.user_id)
     else

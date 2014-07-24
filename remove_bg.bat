@@ -1,9 +1,10 @@
+@echo off
 SET IMG_PATH=%1
 SET IMG_NAME=%2
 SET TARGET_IMG_PATH=%3
 SET TARGET_IMG_PATH_NAME=%TARGET_IMG_PATH%%IMG_NAME%
 SET TARGET_IMG_TMP_PATH_NAME=%TARGET_IMG_PATH%tmp/%IMG_NAME%
-SET THRESHOLD=7
+SET THRESHOLD=%4
 
 cp %IMG_PATH%%IMG_NAME% %TARGET_IMG_PATH%tmp/%IMG_NAME%
 
@@ -22,5 +23,4 @@ composite -compose CopyOpacity %TARGET_IMG_TMP_PATH_NAME%_erode_matte.png %TARGE
 
 convert %TARGET_IMG_TMP_PATH_NAME%_finished.png -bordercolor white -border 1x1 -matte -fill none -fuzz  %THRESHOLD%%% -draw "matte 1,1 floodfill" -shave 1x1 %TARGET_IMG_PATH_NAME%
 
-echo %TARGET_IMG_PATH%tmp/*
-##rm -rf %TARGET_IMG_PATH%tmp/*
+rm %TARGET_IMG_PATH%tmp/*
