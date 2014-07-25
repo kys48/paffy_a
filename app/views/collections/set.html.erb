@@ -23,10 +23,14 @@
 <script type="text/javascript">
 siteURL = '<%= request_host%>/';
 imgURL  = '<%= request_host%>/';
+
+_MINITEMS = 2;
+_MAXITEMS = 20;
+
 $(function(){
     TranslationLabels = new Object;
-    TranslationLabels['above_max_item_for_collection']	= 'above max item for collection';
-	TranslationLabels['below_max_item_for_collection']	= 'below max item for collection';
+    TranslationLabels['above_max_item_for_collection']	= '최대 '+_MAXITEMS+'개 상품을 등록할 수 있습니다.';
+	TranslationLabels['below_max_item_for_collection']	= '최소 '+_MINITEMS+'개 상품을 등록해야 합니다.';
 	TranslationLabels['cannot_load_image']				= '이미지를 불러올 수 없습니다.';
 	TranslationLabels['could_not_complete_request']		= '요청을 완료할 수 없습니다.';
 	TranslationLabels['could_not_detect_carousel_for_plugin'] = 'could not detect carousel for plugin';
@@ -199,8 +203,8 @@ $(function() {
 	//oPlatform.searchTagsURL = "/create";
 	oPlatform.publishURL = "/collections/publish";
 	oPlatform.searchTagsURL = "/collections/publish";
-	oPlatform.minItems = 2;
-	oPlatform.maxItems = 20;
+	oPlatform.minItems = _MINITEMS;
+	oPlatform.maxItems = _MAXITEMS;
 	oPlatform.init();
 
 });
@@ -522,7 +526,8 @@ function lastPostFunc(goPage){
 						} else if(itemType==2){	// DB
 							oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 							oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
-							oPlatform.productStyleDirectory = "/original/";
+							//oPlatform.productStyleDirectory = "/original/";
+							oPlatform.productStyleDirectory = "/removebg/";
 							
 							item_api = "";
 							item_id = product.id;
@@ -532,7 +537,8 @@ function lastPostFunc(goPage){
 						} else if(itemType==3){	// My items
 							oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 							oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
-							oPlatform.productStyleDirectory = "/original/";
+							//oPlatform.productStyleDirectory = "/original/";
+							oPlatform.productStyleDirectory = "/removebg/";
 							
 							item_api = "";
 							item_id = product.id;

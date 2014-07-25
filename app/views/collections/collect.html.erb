@@ -23,10 +23,14 @@
 <script type="text/javascript">
 siteURL = '<%= request_host%>/';
 imgURL  = '<%= request_host%>/';
+
+_MINITEMS = 1;
+_MAXITEMS = 20;
+
 $(function(){
     TranslationLabels = new Object;
-    TranslationLabels['above_max_item_for_collection']	= 'above max item for collection';
-	TranslationLabels['below_max_item_for_collection']	= 'below max item for collection';
+    TranslationLabels['above_max_item_for_collection']	= '최대 '+_MAXITEMS+'개 상품을 등록할 수 있습니다.';
+	TranslationLabels['below_max_item_for_collection']	= '최소 '+_MINITEMS+'개 상품을 등록해야 합니다.';
 	TranslationLabels['cannot_load_image']				= '이미지를 불러올 수 없습니다.';
 	TranslationLabels['could_not_complete_request']		= '요청을 완료할 수 없습니다.';
 	TranslationLabels['could_not_detect_carousel_for_plugin'] = 'could not detect carousel for plugin';
@@ -196,8 +200,8 @@ $(function() {
 	oCollection.productStyleDirectory = ""
 	
     oCollection.publishURL              = "/collections/publish";
-    oCollection.minItems                = 1;
-    oCollection.maxItems                = 30;
+    oCollection.minItems                = _MINITEMS;
+    oCollection.maxItems                = _MAXITEMS;
     oCollection.init();
     
 });

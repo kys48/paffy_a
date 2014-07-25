@@ -207,10 +207,10 @@ class CollectionsController < ApplicationController
       #drowSet(params[:items], params[:info])
       drowSet(params)
     end
-
+    
     respond_to do |format|
       #format.json { render json: @collection.to_json }
-      format.json { render :json => { status: true, location: '/collections/'+type, msg: '콜렉션을 등록하였습니다.' }.to_json }
+      format.json { render :json => { status: true, location: "/collections/#{@collection.id}", msg: "콜렉션을 등록하였습니다." }.to_json }
     end
   end
   
@@ -351,6 +351,9 @@ class CollectionsController < ApplicationController
       @collection_product.caption = caption  
       @collection_product.save! 
     end
+    
+    
+    
   end
   
   
@@ -389,6 +392,12 @@ class CollectionsController < ApplicationController
       zIndex     = img[1][:zIndex]
       rotate     = img[1][:rotate]
       
+      if whiteBck == 'true'
+        imgStyle = "original"
+      else
+        imgStyle = "removebg"
+      end
+      
       image_tmp = nil;
       
       if itemAPI=="shopstyle"
@@ -396,7 +405,7 @@ class CollectionsController < ApplicationController
       else
         image1_tmp = Magick::Image.read(RAILS_ROOT+productFilePath+imgStyle+'/'+itemImg).first
       end
-      
+
       if image1_tmp
         image1 = Magick::Image.new(image1_tmp.columns,image1_tmp.rows){
           if whiteBck == 'true'
@@ -424,7 +433,7 @@ class CollectionsController < ApplicationController
         #image1.resize "400X300"
         
         #convert image1.png -fuzz 20% -transparent white result.png (배경제거명령어)
-        #image1.flatten_images
+        
         bg.composite!(image1.resize_to_fit(height.to_i).rotate!(rotate.to_i), left.to_i, top.to_i, Magick::OverCompositeOp)
       end
     end
@@ -432,10 +441,10 @@ class CollectionsController < ApplicationController
     
     collection_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
 
-    bg.write(RAILS_ROOT+collectionFilePath+imgStyle+'/'+collection_file_name)
+    bg.write(RAILS_ROOT+collectionFilePath+'original/'+collection_file_name)
     
     # 썸네일 만들기
-    bg_img = Magick::Image.read(RAILS_ROOT+collectionFilePath+imgStyle+'/'+collection_file_name).first
+    bg_img = Magick::Image.read(RAILS_ROOT+collectionFilePath+'original/'+collection_file_name).first
     thumb = bg_img.resize(220,220)
     thumb.write(RAILS_ROOT+collectionFilePath+'thumb/'+collection_file_name)
     #send_data(thumb.to_blob, :disposition => 'inline', :type => 'image/png')
@@ -504,7 +513,7 @@ class CollectionsController < ApplicationController
         
       @collection_product.save! 
     end
-   
+    
   end
   
   

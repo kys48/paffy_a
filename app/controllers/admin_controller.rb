@@ -8,7 +8,9 @@ include ERB::Util
 class AdminController < ApplicationController
   after_filter :cors_set_access_control_headers
 
-  def importProductExcel
+
+
+  def importProduct
     respond_to do |format|
       format.html # importProductExcel.html.erb
       format.json { render json: {status: true} }
@@ -416,6 +418,97 @@ puts(Time.zone.now)
     end
   end
   
+  
+  # 상품 리스트
+  def productList
+
+    
+    respond_to do |format|
+      format.html # productList.html.erb
+      format.json { render json: {status: true} }
+    end
+  end
+  
+  # 상품 리스트 ajax
+  def productListCallback
+    page = params[:page]||1
+    per_page = params[:per_page]||20
+    cate_code = params[:cate_code]||''
+    search_key = params[:search_key]||''
+    order = params[:order]||'created_at DESC'
+    
+    where_str = "1=1"
+    if cate_code && cate_code!=''
+      where_str += " AND cate_code='#{cate_code}'"
+    end
+    
+    if search_key && search_key!=''
+      where_str += " AND ("
+      where_str += "         subject LIKE '%#{search_key}%'"
+      where_str += "      OR merchant LIKE '%#{search_key}%'"
+      where_str += "      OR url LIKE '%#{search_key}%'"
+      where_str += "     )"
+    end
+    
+    @products = Product.paginate(page: page, per_page: per_page)
+                .where(where_str)
+                .order(order)
+
+=begin    
+    @products.each_width_index do |product, i|
+      
+      if product.remove_check!='Y'
+        # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
+        %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+      end
+        
+    end
+=end    
+    
+    respond_to do |format|
+      format.json { render :json => { status: true, product_list: @products }.to_json }
+    end
+  end
+    
+  # 상품 이미지 배경제거 ajax
+  def removeBgCallback
+    #records = Dir.glob("**/*")
+    records = Dir.glob(RAILS_ROOT+"/public/data/product/original/*.*")
+    puts(records.size)
+    
+    products = []
+    rcnt = 0
+    puts("start...[" + Time.zone.now.to_s+"]")
+    
+    records.each_with_index do |img_file_name, i|
+      
+      #if i<100
+        if img_file_name && img_file_name!=''
+          #puts(img_file_name)
+          #puts("remove_bg.bat #{RAILS_ROOT}/public/data/product/original/ #{img_file_name} #{RAILS_ROOT}/public/data/product/removebg/ 7")
+          
+          pattern = /\//
+          last = img_file_name.rindex(pattern)
+          
+          product_file_name = img_file_name[last+1..img_file_name.length]
+          
+          # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
+          %x{remove_bg.bat #{RAILS_ROOT}/public/data/product/original/ #{product_file_name} #{RAILS_ROOT}/public/data/product/removebg/ 7}
+          
+          products[rcnt] = product_file_name
+        end
+      #end
+      rcnt += 1
+       
+    end
+    
+    puts("end.....[" + Time.zone.now.to_s+"]")
+    
+    respond_to do |format|
+      format.json { render :json => { status: true, product_list: products }.to_json }
+    end
+  end
+
   
   private
   

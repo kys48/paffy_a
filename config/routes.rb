@@ -1,5 +1,14 @@
 PaffyA::Application.routes.draw do
 
+  get 'admin/removeBgCallback'
+  match 'admin/removeBgCallback', to: 'admin#removeBgCallback'
+  
+  get 'admin/productList'
+  match 'admin/productList', to: 'admin#productList'
+  
+  get 'admin/productListCallback'
+  match 'admin/productListCallback', to: 'admin#productListCallback'
+
   get 'store/topstore'
   match 'store/topstore', to: 'store#topstore'
   
@@ -46,8 +55,8 @@ PaffyA::Application.routes.draw do
   match 'products/postCallback', to: 'products#postCallback'
   
   
-  get 'admin/importProductExcel'
-  match 'impProduct', to: 'admin#importProductExcel'
+  get 'admin/importProduct'
+  match 'impProduct', to: 'admin#importProduct'
   
   get 'admin/importProductExcelProcess'
   match 'impProductProcess', to: 'admin#importProductExcelProcess'

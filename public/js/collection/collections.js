@@ -333,13 +333,14 @@ function collection(platformType){
                 
                 if(json.status == true){
                     notify('success', json.msg, function(){
-                        //document.location.href = json.redirect;
+                        document.location.href = json.location;
                     });
                     self.hidePublish();
                     self.restart();
                     self.publishSubmit.html(self.publishSubmit.find('input[name="active"]').val());
-                    //if(self.items > 0) beforeLeave(true);
                     
+                    semafors['ajax'] = false;
+                    //if(self.items > 0) beforeLeave(true);
                     return;
                 }
                 

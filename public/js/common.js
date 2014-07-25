@@ -142,5 +142,13 @@ function getMoneyType(price,priceType){
 		priceStr = "元"+priceStr;
 	}
 	return priceStr;
-	
+}
+
+// Object 요소 출력
+function printObject(obj){
+	var str = "";
+	for(key in obj) {
+		str += key+"===========>"+this[key]+"\n";
+	}
+	return str;
 }

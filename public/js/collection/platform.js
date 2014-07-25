@@ -312,7 +312,6 @@ alert(111);
     */
     self.addItems = function(items){
         $.each(items, function(index, value){
-            
             if( $.inArray(value.itemOrigin, ['product', 'embellishment']) != -1){
                 
                 self.addImageOnInit(value, self.board);
@@ -419,11 +418,16 @@ alert(111);
     * Send ajax data for publish
     */
     self.submitPublish = function(){
-       
         if(semafors['ajax'])
             return;
         
         semafors['ajax'] = true;
+
+        if(self.items < self.minItems){
+            var warning = notify('warning', TranslationLabels['below_max_item_for_collection']);
+            semafors['ajax'] = false;
+            return;    
+        }
         
         var postData = new Object();
         
@@ -481,12 +485,14 @@ alert(111);
             dataType: "json",
             success : function(json){
                 if(json.status == true){
-                    //document.location.href = json.redirect;
                     notify('success', json.msg);
-                    //document.location.href = json.location;
+                    document.location.href = json.location;
+                    
                     self.hidePublish();
                     self.restart();
                     self.publishSubmit.html(self.publishSubmit.find('input[name="active"]').val());
+                    
+                    semafors['ajax'] = false;
                     //if(self.items > 0) beforeLeave(true);
                     return;
                 }
@@ -735,12 +741,7 @@ alert(111);
         }
     }
     
-    /**
-     * Selects specific image
-     * from dashboard. This methods makes
-     * the image active and makes resize
-     * and item specific actions available.
-     */
+    // 이미지 선택
     self.selectImage = function(element){
        
         if(element.hasClass('selected'))
@@ -851,6 +852,8 @@ alert(111);
         //imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;	// DB에 있는 상품
         imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;
         
+alert(imgPointer.src)
+        
         imgPointer.onload = function(){
             self.board.find('.message').hide();
             self.addPreoloadedImage(imgPointer, itemId, 'product', itemImg, position, self.board);  
@@ -885,8 +888,6 @@ alert(111);
         if( self.hasTemplate && (itemOrigin == 'product' || itemOrigin == 'embellishment') && target.attr('id') == self.board.attr('id'))
             return;
         
-//alert(self.productURL);
-
         if(itemOrigin === 'product'){
             //imgPointer.src = self.productURL+itemId+'.png';
             imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;
@@ -916,29 +917,30 @@ alert(111);
      * history stack
      */
     self.addPreoloadedImage = function(image, itemId, itemOrigin, itemImg, itemAPI, itemURL, position, target) {
+        //imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;
         var imageWrapper = $('<div class="image"><img src="'+image.src+'"></div>');
-        
+
         if(self.hasTemplate){
             var innerItem = target.find('.image');
             if(innerItem.length >0)
                 self.removeItem(innerItem.attr('id'), true);
         }
-    
+
         imageWrapper.data({
             imageURL   : image.src,
+            imageOriginURL   : self.productURL+'/original/'+itemImg,
             itemId     : itemId,
             itemOrigin : itemOrigin,
             itemImg    : itemImg,
             itemAPI    : itemAPI,
             itemURL    : itemURL
         });
-        
+
         imageWrapper.appendTo(target).hide();
-        
+
         var left, top;
         
         if(self.hasTemplate){
-            
             target.find('.hint').hide();
             
             var imageRatio = imageWrapper.width() / imageWrapper.height();
@@ -955,14 +957,13 @@ alert(111);
             top     = (target.height() / 2) - (imageWrapper.height() / 2);
             
             target.addClass('filled');
-            
         }else{
             left    = parseInt(position.left - self.boardOffset.left - imageWrapper.width() / 2);
             top     = parseInt(position.top  - self.boardOffset.top - imageWrapper.height() / 2);
         }
-        
+ 
         self.makeDraggable(imageWrapper);
-        
+
         imageWrapper.attr('id', 'image_'+(++self.itemsCreated))
                     .css({
                         left: left+'px',
@@ -970,7 +971,7 @@ alert(111);
                         zIndex: ++self.items
                     })
                     .show();
-        
+
         self.recordHistory({
             event       : 'add',
             element     : imageWrapper.attr('id'),
@@ -978,10 +979,10 @@ alert(111);
             parent      : imageWrapper.parent(),
             data        : imageWrapper.data()
         });
-        
+ 
         self.selectImage(imageWrapper);
-    
     }
+
     
     self.addImageOnInit = function(initData, target){
 alert('addImageOnInit');    
@@ -1116,7 +1117,6 @@ alert('addPlaceHolder');
     * Sets hint on the placeholder
     */
     self.setPlaceholderHint = function(hint, element){
-        
         if(!self.inTemplateCreate())
             return;
         
@@ -1143,9 +1143,7 @@ alert('addPlaceHolder');
      * to history stack
      */
     self.removeItem = function(elementId, recordHistory){
-        
         var el;
-        
         if(elementId)
             el = self.board.find('#'+elementId);
         else
@@ -1164,14 +1162,12 @@ alert('addPlaceHolder');
         }             
         
         if(el.hasClass('selected')){
-            
             el.removeClass('selected');
             
             if(!self.hasTemplate)
                 el.resizable("destroy").rotatable("destroy");
             else
                 el.parent().removeClass('childSelected');
-            
         }
 
         if(!elementId || recordHistory){
@@ -1387,9 +1383,7 @@ alert('addPlaceHolder');
             
     }
     
-    /**
-     * 배경제거
-     */
+    // 배경제거
     self.noBackground = function(elementId){
         var el;
 
@@ -1406,6 +1400,8 @@ alert('addPlaceHolder');
             
         el.removeClass('whiteBackground');
         
+        el.find('img').attr("src", el.data('imageURL'));	// 배경제거된 이미지로 교체
+        
         if(!elementId){
             self.recordHistory({
                 event   : 'noBackground',
@@ -1414,12 +1410,8 @@ alert('addPlaceHolder');
         }    
     }
     
-    /**
-     * Adds white background of active or specific item.
-     * Method records action to history stack
-     */
+    // 원본이미지 쓰기
     self.whiteBackground = function(elementId){
-          
         var el;
         
         if(elementId)
@@ -1433,14 +1425,16 @@ alert('addPlaceHolder');
         if(el.hasClass('whiteBackground'))
             return;
             
-        el.addClass('whiteBackground');
-        
+        el.addClass('whiteBackground');	// 배경흰색으로 채우기
+
+		el.find('img').attr("src", el.data('imageOriginURL'));	// 원본 이미지로 교체
+
         if(!elementId){
             self.recordHistory({
                 event   : 'whiteBackground',
                 element : el.attr('id')
             });
-        }    
+        }
     }
     
     /**
@@ -1691,7 +1685,6 @@ alert('addPlaceHolder');
         if(element !== false){
             
             if( self.hasTemplate ){
-                
                 self.zoomInBtn.removeClass('inactive');
                 self.zoomOutBtn.removeClass('inactive');
                 self.removeBtn.removeClass('inactive');
@@ -1701,7 +1694,7 @@ alert('addPlaceHolder');
                 self.ItemNavigator.hide();
                 
             }else if(! self.inTemplateCreate() || !$(element).hasClass('placeholder')){
-                
+//alert(element.data('imageURL'));
                 self.zoomInBtn.removeClass('inactive');
                 self.zoomOutBtn.removeClass('inactive');
                 self.forwardBtn.removeClass('inactive');
@@ -1710,7 +1703,8 @@ alert('addPlaceHolder');
             
                 self.ItemNavigator.show();
                 self.noBckgBtn.html('<img src="'+element.data('imageURL')+'" />');
-                self.whiteBckgBtn.html('<img src="'+element.data('imageURL')+'" />');
+                //self.whiteBckgBtn.html('<img src="'+element.data('imageURL')+'" />');
+                self.whiteBckgBtn.html('<img src="'+element.data('imageOriginURL')+'" />');
                 self.cropBtn.find('img').remove();
                 self.cropBtn.show().append('<img src="'+element.data('imageURL')+'" />');
                 
@@ -1718,7 +1712,6 @@ alert('addPlaceHolder');
                 self.flopBtn.removeClass('inactive');
             
             }else if(self.inTemplateCreate() && $(element).hasClass('placeholder')){
-                
                 self.zoomInBtn.removeClass('inactive');
                 self.zoomOutBtn.removeClass('inactive');
                 self.forwardBtn.removeClass('inactive');

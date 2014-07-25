@@ -1,0 +1,178 @@
+<br/>
+<h2>상품 리스트</h2>
+<div style="border:1px solid black; padding:20px;">
+	1. 상품 배경이미지 제거<br/><br/>
+	<%= button_tag "호출하기", onclick: "removeBg();" %>
+	<div id="removeBgDv" style="font-size:12px;text-align:left; ">
+	</div>
+</div>
+<div style="border:1px solid black; padding:20px; margin-top:10px;">
+	2. 엑셀파일로 상품등록<br/><br/>
+	검색어 : <input type="text" id="search_key" name="search_key" value="" style="width:150px">,
+	카테고리코드 : <input type="text" id="cate_code" name="cate_code" value="" style="width:100px">,
+	시작 : <input type="text" id="page" name="page" value="1" style="width:50px">,
+	줄수 : <input type="text" id="per_page" name="per_page" value="16" style="width:50px">
+	<%= button_tag "호출하기", onclick: "$('#productDvCnt').val(0);$('#productDv').html('');getProductList();" %>
+	
+	<div id="productDv" style="width:100%; height:500px; overflow:auto; border:1px solid red; font-size:12px;text-align:left; ">
+	</div>
+	<%= button_tag "다음페이지", onclick: "getProductListNext()" %>
+	총상품수:<input type="text" id="productDvCnt" name="productDvCnt" value="0" style="width:40px;">
+</div>
+
+<script language="JavaScript">
+function removeBg(){
+	var postData = new Object();
+	
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+	$.ajax({
+	    url     : '/admin/removeBgCallback',
+	    type    : 'post',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+	    	
+	    	products = json.product_list;
+	    	
+	    	if(products.length>0) {
+				$.each(products, function (index, product) {
+					var img_name = product.substring(product.lastIndexOf("/")+1,product.length);
+					var li = '<img src="/data/product/removebg/'+img_name+'" style="width:100px;height:100px;">';
+					$('#removeBgDv').append(li);
+				});
+				chkGet = true;
+	    	} else {
+	    		//notify('error', json.msg);
+	    		// the end
+	    		//alert("종료~!!!");
+	    	}
+	    	alert("종료~!!!");
+	    },
+	    error   : function(e){
+	    	$('#removeBgDv').append("----------error-------------");
+	    }
+	});
+}
+
+
+function getProductListNext(){
+	page = parseInt($("#page").val());
+	if(page>11){
+		alert("종료~!");
+	} else {
+		$("#page").val(page+1);
+		getProductList();
+	}
+	
+}
+
+function getProductList(){
+	page = $("#page").val();
+	per_page = $("#per_page").val();
+	search_key = $("#search_key").val();
+	cate_code = $("#cate_code").val();
+	
+	chkpass = true;
+/*	
+	if(search_key==""){
+		alert("검색어를 입력하세요.");
+		chkpass = false;
+		$("#search_key").focus();
+	}
+	if(cate_code==""){
+		alert("카테고리 코드를 입력하세요.");
+		chkpass = false;
+		$("#cate_code").focus();
+	}
+*/	
+	if(page==""){
+		alert("시작값을 입력하세요.");
+		chkpass = false;
+		$("#page").focus();
+	}
+	if(per_page==""){
+		alert("표시줄 수를 입력하세요.");
+		chkpass = false;
+		$("#per_page").focus();
+	}
+	
+	if(chkpass){
+		var postData = new Object();
+		postData.page = page;
+		postData.search_key = search_key;
+		postData.cate_code = cate_code;
+		postData.per_page = per_page;
+		postData.order = 'created_at DESC';
+		
+		chkGet = false;
+	
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+	
+		$.ajax({
+		    url     : '/admin/productListCallback',
+		    type    : 'post',
+		    data	: $.param(postData),
+		    async   : false,  
+		    success : function(json){
+		    	products = json.product_list;
+		    	rcnt = parseInt($("#productDvCnt").val());
+		    	rcnt += products.length;
+		    	$("#productDvCnt").val(rcnt);
+		    	$('#productDv').append("--page("+page+")--");
+
+		    	if(products.length>0) {
+					$.each(products, function (index, product) {
+						var url = product.url;
+						var img_file_name = product.img_file_name;
+						var subject = product.subject;
+
+						var li = ''
+						+ '<div style="border-bottom:1px dashed #cccccc;">'
+						+ '<img src="/data/product/original/'+img_file_name+'" style="width:100px;height:100px;"> &nbsp; '
+						+ '<a href="/collections/pshow/'+product.id+'" target="_blank">'+subject+'</a>'
+						+ ' &nbsp; <a href="'+url+'" target="_blank">(원본링크)</a>'
+						//+ '<input type="text" value="'+item_url+'">'
+						+ '</div>';
+
+						$('#productDv').append(li);
+						
+					});
+					chkGet = true;
+		    	} else {
+		    		//notify('error', json.msg);
+		    		// the end
+		    		//alert("종료~!!!");
+		    	}
+/*		    	
+				setTimeout(function() {
+					
+					getNaverNext(); // 다음페이지 call
+				}, 100);
+*/
+		    },
+		    error   : function(e){
+		    	$('#productDv').append("----------error-------------");
+		    }
+		});
+		
+	}
+}
+</script>
+
+
+
+
+
+
+
