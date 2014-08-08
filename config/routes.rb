@@ -1,36 +1,32 @@
 PaffyA::Application.routes.draw do
 
-  get 'admin/removeBgCallback'
+  match 'admin/setColorCallback', to: 'admin#setColorCallback'
   match 'admin/removeBgCallback', to: 'admin#removeBgCallback'
-  
-  get 'admin/productList'
   match 'admin/productList', to: 'admin#productList'
-  
-  get 'admin/productListCallback'
   match 'admin/productListCallback', to: 'admin#productListCallback'
 
-  get 'store/topstore'
+  #get 'store/topstore'
   match 'store/topstore', to: 'store#topstore'
   
-  get 'follows/put'
+  #get 'follows/put'
   match 'follows/put', to: 'follows#put'
 
-  get 'mypage/myfeed'
+  #get 'mypage/myfeed'
   match 'mypage/myfeed', to: 'mypage#myfeed'
   
-  get 'admin/getNaverShopApi'
+  #get 'admin/getNaverShopApi'
   match 'getNaverShopApi', to: 'admin#getNaverShopApi'
   
-  get 'products/myProductListCallback'
+  #get 'products/myProductListCallback'
   match 'products/myProductListCallback', to: 'products#myProductListCallback'
   
-  get 'products/productListCallback'
+  #get 'products/productListCallback'
   match 'products/productListCallback', to: 'products#productListCallback'
   
-  get 'mypage/index'
+  #get 'mypage/index'
   match 'mypage', to: 'mypage#index'
   
-  get 'mypage/itemListCallback'
+  #get 'mypage/itemListCallback'
   match 'mypage/itemListCallback', to: 'mypage#itemListCallback'
   
   #get 'mypage' => 'mypage#index', :as => 'mypage'
@@ -64,8 +60,10 @@ PaffyA::Application.routes.draw do
   get 'collections/pshow'
   match 'collections/pshow/:id', to: 'collections#pshow'
   
+  match 'search', to: 'main#search'
+  
   get 'main' => 'main#index', :as => 'main'
-  get 'main/itemListCallback' => 'main#itemListCallback', :as => 'main/itemListCallback'
+  match 'main/itemListCallback', to: 'main#itemListCallback'
 
   get 'clip/post'
   match 'clip/post', to: 'clip#post'
@@ -96,7 +94,8 @@ PaffyA::Application.routes.draw do
   get 'log_out' => 'sessions#destroy', :as => 'log_out'
   get 'log_in' => 'sessions#login', :as => 'log_in'
   get 'login_pop' => 'sessions#login_pop', :as => 'login_pop'
-  get 'sign_up' => 'users#new', :as => 'sign_up'
+  get 'sign_up' => 'sessions#sign_up', :as => 'sign_up'
+  post 'sign_up_complete' => 'sessions#sign_up_complete', :as => 'sign_up_complete'
   
   match 'auth/:provider/callback', to: 'sessions#fcreate'
   match 'auth/failure', to: redirect('/')

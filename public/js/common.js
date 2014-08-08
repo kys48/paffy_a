@@ -1,3 +1,92 @@
+
+// 제휴링크 변환
+function goProductUrl(url,merchant){
+	if(merchant == 'shopstyle'){
+		if(CHKMOBILE=='Y'){
+			document.location.href = url;
+		} else {
+			window.open(url);
+		}
+	} else if(merchant == 'linkprice'){
+		if(CHKMOBILE=='Y'){
+			document.location.href = url;
+		} else {
+			window.open(url);
+		}
+	} else {
+		var openurl = url;
+		$.ajax({
+		    url     : '/getLinkpriceUrl?url='+encodeURIComponent(url),
+		    type    : 'get',
+		    dataType: 'json',
+		    success : function(json){
+				if (json.status){
+					var result = json.result;
+					var lp_url = json.url;
+					if (result=='S') openurl = lp_url;
+				}
+				if(CHKMOBILE=='Y'){
+					document.location.href = openurl;
+				} else {
+					window.open(openurl);
+				}
+		    },
+		    error   : function(e){
+		    	if(CHKMOBILE=='Y'){
+					document.location.href = openurl;
+				} else {
+					window.open(openurl);
+				}
+		    }
+		});	
+	}
+}
+
+// 좋아요
+function likeItem(item_type,ref_id){
+    var likeId = "";
+    var likeCntId = "";
+    if(item_type=="P"){
+    	likeId		= "pid_"+ref_id;
+    	likeCntId	= "pcnt_"+ref_id;
+    }else if(item_type=="C"){
+    	likeId		= "cid_"+ref_id;
+    	likeCntId	= "ccnt_"+ref_id;
+    }
+    
+    $.ajax({
+        url     : '/gets/put?ref_id='+ref_id+'&get_type=L&item_type='+item_type,
+        type    : 'get',
+        dataType: 'json',
+        async   : false,  
+        success : function(json){
+    		$('#'+likeCntId).html(json.cnt_item);
+    		$('#'+likeId).removeClass();
+
+    		if(json.like_status=='Y'){
+    			$('#'+likeId).addClass('like_icon_on');
+    		}else{
+    			$('#'+likeId).addClass('like_icon');
+    		}
+        },
+        error   : function(e){
+            //notify('error', TranslationLabels['could_not_complete_request']);
+        }
+    });
+}
+
+// 로그인 팝업
+function login_pop(url){
+	var backurl = encodeURIComponent(document.location.href);
+	if(url!="") backurl = encodeURIComponent(url);
+	
+	if(CHKMOBILE=='Y'){
+		document.location.href = "/login_pop?backurl="+backurl,"Paffy 로그인","width=450,height=400,scrollbars=no,resizeable=no,left=400,top=200";
+	} else {
+		layer_open("/login_pop?backurl="+backurl,400,330,"no","pop_layer","pop_content");
+	}
+}
+
 //	문자열 지정한 길이만큼 자르기
 function chr_byte(chr){
 	if(escape(chr).length > 4)      return 2;
@@ -142,6 +231,17 @@ function getMoneyType(price,priceType){
 		priceStr = "元"+priceStr;
 	}
 	return priceStr;
+}
+
+// 공백 제거
+function trimStr(str){
+	//정규 표현식을 사용하여 화이트스페이스를 빈문자로 전환
+	str = str.replace(/^\s*/,'').replace(/\s*$/, ''); 
+	return str; //변환한 스트링을 리턴.
+}
+
+function rctobr(str) {
+	return str.replace( /\r/g, "<br>");
 }
 
 // Object 요소 출력

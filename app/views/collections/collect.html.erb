@@ -297,8 +297,8 @@ $(function() {
     </div>
             
     <div class="whiteHeader tabHolder cf" style="text-align:left; padding-left:20px; font-size:14px;">
-     	<a href="javascript:changeType(1)" id="menu1" class="publish bBlue small" style="width:150px">Items</a>   
-     	<a href="javascript:changeType(2)" id="menu2" class="publish bGray small" style="width:150px">Favorite</a>
+     	<a href="javascript:changeType(1)" id="menu1" class="publish bBlue small" style="width:150px">Favorite</a>   
+     	<a href="javascript:changeType(2)" id="menu2" class="publish bGray small" style="width:150px">Items</a>
      	<a href="javascript:changeType(3)" id="menu3" class="publish bGray small" style="width:150px">My Items</a>
         <!--ul id="tabHolder" class="tabs left">
         	<li><a href="#" class="publish bBlue small" style="color:white">Items</a></li>
@@ -403,23 +403,16 @@ function lastPostFunc(goPage){
 
 	var shopstyle_api_key = '<%=SHOPSTYLE_KEY%>';
 	var per_page = 30;
-	var searchKey = $('#category').val();
+	var search_key = $('#category').val();
 	
-	if(itemType!=3 && searchKey==""){
+	if(itemType!=3 && search_key==""){
 		$('#itemList').html("");
 		$('#pagingDv').html("");
 	} else {
 		var api_url = '';
 		var method_type = 'get';
 
-		if(itemType==1){	// shop style 
-			method_type = 'get';
-			api_url = 'http://api.shopstyle.com/api/v2/products?pid='+shopstyle_api_key
-					+ '&fts='+encodeURIComponent(searchKey)
-					+ '&offset='+(curPage*per_page)
-					+ '&limit='+per_page;
-			
-		} else if(itemType==2){	// DB
+		if(itemType==1){	// DB
 			method_type = 'post';
 			//api_url = '/products/productListCallback?page='+(curPage+1)+'&per_page='+per_page;
 			api_url = '/products/productListCallback';
@@ -428,6 +421,13 @@ function lastPostFunc(goPage){
 			postData.cate_code = $('#category').val();
 			postData.per_page = 30;
 			
+		} else if(itemType==2){	// shop style 
+			method_type = 'get';
+			api_url = 'http://api.shopstyle.com/api/v2/products?pid='+shopstyle_api_key
+					+ '&fts='+encodeURIComponent(search_key)
+					+ '&offset='+(curPage*per_page)
+					+ '&limit='+per_page;
+			
 		} else if(itemType==3){	// My items
 			method_type = 'post';
 			//api_url = '/mypage/itemListCallback?page='+(curPage+1)+'&type=P&per_page='+per_page;
@@ -435,7 +435,7 @@ function lastPostFunc(goPage){
 			
 			postData.page = curPage+1;
 			postData.type = 'P';
-			//postData.searchKey = $('#category').val();
+			//postData.search_key = $('#category').val();
 			postData.per_page = 30;
 		}
 		
@@ -467,17 +467,7 @@ function lastPostFunc(goPage){
 						var img_directory1 = "original/"
 						var img_directory2 = "medium/"
 						
-						if(itemType==1){	// shop style
-							oCollection.productURL = "";	// 상품 이미지 폴더
-							oCollection.setURL = "";	// 꾸민 이미지 폴더
-							oCollection.productStyleDirectory = "";
-							
-							item_api = "shopstyle";
-							item_id = product.id;
-							item_img_url1 = product["image"]["sizes"]["IPhone"]["url"];
-							item_img_url2 = product["image"]["sizes"]["Large"]["url"];
-							item_url = product.clickUrl;
-						} else if(itemType==2){	// DB
+						if(itemType==1){	// DB
 							oCollection.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 							oCollection.setURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 							oCollection.productStyleDirectory = "/original/";
@@ -487,6 +477,16 @@ function lastPostFunc(goPage){
 							item_img_url1 = product.img_file_name;
 							item_img_url2 = file_path+img_directory2+product.img_file_name;
 							item_url = product.url;
+						} else if(itemType==2){	// shop style
+							oCollection.productURL = "";	// 상품 이미지 폴더
+							oCollection.setURL = "";	// 꾸민 이미지 폴더
+							oCollection.productStyleDirectory = "";
+							
+							item_api = "shopstyle";
+							item_id = product.id;
+							item_img_url1 = product["image"]["sizes"]["IPhone"]["url"];
+							item_img_url2 = product["image"]["sizes"]["Large"]["url"];
+							item_url = product.clickUrl;
 						} else if(itemType==3){	// My items
 							oCollection.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 							oCollection.setURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더

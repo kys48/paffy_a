@@ -3,11 +3,14 @@
 class MainController < ApplicationController
   
   def index
-    #exec("ls -l")
-    #%x("ls -l")
-    #system "ls -l"
+    cmenu = params[:cmenu]||"1"
+    cmenu_sub = params[:cmenu_sub]||"1"
+    params[:cmenu] = cmenu
+    params[:cmenu_sub] = cmenu_sub
     
-    @item_type = params[:type]
+    @session_user_id = session[:user_id]||""
+    @item_type = params[:type]||""
+    @store_type = params[:store_type]||""
     params[:per_page] = 15
     #params[:order] = " RAND() "
     #params[:order] = " created_at DESC "
@@ -35,6 +38,7 @@ class MainController < ApplicationController
     @store_list4 = UserRank.storeList(search_params)
     
     # 찜한 상품, 콜렉션
+    params[:session_user_id] = @session_user_id
     @collections = Collection.itemList(params)
     
     respond_to do |format|
@@ -45,16 +49,51 @@ class MainController < ApplicationController
   
   # 메인페이지 ajax
   def itemListCallback
+    params[:session_user_id] = session[:user_id]
     page = params[:page]||1
-    item_type = params[:type]
+    item_type = params[:type]||"P"
     params[:per_page] = 16
 
     # 찜한 상품, 콜렉션
-    @collections = Collection.itemList(params)
+    collectionList = Collection.itemList(params)
+    
+    #collections = []
+    
+    collectionList.each_with_index do |collection,i|
+      price = 0.0
+      
+      if collection.price_type!='KRW'
+        case collection.price_type
+          when 'USD'
+            price = GoogCurrency.usd_to_krw(collection.price).to_i
+          when 'JPY'
+            price = GoogCurrency.jpy_to_krw(collection.price).to_i
+          when 'EUR'
+            price = GoogCurrency.eur_to_krw(collection.price).to_i
+          when 'GBP'
+            price = GoogCurrency.gbp_to_krw(collection.price).to_i
+          when 'CNY'
+            price = GoogCurrency.eur_to_krw(collection.price).to_i
+        end
+        collection.price = price
+        collection.price_type = 'KRW'
+      end
+      #collections << collection
+    end
     
     respond_to do |format|
-      #format.json { render json: @collections.to_json }
-      format.json { render :json => { status: true, collections: @collections }.to_json }
+      format.json { render :json => { status: true, collections: collectionList }.to_json }
+    end
+  end
+  
+  # 통합검색
+  def search
+    @item_type = params[:type]
+    @search_key = params[:search_key]
+    
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @collections }
     end
   end
   

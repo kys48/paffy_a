@@ -9,9 +9,10 @@ class ItemController < ApplicationController
   
   # product API 이용
   def getProductApi
-    @searchKey = params[:searchKey]||""
+    @search_key = params[:search_key]||""
     params[:page] = params[:page]||1
     params[:per_page] = params[:per_page]||16
+    params[:cmenu] = "2"
 
     #@products = Product.getApi(params)
     

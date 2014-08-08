@@ -98,6 +98,7 @@ class User < ActiveRecord::Base
     img_original = auth[:properties][:profile_image]
 
     profile_id = "kakao_"+auth[:id]
+    
     where(provider: "kakao", email: profile_id).first_or_initialize.tap do |user|
       user.provider = auth[:provider]
       user.uid = auth[:id]
@@ -112,25 +113,29 @@ class User < ActiveRecord::Base
       
       # 이미지 저장
       if img_original
+        
         dataFilePath = "/public/data/user/"
         product_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
     
-        tmpimg = Magick::Image.read(img_original).first
+        #tmpimg = Magick::Image.read(img_original).first
+        r = open(img_original)
+        bytes = r.read
+        tmpimg = Magick::Image.from_blob(bytes).first
         tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
-    
+
         tmpimg.resize!(220,220)
         tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
-    
+
         tmpimg.resize!(75,75)
         tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
-        
+
         user.img_file_name = product_file_name
         user.img_content_type = "image/png"
         user.img_file_size    = 0
       end
-      
+
       user.save!
-      
+puts("start 5 : #{Time.zone.now}")      
     end
   end
   

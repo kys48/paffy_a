@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'RMagick'
 include Magick
+include Colorscore
 
 class CollectionsController < ApplicationController
   layout 'collection'
@@ -81,7 +82,19 @@ class CollectionsController < ApplicationController
       dataFilePath = "/public/data/product/"
       %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{@product.img_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
     end
-=end    
+=end
+    
+=begin
+    # 이미지 대표색상코드 추출
+    if @product.img_file_name
+      colors = Product.get_product_color(@product.img_file_name)
+      puts colors[0]
+      puts colors[1]
+      @product.color_code_o = colors[0] 
+      @product.color_code_s = colors[1]
+    end
+=end
+
     if @product.user_id 
       @user = User.find(@product.user_id)
     else
@@ -104,6 +117,9 @@ class CollectionsController < ApplicationController
     # 찜 수 가져오기
     @cnt_wish = Wish.where(item_type: 'P', ref_id: product_id).count
     
+
+    
+    
     # 조회수 증가
     @product.hit += 1
     @product.save! 
@@ -120,6 +136,9 @@ class CollectionsController < ApplicationController
   # GET /collections/set
   # GET /collections/set.json
   def set
+    params[:cmenu] = "5"
+    params[:cmenu_sub] = "2"
+    
     if session[:user_id]
       @collection = Collection.new
       
@@ -137,6 +156,9 @@ class CollectionsController < ApplicationController
   # GET /collections/collect
   # GET /collections/collect.json
   def collect
+    params[:cmenu] = "5"
+    params[:cmenu_sub] = "3"
+    
     @collection = Collection.new
     
     @products = Product.paginate(page: params[:page], per_page: 40).order('created_at DESC')
@@ -229,7 +251,7 @@ class CollectionsController < ApplicationController
     imgStyle = "original"
     collectionFilePath = "/public/data/collection/"
     productFilePath = "/public/data/product/"
-
+    
     bg = Magick::Image.read(RAILS_ROOT+'/public/images/collection/bg_collect_650x650.png'){
       self.format = 'PNG'
     }.first
@@ -260,16 +282,11 @@ class CollectionsController < ApplicationController
         end
         
         image_tmp = nil;
-        
         if itemAPI=="shopstyle"
           image1_tmp = Magick::Image.read(itemImg).first
         else
           image1_tmp = Magick::Image.read(RAILS_ROOT+productFilePath+imgStyle+'/'+itemImg).first
         end
-        
-        #image1_tmp = Magick::Image.read(RAILS_ROOT+productFilePath+imgStyle+'/'+itemImg).first
-        #image1_tmp = Magick::Image.read(itemImg).first
-        
         
         if image1_tmp
           bg.composite!(image1_tmp.resize_to_fit(280), left, top, Magick::OverCompositeOp)
@@ -284,9 +301,10 @@ class CollectionsController < ApplicationController
     # 썸네일 만들기
     
     bg_img = Magick::Image.read(RAILS_ROOT+collectionFilePath+imgStyle+'/'+collection_file_name).first
+    
     thumb = bg_img.resize(220,220)
+    #thumb = bg_img.resize_to_fit(220,220)
     thumb.write(RAILS_ROOT+collectionFilePath+'thumb/'+collection_file_name)
-    #thumb.write(RAILS_ROOT+collectionFilePath+'thumb/'+collection_file_name){self.quality = 100}
 
     # collections 저장
     @collection.subject = params[:name]
@@ -401,7 +419,10 @@ class CollectionsController < ApplicationController
       image_tmp = nil;
       
       if itemAPI=="shopstyle"
-        image1_tmp = Magick::Image.read(itemImg).first
+        #image1_tmp = Magick::Image.read(itemImg).first
+        r = open(itemImg)
+        bytes = r.read
+        image1_tmp = Magick::Image.from_blob(bytes).first
       else
         image1_tmp = Magick::Image.read(RAILS_ROOT+productFilePath+imgStyle+'/'+itemImg).first
       end
@@ -445,7 +466,9 @@ class CollectionsController < ApplicationController
     
     # 썸네일 만들기
     bg_img = Magick::Image.read(RAILS_ROOT+collectionFilePath+'original/'+collection_file_name).first
-    thumb = bg_img.resize(220,220)
+
+    thumb = bg_img.resize(220,220) # 이미 정사각형 이미지니깐...
+    #thumb = bg_img.resize_to_fit(220,220)
     thumb.write(RAILS_ROOT+collectionFilePath+'thumb/'+collection_file_name)
     #send_data(thumb.to_blob, :disposition => 'inline', :type => 'image/png')
     #Magick::Image.read(RAILS_ROOT+collectionFilePath+imgStyle+'/'+itemImg).first

@@ -11,7 +11,21 @@
 </style>
 
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
-		<div style="padding-top:30px;"></div>
+
+        <div style="padding:10px 75px 0px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	              <ul class="nav">
+	                <li <% if params[:cmenu_sub]=="1" %>class="active"<% end %>><a href="/main?cmenu=1&cmenu_sub=1">All</a></li>
+	                <li <% if params[:cmenu_sub]=="2" %>class="active"<% end %>><a href="/main?type=P&store_type=F&cmenu=1&cmenu_sub=2">해외직구</a></li>
+	                <li <% if params[:cmenu_sub]=="3" %>class="active"<% end %>><a href="/main?type=P&store_type=I&cmenu=1&cmenu_sub=3">Styles</a></li>
+	                <li <% if params[:cmenu_sub]=="4" %>class="active"<% end %>><a href="/main?type=C&cmenu=1&cmenu_sub=4">Set&Collection</a></li>
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
 			
 		<div id="products" class="products">
 			<a name="top"></a>
@@ -96,9 +110,21 @@
 							 	</div>
 							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
 							 		<span style="color:#000000"><%= collection.subject%></span><br/>
-							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088cc"><%=collection.profile_id%></a>
+							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088cc"><%=collection.user_name%></a>
 							 	</div>
-							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
+							 	<div style="text-align:right;padding-right:10px;">
+<%
+			cnt_like_user = collection.cnt_like_user
+			class_like = "like_icon"
+			if cnt_like_user>0
+				class_like = "like_icon_on"
+			end
+%>
+							 		<span id="cid_<%=collection.id%>" class="<%=class_like%>"></span>
+							 		<span id="ccnt_<%=collection.id%>" class="like_count"><%=collection.cnt_like%></span>
+							 		<span class="view_icon"></span>
+							 		<span class="view_count"><%=collection.hit%></span>
+							 	</div>
 							</div>
 						    	
 <%
@@ -126,26 +152,41 @@
 		      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
 		    end
 %>
+<div class="heart-shape before"></div>
 							<div class="thumbnail" style="width:230px;height:305px;display:table-cell;text-align:center;vertical-align:middle">
 							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
 							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/products/<%= collection.id%>'" style="cursor:pointer">
 							 	</div>
 							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
-							 		<span style="color:#000000"><%= collection.subject%></span><br/>
+							 		<a href="javascript:goProductUrl('<%=collection.url%>','<%=collection.merchant%>')"><span style="color:#000000"><%= collection.subject%></span></a>
+							 		<br/>
 							 		<%= price_str%>&nbsp;
 							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088CC"><%=collection.profile_id%></a>
 							 	</div>
-							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
+							 	<div style="text-align:right;padding-right:10px;">
+<%
+			cnt_like_user = collection.cnt_like_user
+			class_like = "like_icon"
+			if cnt_like_user>0
+				class_like = "like_icon_on"
+			end
+%>
+							 		<span id="pid_<%=collection.id%>" class="<%=class_like%>"></span>
+							 		<span id="pcnt_<%=collection.id%>" class="like_count"><%=collection.cnt_like%></span>
+							 		<span class="view_icon"></span>
+							 		<span class="view_count"><%=collection.hit%></span>
+							 	</div>
 							</div>
 <%		end %>
 						</li>
 <%	end %>
+<%	if @collections.size==0 %>
+						<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>
+<%	end %>
 				    </ul>
 			    </div>
-				<div id="loadingDiv" style="text-align:center;padding:10px;font-size:15px;">
-			    	loading more...
-			    	<img src="/images/common/loading5.gif">
-			    </div>
+
+
 			</div>
 		</div>
 		
@@ -154,86 +195,138 @@
 	<a href="#top" id="top-link" class="floatingLink">top</a>
 
 <script type="text/javascript">
-/*
-$(document).ready(function(){
-	$(function() {
-		$('ul.da-thumbs > li').hoverdir();
-	});
-});
-*/
+<%	if @collections.size>0 %>
 // scroll event
 $(window).scroll(function(){
 	if($(window).scrollTop() == $(document).height() - $(window).height()){
-		lastPostFunc();
+		itemList();
 	}
 });
+<%	end %>
 
 var nextPage = 2;
-function lastPostFunc(){
-	//nextPage++;
-	$('#loadingDiv').show();
-	$.ajax({
-	    url     : '/main/itemListCallback?page='+nextPage+'&type=<%= @item_type%>&order=hit DESC',
-	    type    : 'get',
-	    dataType: 'json',
-	    async   : false,  
-	    success : function(json){
-	    	collections = json.collections;
+var searchYn = true;
 
-	    	if(json.status){
-
-				if(collections.length>0) nextPage++;
-				$.each(collections, function (index, collection) {
-					var li = '<li>'
-					+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
-					
-					if(collection.item_type=='C'){
-						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-						+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
-						+ '</div>'
-						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-						+ '</div>'
-						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
-					}else if(collection.item_type=='P'){
-						var priceStr = getMoneyType(collection.price,collection.price_type);
-						 
-						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-						+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
-						+ '</div>'
-						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-						+ priceStr + "&nbsp;"
-						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-						+ '</div>'
-						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
-					}
-					li += '</div>'
-					+ '</li>';
-					
-					$('#itemList').append(li);
-				});
-
-	    	} else {
-	    		notify('error', json.msg);
-	    	}
-	    	
-	    	$('#loadingDiv').hide();
-	    	
-	    },
-	    error   : function(e){
-	        semafors['ajax'] = false;
-	        //notify('error', TranslationLabels['could_not_complete_request']);
-	    }
-	});
+function itemList(){
+	var postData = new Object();
+    postData.page = nextPage;
+    postData.type = '<%=@item_type%>';
+    postData.store_type = '<%=@store_type%>';
+    postData.order = 'hit DESC';
+	
+	if (searchYn){
+		layer_open_loading("loading_pop_layer",5,"N");
+			
+		setTimeout( function() {
+			// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+			
+			$.ajax({
+			    url     : '/main/itemListCallback',
+			    type    : 'post',
+			    dataType: 'json',
+			    data	: $.param(postData),
+			    async   : false,  
+			    success : function(json){
+			    	collections = json.collections;
+			    	
+			    	layer_close_loading("loading_pop_layer");
+		
+			    	if(json.status){
+		
+						if(collections.length>0) {
+							nextPage++;
+							
+							$.each(collections, function (index, collection) {
+								var cnt_like_user = collection.cnt_like_user
+								var class_like = "like_icon"
+								if(cnt_like_user>0){
+									class_like = "like_icon_on"
+								}
+								
+								var li = '<li>'
+								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+								if(collection.item_type=='C'){
+									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+									+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
+									+ '</div>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
+									+ '</div>'
+									+ '<div style="text-align:right;padding-right:10px;">'
+									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span class="view_icon"></span>'
+									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ '</div>';
+									
+								}else if(collection.item_type=='P'){
+									var priceStr = getMoneyType(collection.price,collection.price_type);
+									
+									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+									+ '</div>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
+									+ priceStr + "&nbsp;"
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+									+ '</div>'
+									+ '<div style="text-align:right;padding-right:10px;">'
+									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span class="view_icon"></span>'
+									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ '</div>';
+								}
+								li += '</div>'
+								+ '</li>';
+								
+								$('#itemList').append(li);
+							});
+							
+						} else {	// 결과값이 없을경우
+							searchYn = false;
+							if(nextPage==1){
+								$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+							} else {
+								$('#itemList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">No results found</li>');
+							}
+						}
+						
+			    	} else {
+			    		searchYn = false;
+			    		notify('error', json.msg);
+			    	}
+			    },
+			    error   : function(e){
+			        searchYn = false;
+			        semafors['ajax'] = false;
+			        //notify('error', TranslationLabels['could_not_complete_request']);
+			    }
+			});
+		}, 10 );
+	}
 }
 
 
-
-
-
-
+// 좋아요
+function like(obj){
+<%	if @session_user_id && @session_user_id!="" %>
+		var item_type = "";
+		var id = obj.id;
+		arrId = id.split("_");
+		if(arrId[0]=="pid") item_type = "P";
+		else if(arrId[0]=="cid") item_type = "C";
+		likeItem(item_type,arrId[1]);
+<%	else %>
+		login_pop('/');
+<%	end %>
+}
 
 
 $(function() {
@@ -270,28 +363,16 @@ $(function() {
 	});
 	
 
+	// 좋아요
+	$( ".like_icon" ).click(function() {
+		like(this);
+	});
+	// 좋아요 취소
+	$( ".like_icon_on" ).click(function() {
+		like(this);
+	});
+
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 var slideshow = $('#slideshow').slideshow({
@@ -379,7 +460,3 @@ $('#transition').bind('change', function(){
   slideshow.options.transition = this.value;
 });
 </script>
-
-
-
- 

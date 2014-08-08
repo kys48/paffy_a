@@ -1,10 +1,26 @@
 <%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
 <%= render :partial => '/common/landing' %>
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
-		<div style="padding:10px 20px 0px 30px;">
-			<h3><%= @searchKey%></h3>
-		</div>
-			
+		
+        <div style="padding:10px 75px 0px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	              <ul class="nav">
+	              	<li <% if @search_key=="Women"%>class="active"<% end %>><a href="/getProductApi?search_key=Women&cmenu=2&cmenu_sub=1">Women</a></li>
+		            <li <% if @search_key=="Bags"%>class="active"<% end %>><a href="/getProductApi?search_key=Bags&cmenu=2&cmenu_sub=2">Bags</a></li>
+		            <li <% if @search_key=="Shoes"%>class="active"<% end %>><a href="/getProductApi?search_key=Shoes&cmenu=2&cmenu_sub=3">Shoes</a></li>
+		            <li <% if @search_key=="Beauty"%>class="active"<% end %>><a href="/getProductApi?search_key=Beauty&cmenu=2&cmenu_sub=4">Beauty</a></li>
+		            <li <% if @search_key=="Jewelry"%>class="active"<% end %>><a href="/getProductApi?search_key=Jewelry&cmenu=2&cmenu_sub=5">Jewelry</a></li>
+		            <li <% if @search_key=="Kids"%>class="active"<% end %>><a href="/getProductApi?search_key=Kids&cmenu=2&cmenu_sub=6">Kids</a></li>
+		            <li <% if @search_key=="Home"%>class="active"<% end %>><a href="/getProductApi?search_key=Home&cmenu=2&cmenu_sub=7">Home</a></li>
+		            <li <% if @search_key=="Men"%>class="active"<% end %>><a href="/getProductApi?search_key=Men&cmenu=2&cmenu_sub=8">Men</a></li>
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
+		
 		<div id="products" class="products">
 			<a name="top"></a>
 			<div class="freshdesignweb">
@@ -25,94 +41,104 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	lastPostFunc();
+	productList();
 });
 
 
 // scroll event
 $(window).scroll(function(){
 	if($(window).scrollTop() == $(document).height() - $(window).height()){
-		if(chkGet) lastPostFunc();
+		productList();
 	}
 });
 
-var chkGet = true;
+var searchYn = true;
 var curPage = 0;
-function lastPostFunc(){
-	$('#loadingDiv').show();
-	
-	//curPage++;
+
+function productList(){
 	var postData = new Object();
 	postData.page = curPage;
-	postData.searchKey = '<%= @searchKey%>';
+	postData.search_key = '<%= @search_key%>';
 	postData.per_page = 16;
 	
-	chkGet = false;
-
 	// rails 에선 느려서 필요시 스크립트로만 가져오는 걸로 대체할것
 
 	var shopstyle_api_key = '<%=SHOPSTYLE_KEY%>';
 	var img_style = 'Large';
 	var per_page = 16;
-	var searchKey = '<%= @searchKey%>';
+	var search_key = '<%= @search_key%>';
 	
-	// rails 에선 느려서 필요시 스크립트로만 가져오는 걸로 대체할것
+	// rails 에선 느려서 필요시 스크립트로만 가져오는 걸로 대체
 	var api_url = 'http://api.shopstyle.com/api/v2/products?pid='+shopstyle_api_key
-				+ '&fts='+encodeURIComponent(searchKey)
+				+ '&fts='+encodeURIComponent(search_key)
 				+ '&offset='+(curPage*per_page)
 				+ '&limit='+per_page;
-
-	$.ajax({
-	    url     : api_url,
-	    type    : 'get',
-	    dataType: 'json',
-	    async   : false,  
-	    success : function(json){
-	    	products = json.products;
-	    	if(products.length>0) {
-				curPage++;
-				$.each(products, function (index, product) {
-					var img_url = product["image"]["sizes"][img_style]["url"];
-					var retailer = product["retailer"]["name"];
-					var product_name = product.name;
-					product_name = cropByte(product_name,40);
-					
-					//var currency	= product["currency"];
-					//var price		= product["price"];
-					var priceLabel	= product["priceLabel"];
-					var li = ''
-					+ '<li>'
-					+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">'
-					+ '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">'
-					+ '<img src="'+img_url+'" onClick="goUrl(\''+product.clickUrl+'\')" style="cursor:pointer">'
-					+ '</div>'
-					+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-					+ '	<span style="color:#000000">'+product_name+'</span><br/>'
-					+ priceLabel + "&nbsp;"
-					+ '	<span style="color:#0088cc">'+retailer+'</span>'
-					+ '</div>'
-					//+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>'
-					+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">&nbsp;</div>';
-					+ '</div>'
-					+ '</li>';
-					
-					$('#itemList').append(li);
-				});
-				chkGet = true;
-				$('#loadingDiv').hide();
-	    	} else {
-	    		//notify('error', json.msg);
-	    		//$('#loadingDiv').html("no more result...")
-	    		$('#loadingDiv').hide();
-	    	}
-	    	
-	    },
-	    error   : function(e){
-	    	semafors['ajax'] = false;
-	        $('#loadingDiv').hide();
-	    }
-	});
+				
+	if(searchYn){
+			
+		layer_open_loading("loading_pop_layer",5,"N");
+		
+		setTimeout( function() {			
 	
+			$.ajax({
+			    url     : api_url,
+			    type    : 'get',
+			    dataType: 'json',
+			    async   : false,  
+			    success : function(json){
+			    	products = json.products;
+			    	
+			    	layer_close_loading("loading_pop_layer");
+			    	
+			    	if(products.length>0) {
+						curPage++;
+						$.each(products, function (index, product) {
+							var img_url = product["image"]["sizes"][img_style]["url"];
+							var retailer = product["retailer"]["name"];
+							var product_name = product.name;
+							product_name = cropByte(product_name,40);
+							
+							//var currency	= product["currency"];
+							//var price		= product["price"];
+							var priceLabel	= product["priceLabel"];
+							var li = ''
+							+ '<li>'
+							+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">'
+							+ '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">'
+							+ '<img src="'+img_url+'" onClick="goUrl(\''+product.clickUrl+'\')" style="cursor:pointer">'
+							+ '</div>'
+							+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+							+ '	<span style="color:#000000">'+product_name+'</span><br/>'
+							+ priceLabel + "&nbsp;"
+							+ '	<span style="color:#0088cc">'+retailer+'</span>'
+							+ '</div>'
+							//+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>'
+							+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">&nbsp;</div>';
+							+ '</div>'
+							+ '</li>';
+							
+							$('#itemList').append(li);
+						});
+						
+						
+			    	} else {
+			    		searchYn = false;
+						if(nextPage==1){
+							$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+						} else {
+							$('#itemList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">No results found</li>');
+						}
+			    	}
+			    	
+			    },
+			    error   : function(e){
+			    	searchYn = false;
+			    	semafors['ajax'] = false;
+			        
+			    }
+			});
+		}, 10 );
+	}
 }
 
 function goUrl(url){

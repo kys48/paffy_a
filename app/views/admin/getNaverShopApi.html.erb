@@ -2,7 +2,7 @@
 <%= render :partial => '/common/landing' %>
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
 		<div style="padding:10px 20px 0px 30px;">
-			<h3><%= @searchKey%></h3>
+			<h3><%= @search_key%></h3>
 		</div>
 			
 		<div id="products" class="products">
@@ -44,7 +44,7 @@ function lastPostFunc(){
 	//curPage++;
 	var postData = new Object();
 	postData.page = curPage;
-	postData.searchKey = '<%= @searchKey%>';
+	postData.search_key = '<%= @search_key%>';
 	postData.per_page = 16;
 	postData.sort = 'sim';
 	

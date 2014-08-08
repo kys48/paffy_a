@@ -131,6 +131,7 @@ puts("start~")
               product.save!
               
             else
+              product = Product.new
               
               product_file_name = ""
               product_content_type = ""
@@ -140,24 +141,30 @@ puts("start~")
                 product_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
                 product_content_type = "image/png"
           
-                r = open(URI.parse(img_url))
+                #r = open(URI.parse(img_url))
+                r = open(img_url)
                 bytes = r.read
                 tmpimg = Magick::Image.from_blob(bytes).first
                 tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
             
-                tmpimg.resize!(220,220)
+                #tmpimg.resize!(220,220)
+                tmpimg.resize_to_fit!(220,220)
                 tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
             
-                tmpimg.resize!(75,75)
+                #tmpimg.resize!(75,75)
+                tmpimg.resize_to_fit!(75,75)
                 tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
                 
                 # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
                 %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
                 
+                # 이미지 대표색상코드 추출
+                colors = Product.get_product_color(product_file_name)
+                @product.color_code_o = colors[0] 
+                @product.color_code_s = colors[1]
               end
               
               # DB 저장
-              product = Product.new
               product.subject = name
               product.price = price.to_i
               product.price_type = "KRW"
@@ -214,7 +221,7 @@ puts("end~")
   def getNaverShopApi
     page = params[:page]||1
     per_page = params[:per_page]||16
-    searchKey = params[:searchKey]||""
+    search_key = params[:search_key]||""
     searchDomain = params[:searchDomain]||""
     cate_code = params[:cate_code]||""
     sort = params[:sort]||"sim"
@@ -222,7 +229,7 @@ puts("end~")
     product_list = []
     
     xmlurl = "http://openapi.naver.com/search?key=" + NAVER_API_KEY +
-             "&query=" + url_encode(searchKey) +
+             "&query=" + url_encode(search_key) +
              "&start=" + (((page.to_i-1)*per_page.to_i)+1).to_s + 
              "&display=" + per_page + 
              "&target=shop" + 
@@ -353,19 +360,27 @@ puts("start!")
               product_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
               product_content_type = "image/png"
         
-              r = open(URI.parse(image))
+              #r = open(URI.parse(image))
+              r = open(image)
               bytes = r.read
               tmpimg = Magick::Image.from_blob(bytes).first
               tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
           
-              tmpimg.resize!(220,220)
+              #tmpimg.resize!(220,220)
+              tmpimg.resize_to_fit!(220,220)
               tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
           
-              tmpimg.resize!(75,75)
+              #tmpimg.resize!(75,75)
+              tmpimg.resize_to_fit!(75,75)
               tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
               
               # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
               %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+              
+              # 이미지 대표색상코드 추출
+              colors = Product.get_product_color(product_file_name)
+              add_product.color_code_o = colors[0] 
+              add_product.color_code_s = colors[1]
             end
   
             # 상품저장
@@ -421,8 +436,6 @@ puts(Time.zone.now)
   
   # 상품 리스트
   def productList
-
-    
     respond_to do |format|
       format.html # productList.html.erb
       format.json { render json: {status: true} }
@@ -461,6 +474,11 @@ puts(Time.zone.now)
         # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
         %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
       end
+      
+      # 이미지 대표색상코드 추출
+      colors = Product.get_product_color(product_file_name)
+      product.color_code_o = colors[0] 
+      product.color_code_s = colors[1]
         
     end
 =end    
@@ -484,9 +502,6 @@ puts(Time.zone.now)
       
       #if i<100
         if img_file_name && img_file_name!=''
-          #puts(img_file_name)
-          #puts("remove_bg.bat #{RAILS_ROOT}/public/data/product/original/ #{img_file_name} #{RAILS_ROOT}/public/data/product/removebg/ 7")
-          
           pattern = /\//
           last = img_file_name.rindex(pattern)
           
@@ -506,6 +521,40 @@ puts(Time.zone.now)
     
     respond_to do |format|
       format.json { render :json => { status: true, product_list: products }.to_json }
+    end
+  end
+  
+  # 상품 이미지 색상추출 ajax
+  def setColorCallback
+    page = params[:page]||1
+    params[:page] = 1
+    per_page = params[:per_page]||20
+    
+    products = Product.paginate(page: page, per_page: per_page)
+                      .where("color_code_o is null")
+                      .order("id ASC")
+    
+    puts("===================================")
+    puts("products count : #{products.size}")
+    rcnt = 0
+    puts("start...[" + Time.zone.now.to_s+"]")
+    
+    products.each_with_index do |product, i|
+      if product.img_file_name && product.img_file_name!=''
+        colors = Product.get_product_color(product.img_file_name)
+        product.color_code_o = colors[0] 
+        product.color_code_s = colors[1]
+        product.save!
+  
+        #products[rcnt] = product.img_file_name
+      end
+      rcnt += 1
+    end
+    
+    puts("end.....[" + Time.zone.now.to_s+"]")
+    
+    respond_to do |format|
+      format.json { render :json => { status: true }.to_json }
     end
   end
 

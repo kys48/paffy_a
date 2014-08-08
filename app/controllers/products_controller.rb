@@ -40,6 +40,9 @@ class ProductsController < ApplicationController
 
   # 상품 url 포스팅하기
   def post
+    params[:cmenu] = "5"
+    params[:cmenu_sub] = "1"
+    
     if session[:user_id]
       respond_to do |format|
         format.html # new.html.erb
@@ -153,11 +156,12 @@ class ProductsController < ApplicationController
     page = params[:page]||1
     item_type = params[:type]
     #user = User.where(profile_id: @profile_id).first
-
+puts params[:myfeed]
     # 찜한 상품, 콜렉션
     collections = Collection.new
     if profile_id
       params[:id] = profile_id
+      params[:myfeed] = "Y"
       collections = Collection.itemList(params)
     end
     

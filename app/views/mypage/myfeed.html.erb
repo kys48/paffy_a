@@ -1,70 +1,26 @@
 <%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
 <%= render :partial => '/common/landing' %>
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
-		<div style="padding-top:30px;"></div>
+        <div style="padding:10px 75px 0px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	              <ul class="nav">
+	                <li <% if @item_type!="P" && @item_type!="C" %>class="active"<% end %>><a href="/mypage/myfeed">All</a></li>
+	                <li <% if @item_type=="P" %>class="active"<% end %>><a href="/mypage/myfeed?type=P">Product</a></li>
+	                <li <% if @item_type=="C" %>class="active"<% end %>><a href="/mypage/myfeed?type=C">Set&collection</a></li>
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
 			
 		<div id="products" class="products">
 			<a name="top"></a>
 			<div class="freshdesignweb">
 			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
 				    <ul id="itemList" class="portfolio_list">
-				    <% @collections.each do |collection| %>
-						<li>
-						<% if collection.item_type=='C'%>
-							<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">
-							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
-							 		<img src="/data/collection/thumb/<%= collection.img_file_name%>" onClick="document.location.href='/collections/<%= collection.id%>'" style="cursor:pointer">
-							 	</div>
-							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
-							 		<span style="color:#000000"><%= collection.subject%></span><br/>
-							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088cc"><%=collection.profile_id%></a>
-							 	</div>
-							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
-							</div>
-						    	
-					    <% elsif collection.item_type=='P'
-								price_type_str = "￦"
-								price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-							    case collection.price_type
-							      when "KRW"
-							        price_type_str = "￦"
-							        price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-							      when "USD"
-							      	price_type_str = "$"
-							      	price_str = number_to_currency(collection.price, :unit => price_type_str)
-							      when "JPY"
-							      	price_type_str = "￥"
-							      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-							      when "EUR"
-							      	price_type_str = "€"
-							      	price_str = number_to_currency(collection.price, :unit => price_type_str)
-							      when "GBP"
-							      	price_type_str = "￡"
-							      	price_str = number_to_currency(collection.price, :unit => price_type_str)
-							      when "CNY"
-							      	price_type_str = "元"
-							      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
-							    end
-					    %>
-							<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">
-							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
-							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/products/<%= collection.id%>'" style="cursor:pointer">
-							 	</div>
-							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
-							 		<span style="color:#000000"><%= collection.subject%></span><br/>
-							 		<%= price_str%>&nbsp;
-							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088CC"><%=collection.profile_id%></a>
-							 	</div>
-							 	<div style="text-align:right;color:#aaaaaa;font-size:11px"><%=collection.cnt_like%> Like / <%=collection.hit%> View</div>
-							</div>
-					    <% end %>
-						</li>
-				    <% end %>
 				    </ul>
-			    </div>
-				<div id="loadingDiv" style="display:none;text-align:center;padding:10px;font-size:15px;">
-			    	loading more...
-			    	<img src="/images/common/loading5.gif">
 			    </div>
 			</div>
 		</div>
@@ -74,99 +30,123 @@
 	<a href="#top" id="top-link" class="floatingLink">top</a>
 
 <script type="text/javascript">
-/*
 $(document).ready(function(){
 	$(function() {
-		$('ul.da-thumbs > li').hoverdir();
+		itemList();
 	});
 });
-*/
+
 // scroll event
 $(window).scroll(function(){
 	if($(window).scrollTop() == $(document).height() - $(window).height()){
-		lastPostFunc();
+		itemList();
 	}
 });
 
-var nextPage = 2;
-function lastPostFunc(){
-	//nextPage++;
-	$('#loadingDiv').show();
+var nextPage = 1;
+function itemList(){
+	layer_open_loading("loading_pop_layer",5,"N");
 	
     var postData = new Object();
     postData.page = nextPage;
     postData.id = '<%= @profile_id%>';
     postData.type = '<%= @item_type%>';
-    postData.order = 'RAND()';
+    postData.order = 'hit DESC';
     postData.myfeed = 'Y';
-
-	// ajax post 에서 세션 유지 시키기 위함
-	$.ajaxSetup({
-	  beforeSend: function(xhr) {
-	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
-	  }
-	});
+    
+    setTimeout( function() {
 	
-	$.ajax({
-	    url     : '/mypage/itemListCallback',
-	    type    : 'post',
-	    dataType: 'json',
-	    data	: $.param(postData),
-	    async   : false,  
-	    success : function(json){
-	    	collections = json.collections;
-
-	    	if(json.status){
-
-				if(collections.length>0) nextPage++;
-				$.each(collections, function (index, collection) {
-					var li = '<li>'
-					+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
-					
-					if(collection.item_type=='C'){
-						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-						+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
-						+ '</div>'
-						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-						+ '</div>'
-						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
-					}else if(collection.item_type=='P'){
-						var priceStr = getMoneyType(collection.price,collection.price_type);
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+		
+		$.ajax({
+		    url     : '/mypage/itemListCallback',
+		    type    : 'post',
+		    dataType: 'json',
+		    data	: $.param(postData),
+		    async   : false,  
+		    success : function(json){
+		    	collections = json.collections;
+		    	
+		    	layer_close_loading("loading_pop_layer");
+	
+		    	if(json.status){
+	
+					if(collections.length>0) nextPage++;
+					$.each(collections, function (index, collection) {
+						var cnt_like_user = collection.cnt_like_user
+						var class_like = "like_icon"
+						if(cnt_like_user>0){
+							class_like = "like_icon_on"
+						}
 						
-						li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-						+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
-						+ '</div>'
-						+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-						+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-						+ priceStr + "&nbsp;"
-						+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-						+ '</div>'
-						+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
-					}
-					li += '</div>'
-					+ '</li>';
-					
-					$('#itemList').append(li);
-				});
+						var li = '<li>'
+						+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+						if(collection.item_type=='C'){
+							li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+							+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
+							+ '</div>'
+							+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+							+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+							+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+							+ '</div>'
+							+ '<div style="text-align:right;padding-right:10px;">'
+							+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+							+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+							+ '	<span class="view_icon"></span>'
+							+ '	<span class="view_count">'+collection.hit+'</span>'
+							+ '</div>';
+						}else if(collection.item_type=='P'){
+							var priceStr = getMoneyType(collection.price,collection.price_type);
+							
+							li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+							+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+							+ '</div>'
+							+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+							+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+							+ priceStr + "&nbsp;"
+							+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+							+ '</div>'
+							+ '<div style="text-align:right;padding-right:10px;">'
+							+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+							+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+							+ '	<span class="view_icon"></span>'
+							+ '	<span class="view_count">'+collection.hit+'</span>'
+							+ '</div>';
+						}
+						li += '</div>'
+						+ '</li>';
+						
+						$('#itemList').append(li);
+					});
+	
+		    	} else {
+		    		notify('error', json.msg);
+		    	}
+		    },
+		    error   : function(e){
+		        semafors['ajax'] = false;
+		        //notify('error', TranslationLabels['could_not_complete_request']);
+		    }
+		});
+	}, 10 );
+}
 
-	    	} else {
-	    		notify('error', json.msg);
-	    	}
-	    	
-	    	$('#loadingDiv').hide();
-	    	
-	    },
-	    error   : function(e){
-	        semafors['ajax'] = false;
-	        //notify('error', TranslationLabels['could_not_complete_request']);
-	    }
-	});
+// 좋아요
+function like(obj){
+<%	if @session_user_id && @session_user_id!="" %>
+		var item_type = "";
+		var id = obj.id;
+		arrId = id.split("_");
+		if(arrId[0]=="pid") item_type = "P";
+		else if(arrId[0]=="cid") item_type = "C";
+		likeItem(item_type,arrId[1]);
+<%	else %>
+		login_pop('/');
+<%	end %>
 }
 </script>
-
-
-
-
-

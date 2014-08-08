@@ -45,7 +45,14 @@ function postCheck(){
 		frm.submit();
 <%	else %>
 		backurl = encodeURIComponent(document.location.href);
-		window.open("/login_pop?backurl="+backurl,"Paffy 로그인","width=450,height=400,scrollbars=no,resizeable=no,left=400,top=200");
+		
+		if(CHKMOBILE=='Y'){
+			document.location.href = "/login_pop?target=self&backurl="+backurl,"Paffy 로그인","width=450,height=400,scrollbars=no,resizeable=no,left=400,top=200";
+		} else {
+			document.location.href = "/login_pop?target=self&backurl="+backurl,"Paffy 로그인","width=450,height=400,scrollbars=no,resizeable=no,left=400,top=200";
+			//layer_open("/login_pop?backurl="+backurl,400,330,"no","pop_layer","pop_content");
+		}
+		
 <%	end %>
 	}	
 }
@@ -53,6 +60,11 @@ function postCheck(){
 function reload(){
 	document.location.href = document.location.href;
 }
+
+
+$(function() {
+	parent.resizePostFrame();
+});
 </script>
 
 <dl class="layer_cnt">

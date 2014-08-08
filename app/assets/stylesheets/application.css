@@ -5,3 +5,46 @@
  *= require_self
  *= require_tree .
 */
+
+.like_icon {
+	display:inline-block;
+	width:16px;
+	height:15px;
+	background-image:url('/images/common/icon_like.png');
+	background-repeat:no-repeat;
+	cursor:pointer;
+}
+
+.like_icon_on {
+	display:inline-block;
+	width:16px;
+	height:15px;
+	background-image:url('/images/common/icon_like_on.png');
+	background-repeat:no-repeat;
+	cursor:pointer;
+}
+
+.like_count {
+	display:inline-block;
+	text-align:left;
+	color:#aaaaaa;
+	font-size:12px;
+	line-height:14px;
+}
+
+.view_icon {
+	display:inline-block;
+	margin-left:10px;
+	width:16px;
+	height:15px;
+	background-image:url('/images/common/icon_view.png');
+	background-repeat:no-repeat;
+}
+
+.view_count {
+	display:inline-block;
+	text-align:left;
+	color:#aaaaaa;
+	font-size:12px;
+	line-height:14px;
+}

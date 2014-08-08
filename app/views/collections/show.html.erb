@@ -21,7 +21,6 @@
 <%= javascript_include_tag "/js/collection/jquerypp.custom.js" %>
 <%= javascript_include_tag "/js/collection/sprintf.min.js" %>
 <%= javascript_include_tag "/js/kakao-1.0.8.min.js" %>
-<%= javascript_include_tag "/js/checkMobile.js" %>
 <!--script type="text/javascript" src="/vassets/b263/javascripts/tool/restapi.tool.js"></script-->
 
 <script type="text/javascript">
@@ -236,7 +235,7 @@ function goUrl(url){
 <meta property="og:site_name"       content="paffy.com"/>
 <meta property="og:description"     content="<%= @collection.contents%>"/>
 <meta property="og:type"			content="paffy_share:fashion" />
-<meta property="og:image"     		content="<%= request_host%><%= @collection.img.url(:original)%>"/>
+<meta property="og:image"     		content="<%= request_host%><%= @collection.img.url(:thumb)%>"/>
 
 <%= render :partial => '/common/header_bottom' %>
 

@@ -1,6 +1,51 @@
 <%= render :partial => '/common/pop_header_top' %>
 <%= stylesheet_link_tag    "/css/signin.css", :media => "all" %>
 <%= javascript_include_tag "/js/kakao-1.0.8.min.js" %>
+
+<%= render :partial => '/common/pop_header_bottom' %>
+
+<div class="form-signin" style="padding-top:0px;">
+	<h4 class="form-signin-heading" style="font-family:sans-serif;font-style:italic;">
+		Sign in to Paffy
+	</h4>
+	
+	<%= form_tag "/sessions/createpop" do %>
+<input type="hidden" name="backurl" value="<%= @backurl%>" />
+<input type="hidden" name="target" value="<%= @target%>" />
+
+	  <div>
+		  <div style="float:left;"><a href="javascript:authFB()"><img src="/images/common/btn_login_facebook.png"></a></div>
+		  <div style="float:right;"><a href="javascript:loginWithKakao()"><img src="/images/common/btn_login_kakao.png"></a></div>
+		  <div style="clear:both;"></div>
+	  </div>
+	  <hr>
+	  
+	  <%= text_field_tag :email, params[:email], label: "이메일", class: "input-block-level", placeholder: "이메일을 입력하세요", help: "사용하시는 이메일 주소를 입력하세요", required: true, autofocus: true, pattern: '[^@]+@[^@]+\.[a-zA-Z]{2,6}' %>
+	  <%= password_field_tag :password, params[:password], label: "비밀번호", class: "input-block-level", placeholder: "비밀번호를 입력하세요", required: true %>
+	  <label class="checkbox">
+	    <input type="checkbox" value="remember-me"> Remember me
+	  </label>
+	  <div style="padding-top:10px;">
+	  	<%= submit_tag "로그인", class: "btn btn-primary", style: "width:100%" %>
+	  </div>
+	  
+	<% end %>
+	
+<div id="kakao"></div>	
+
+	<div>
+	<%= link_to "회원가입", sign_up_path %>
+	</div>
+	
+	<% flash.each do |name, msg| %>
+	  <div style="border:1px solid black; background-color:#f4f4f4; padding:10px; font-weight: bold;">
+	  	<%= content_tag :div, msg, :id => "flash_#{name}" %>
+	  </div>
+	<% end %>
+
+</div>
+
+
 <script language="JavaScript">
 Kakao.init('<%= KAKAO_JS_KEY%>');
 var refreshToken = Kakao.Auth.getRefreshToken();	// 로그인시 발급된 Token
@@ -18,6 +63,7 @@ function loginWithKakao() {
 				url: '/v1/user/me',
 				success: function(data) {
 					//alert(JSON.stringify(data));
+					layer_open_loading("loading_pop_layer",8,"Y");
 					authKakao(data);
 				}
 			});
@@ -45,48 +91,31 @@ function authKakao(data){
 }
 
 function authFB(){
-	window.open("/auth/facebook","페이스북 로그인","width=450,height=400,scrollbars=yes,resizeable=yes");
+	window.open("/auth/facebook","login facebook","width=450,height=400,scrollbars=yes,resizeable=yes");
 }
 
 function reload(){
-	opener.reload();
-	self.close();
+	layer_open_loading("loading_pop_layer",8,"Y");
+<% if @backurl && @backurl!='' %>
+	<% if @target=='self' %>
+		document.location.href = '<%=@backurl%>';
+	<% else %>
+		parent.document.location.href = '<%=@backurl%>';
+	<% end %>
+<% else %>
+	<% if @target=='self' %>
+		document.location.href = document.location.href;
+	<% else %>
+		parent.document.location.href = parent.document.location.href;
+	<% end %>
+<% end %>
+	layer_close();
 }
+
+
+
+
+
 </script>
 
-<%= render :partial => '/common/pop_header_bottom' %>
-
-<div class="form-signin">
-	<h2 class="form-signin-heading">PAFFY 로그인</h2>
-	
-	<%= form_tag "/sessions/createpop" do %>
-<input type="hidden" name="backurl" value="<%= params[:backurl]%>" />
-	  <%= text_field_tag :email, params[:email], label: "이메일", class: "input-block-level", placeholder: "이메일을 입력하세요", help: "사용하시는 이메일 주소를 입력하세요", required: true, autofocus: true, pattern: '[^@]+@[^@]+\.[a-zA-Z]{2,6}' %>
-	  <%= password_field_tag :password, params[:password], label: "비밀번호", class: "input-block-level", placeholder: "비밀번호를 입력하세요", required: true %>
-	  <label class="checkbox">
-	    <input type="checkbox" value="remember-me"> Remember me
-	  </label>
-	  <div style="padding-top:10px;">
-	  	<%= submit_tag "로그인", class: "btn btn-primary", style: "width:100%" %>
-	  </div>
-	  <div style="padding-top:10px;">
-		  <%= link_to "Facebook 로그인", "javascript:authFB()", class: "btn btn-info", style: "width:40%" %>
-		  <%= link_to "카카오 로그인", "javascript:loginWithKakao()", id: "custom-login-btn", class: "btn btn-warning", style: "width:40%" %>
-	  </div>
-	  
-	<% end %>
-	
-<div id="kakao"></div>	
-
-	<div>
-	<%= link_to "회원가입", sign_up_path %>
-	</div>
-	
-	<% flash.each do |name, msg| %>
-	  <div style="border:1px solid black; background-color:#f4f4f4; padding:10px; font-weight: bold;">
-	  	<%= content_tag :div, msg, :id => "flash_#{name}" %>
-	  </div>
-	<% end %>
-
-</div>
 <%= render :partial => '/common/pop_footer' %>

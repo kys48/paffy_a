@@ -3,11 +3,23 @@
 <div style="border:1px solid black; padding:20px;">
 	1. 상품 배경이미지 제거<br/><br/>
 	<%= button_tag "호출하기", onclick: "removeBg();" %>
-	<div id="removeBgDv" style="font-size:12px;text-align:left; ">
-	</div>
+	<div id="removeBgDv" style="font-size:12px;text-align:left; "></div>
 </div>
 <div style="border:1px solid black; padding:20px; margin-top:10px;">
-	2. 엑셀파일로 상품등록<br/><br/>
+	2. 상품 대표색상 추출<br/><br/>
+	시작페이지 수 : <input type="text" id="color_page" name="color_page" value="1" style="width:50px">,
+	변환데이터 수 : <input type="text" id="color_per_page" name="color_per_page" value="16" style="width:50px">
+	반복 횟수 : <input type="text" id="color_loop" name="color_loop" value="3" style="width:50px">
+	<%= button_tag "호출하기", onclick: "initColor();" %>
+	
+	<div id="colorDv" style="font-size:12px;text-align:left;border:1px solid red;">
+		&nbsp;
+	</div>
+	<%= button_tag "다음페이지", onclick: "colorListNext()" %>
+	총 변환 상품 수:<input type="text" id="colorDvCnt" name="colorDvCnt" value="0" style="width:40px;">
+</div>
+<div style="border:1px solid black; padding:20px; margin-top:10px;">
+	3. 엑셀파일로 상품등록<br/><br/>
 	검색어 : <input type="text" id="search_key" name="search_key" value="" style="width:150px">,
 	카테고리코드 : <input type="text" id="cate_code" name="cate_code" value="" style="width:100px">,
 	시작 : <input type="text" id="page" name="page" value="1" style="width:50px">,
@@ -17,10 +29,11 @@
 	<div id="productDv" style="width:100%; height:500px; overflow:auto; border:1px solid red; font-size:12px;text-align:left; ">
 	</div>
 	<%= button_tag "다음페이지", onclick: "getProductListNext()" %>
-	총상품수:<input type="text" id="productDvCnt" name="productDvCnt" value="0" style="width:40px;">
+	총 상품수:<input type="text" id="productDvCnt" name="productDvCnt" value="0" style="width:40px;">
 </div>
 
 <script language="JavaScript">
+// 배경이미지 제거
 function removeBg(){
 	var postData = new Object();
 	
@@ -60,10 +73,119 @@ function removeBg(){
 	});
 }
 
+// 2. 다음 페이지 대표색상 추출
+// 초기화
+function initColor(){
+	$('#colorDvCnt').val(0);
+	$('#colorDv').html('');
+	$('#colorDv').append('<strong style="color:red">start!</strong>');
+	setTimeout( function() {
+		colorList();
+	}, 100 );
+	
+}
+
+// 다음 페이지
+function colorListNext(){
+	page = parseInt($("#color_page").val());
+	loop = parseInt($("#color_loop").val());
+	if(page>=loop){
+		$('#colorDv').append('==＞<strong style="color:blue">end!</strong>');
+	} else {
+		$("#color_page").val(page+1);
+		colorList();
+	}
+	
+}
+
+// 대표색상 추출
+function colorList(){
+	page = $("#color_page").val();
+	per_page = $("#color_per_page").val();
+	
+	chkpass = true;
+	
+	if(page==""){
+		alert("시작값을 입력하세요.");
+		chkpass = false;
+		$("#color_page").focus();
+	}
+	if(per_page==""){
+		alert("표시줄 수를 입력하세요.");
+		chkpass = false;
+		$("#color_per_page").focus();
+	}
+	
+	if(chkpass){
+		var postData = new Object();
+		postData.page = page;
+		postData.per_page = per_page;
+	
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+	
+		$.ajax({
+		    url     : '/admin/setColorCallback',
+		    type    : 'post',
+		    data	: $.param(postData),
+		    async   : false,  
+		    success : function(json){
+		    	//products = json.product_list;
+		    	rcnt = parseInt($("#colorDvCnt").val());
+		    	//rcnt += products.length;
+		    	rcnt += parseInt(per_page);
+		    	$("#colorDvCnt").val(rcnt);
+		    	$("#colorDv").append("==＞page("+page+")");
+		    	
+/*	
+		    	if(products.length>0) {
+
+					$.each(products, function (index, product) {
+						var url = product.url;
+						var img_file_name = product.img_file_name;
+						var subject = product.subject;
+	
+						var li = ''
+						+ '<div style="border-bottom:1px dashed #cccccc;">'
+						+ '<img src="/data/product/original/'+img_file_name+'" style="width:100px;height:100px;"> &nbsp; '
+						+ '<a href="/collections/pshow/'+product.id+'" target="_blank">'+subject+'</a>'
+						+ ' &nbsp; <a href="'+url+'" target="_blank">(원본링크)</a>'
+						//+ '<input type="text" value="'+item_url+'">'
+						+ '</div>';
+	
+						$('#colorDv').append(li);
+						
+					});
+
+		    	} else {
+		    		//notify('error', json.msg);
+		    		// the end
+		    		//alert("종료~!!!");
+		    	}
+*/		    	
+				setTimeout(function() {
+					colorListNext(); // 다음페이지 call
+				}, 100);
+	
+				
+		    },
+		    error   : function(e){
+		    	$('#colorDv').append("----------error-------------");
+		    }
+		});
+	}
+
+}
+
+
 
 function getProductListNext(){
 	page = parseInt($("#page").val());
-	if(page>11){
+	if(page>2){
 		alert("종료~!");
 	} else {
 		$("#page").val(page+1);
@@ -145,7 +267,7 @@ function getProductList(){
 						//+ '<input type="text" value="'+item_url+'">'
 						+ '</div>';
 
-						$('#productDv').append(li);
+						//$('#productDv').append(li);
 						
 					});
 					chkGet = true;
@@ -157,7 +279,7 @@ function getProductList(){
 /*		    	
 				setTimeout(function() {
 					
-					getNaverNext(); // 다음페이지 call
+					getProductListNext(); // 다음페이지 call
 				}, 100);
 */
 		    },

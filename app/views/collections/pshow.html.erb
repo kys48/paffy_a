@@ -21,7 +21,6 @@
 <%= javascript_include_tag "/js/collection/jquerypp.custom.js" %>
 <%= javascript_include_tag "/js/collection/sprintf.min.js" %>
 <%= javascript_include_tag "/js/kakao-1.0.8.min.js" %>
-<%= javascript_include_tag "/js/checkMobile.js" %>
 <!--script type="text/javascript" src="/vassets/b263/javascripts/tool/restapi.tool.js"></script-->
 
 <script type="text/javascript">
@@ -355,12 +354,12 @@ function goUrl(url){
          <!----------------------------start page------------------------------->
         <div id="page">
           <!----------------------------start container------------------------------->                              
-          
         
     <div class="centerHolder cf">
+   	
         <div class="left whiteBox">
             <div class="mainImage">
-            	<div style="font-weight:bold;font-size:17px;color:#000000;"><%= @product.subject %></div>
+            	<div style="font-weight:bold;font-size:17px;color:#000000;"><%= strip_tags(@product.subject) %></div>
             	<div style="padding:5px 0px 5px 0px;">
             		<%= link_to @user.user_name, '/mypage/'+@user.profile_id, class: "blue", target: "_blank"%>님이
 <%

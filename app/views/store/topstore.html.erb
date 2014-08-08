@@ -1,20 +1,24 @@
 <%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
 <%= render :partial => '/common/landing' %>
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
-		
-		<ul>
-			<li>
-				<a href="/store/topstore?store_type=F" <% if @store_type=="F" %> class="active" <% end %> >Global</a>
-			</li>
-			<li>
-				<a href="/store/topstore?store_type=I" <% if @store_type=="I" %> class="active" <% end %> >Recommend</a>
-			</li>
-		</ul>
+
+        <div style="padding:10px 75px 0px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	              <ul class="nav">
+	                <li <% if @store_type=="I" %>class="active"<% end %>><a href="/store/topstore?store_type=I">국내</a></li>
+	                <li <% if @store_type=="F" %>class="active"<% end %>><a href="/store/topstore?store_type=F">해외</a></li>
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
 		
 		<div id="products" class="products">
 			<a name="top"></a>
 			<div class="freshdesignweb">
-			    <div class="image_grid portfolio_2col" style="padding-left:60px;">
+			    <div class="image_grid portfolio_2col" style="padding-left:40px;">
 				    <ul id="itemList" class="portfolio_list">
 <%
 	rcnt = 0
@@ -24,7 +28,7 @@
 		follow_count = store_list[2].to_i
 %>
 <li>
-	<div style="width:480px;height:300px;border:1px solid #cccccc;padding:7px;">
+	<div style="width:480px;height:300px;border:1px solid #cccccc;padding:10px;">
 	 	<table style="height:45px;">
 	 		<tr>
 	 			<td style="width:60px;text-align:left">
@@ -85,6 +89,10 @@
 <script language="JavaScript">
 // 팔로우하기
 function follow(follow_id){
+	
+<%
+	if session[:user_id] && session[:user_id]!=""
+%>	
     var postData = new Object();
     postData.follow_id = follow_id;
     postData.follow_type = "U";
@@ -116,6 +124,13 @@ function follow(follow_id){
         error   : function(e){
         }
     });
+<%
+	else
+%>
+	login_pop(document.location.href);
+<%
+	end
+%>
 }
 
 // 제휴링크 변환

@@ -77,3 +77,6 @@ gem "shopsense-ruby", :git => "git://github.com/PopSugar/ruby-popsugar-shopping-
 gem "json"
 
 #gem 'rack-cors', :require => 'rack/cors'
+gem "colorscore"
+gem "paleta"
+gem "goog_currency"

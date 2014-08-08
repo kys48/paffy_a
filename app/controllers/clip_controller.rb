@@ -53,17 +53,27 @@ class ClipController < ApplicationController
       dataFilePath = "/public/data/product/"
       product_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
   
-      tmpimg = Magick::Image.read(@item_imgurl).first
+      #tmpimg = Magick::Image.read(@item_imgurl).first
+      r = open(@item_imgurl)
+      bytes = r.read
+      tmpimg = Magick::Image.from_blob(bytes).first
       tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
       
-      tmpimg.resize!(220,220)
+      #tmpimg.resize!(220,220)
+      tmpimg.resize_to_fit!(220,220)
       tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
       
-      tmpimg.resize!(75,75)
+      #tmpimg.resize!(75,75)
+      tmpimg.resize_to_fit!(75,75)
       tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
       
       # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
       %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+      
+      # 이미지 대표색상코드 추출
+      colors = Product.get_product_color(product_file_name)
+      @product.color_code_o = colors[0] 
+      @product.color_code_s = colors[1]
       
       @product.subject    = @item_subject
       @product.price      = @item_price

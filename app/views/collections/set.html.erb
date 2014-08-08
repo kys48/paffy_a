@@ -340,14 +340,9 @@ $(function() {
         
         
     <div class="whiteHeader tabHolder cf" style="text-align:left; padding-left:20px; font-size:14px;">
-     	<a href="javascript:changeType(1)" id="menu1" class="publish bBlue small" style="width:150px">Items</a>   
-     	<a href="javascript:changeType(2)" id="menu2" class="publish bGray small" style="width:150px">Favorite</a>
+     	<a href="javascript:changeType(1)" id="menu1" class="publish bBlue small" style="width:150px">Favorite</a>
+     	<a href="javascript:changeType(2)" id="menu2" class="publish bGray small" style="width:150px">Items</a>   
      	<a href="javascript:changeType(3)" id="menu3" class="publish bGray small" style="width:150px">My Items</a>
-        <!--ul id="tabHolder" class="tabs left">
-        	<li><a href="#" class="publish bBlue small" style="color:white">Items</a></li>
-        	<li><a href="#">Favorite</a></li>
-        	<li><a href="#">My Items</a></li>
-        </ul-->
     </div>
                     
     <div id="Dashboard">
@@ -438,165 +433,203 @@ $(function() {
 
 
 var itemType = 1;	// 상품type
-var curPage = 0;
+var cpage = 0;
+
+function init(){
+	cpage = 0;
+	$("#itemList").empty();
+}
+
+// 색상 검색
+function searchColor(code){
+	init();
+	$(".color_palette").css("border","2px solid #ffffff");
+	$("#color_code").val(code);
+	if(code!="") $("#color_"+code).css("border","2px solid #777777");
+	itemList();
+}
+
+// 카테고리 검색
+function searchCate(stat){
+	var code = "";
+	switch (stat){
+		case 0: code=""; break;
+		case 1: code="Women"; break;
+		case 2: code="Bags"; break;
+		case 3: code="Shoes"; break;
+		case 4: code="Beauty"; break;
+		case 5: code="Jewelry"; break;
+		case 6: code="Kids"; break;
+		case 7: code="Home"; break;
+		case 8: code="Men"; break;
+	}
+	init();
+	$("#cate_code").val(code);
+	$(".smenu1_sub").removeClass("active");
+	if(stat>0){
+		$("#smenu1_sub"+stat).addClass("active");
+	}
+	itemList();
+}
+
+function goPage(val){
+	init();
+	cpage = val-1;
+	itemList();
+}
 
 // 상품 리스트를 가져온다
-function lastPostFunc(goPage){
-	curPage = goPage-1;
-	chkGet = false;
-	
-	var postData = new Object();
-	
+function itemList(){
+	var search_key = $('#item_search_key').val();
 	var shopstyle_api_key = '<%=SHOPSTYLE_KEY%>';
 	var per_page = 30;
-	var searchKey = $('#category').val();
+	var cate_code = $('#cate_code').val();
 
-	if(itemType != 3 && searchKey==""){
-		$('#itemList').html("");
-		$('#pagingDv').html("");
-	} else {
-		var api_url = '';
-		var method_type = 'get';
-
-		if(itemType==1){	// shop style 
-			method_type = 'get';
-			api_url = 'http://api.shopstyle.com/api/v2/products?pid='+shopstyle_api_key
-					+ '&fts='+encodeURIComponent(searchKey)
-					+ '&offset='+(curPage*per_page)
-					+ '&limit='+per_page;
-			
-		} else if(itemType==2){	// DB
-			method_type = 'post';
-			//api_url = '/products/productListCallback?page='+(curPage+1)+'&per_page='+per_page;
-			api_url = '/products/productListCallback';
-			
-			postData.page = curPage+1;
-			postData.cate_code = $('#category').val();
-			postData.per_page = 30;
-			
-		} else if(itemType==3){	// My items
-			method_type = 'post';
-			//api_url = '/mypage/itemListCallback?page='+(curPage+1)+'&type=P&per_page='+per_page;
-			api_url = '/products/myProductListCallback';
-			
-			postData.page = curPage+1;
-			postData.type = 'P';
-			//postData.searchKey = $('#category').val();
-			postData.per_page = 30;
-		}
-		
-		// ajax post 에서 세션 유지 시키기 위함
-		$.ajaxSetup({
-		  beforeSend: function(xhr) {
-		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
-		  }
-		});
-		
-		$.ajax({
-		    url     : api_url,
-		    type    : method_type,
-		    dataType: 'json',
-		    data	: $.param(postData),
-		    async   : false,  
-		    success : function(json){
-		    	products = json.products;
-		    	$('#itemList').html("");
-		    	if(products.length>0) {
-					curPage++;
-					$.each(products, function (index, product) {
-						var item_api = "";
-						var item_img_url1 = "";
-						var item_img_url2 = "";
-						var item_url = "";
-						var item_id = "";
-						var file_path = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
-						var img_directory1 = "original/"
-						var img_directory2 = "medium/"
-						
-						if(itemType==1){	// shop style
-							oPlatform.productURL = "";	// 상품 이미지 폴더
-							oPlatform.embellishmentURL = "";	// 꾸민 이미지 폴더
-							oPlatform.productStyleDirectory = "";
-							
-							item_api = "shopstyle";
-							item_id = product.id;
-							item_img_url1 = product["image"]["sizes"]["IPhone"]["url"];
-							item_img_url2 = product["image"]["sizes"]["Large"]["url"];
-							item_url = product.clickUrl;
-						} else if(itemType==2){	// DB
-							oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
-							oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
-							//oPlatform.productStyleDirectory = "/original/";
-							oPlatform.productStyleDirectory = "/removebg/";
-							
-							item_api = "";
-							item_id = product.id;
-							item_img_url1 = product.img_file_name;
-							item_img_url2 = file_path+img_directory2+product.img_file_name;
-							item_url = product.url;
-						} else if(itemType==3){	// My items
-							oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
-							oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
-							//oPlatform.productStyleDirectory = "/original/";
-							oPlatform.productStyleDirectory = "/removebg/";
-							
-							item_api = "";
-							item_id = product.id;
-							item_img_url1 = product.img_file_name;
-							item_img_url2 = file_path+img_directory2+product.img_file_name;
-							item_url = product.url;
-						}
-
-						var li = ''
-						+ '<li class="ui-draggable" style="border:1px solid #CCCCCC;text-align:center;vertical-align:middle">'
-						+ '	<img src='+item_img_url2+'>'
-						+ '	<input type="hidden" name="itemOrigin" value="product">'
-						+ '	<input type="hidden" name="itemAPI" value="'+item_api+'">'
-						+ '	<input type="hidden" name="itemURL" value="'+item_url+'">'
-						+ '	<input type="hidden" name="itemId" value="'+item_id+'">'
-						+ '	<input type="hidden" name="itemImg" value="'+item_img_url1+'">'
-						+ '</li>';
+	var api_url = '';
+	var method_type = 'get';
 	
-						$('#itemList').append(li);
-					});
-					//$('#loadingDiv').hide();
+	var postData = new Object();
+	postData.search_key = search_key;
+	postData.color_code = $('#color_code').val();
+	postData.cate_code = $('#cate_code').val();
 
-					// 페이징
-					var pageStr = '' 
-					+ '<ul class="pagging basic">'
-					+ '<li><a class="singleBack btl bbl" href="javascript:goPage(1)"></a></li>';
-					
-					for(i=1;i<=5;i++){
-						if (curPage==i){
-							pageStr += '<li class="active"><a href="javascript:goPage('+i+')">'+i+'</a></li>';
-						} else {
-							pageStr += '<li><a href="javascript:goPage('+i+')">'+i+'</a></li>';
-						}
-					}
-					pageStr += ''
-					+ '	<li>'
-					+ '		<a class="singleForward" href="javascript:goPage(5)"></a>'
-					+ '	</li>'
-					+ '	<div class="clear"></div>'
-					+ '</ul>';
-					
-					$('#pagingDv').html(pageStr);
-
-		    	} else {
-		    		//$('#loadingDiv').hide();
-		    	}
-		    },
-		    error   : function(e){
-		        //$('#loadingDiv').hide();
-		    }
-		});
+	if(itemType==1){	// DB
+		method_type = 'post';
+		//api_url = '/products/productListCallback?page='+(cpage+1)+'&per_page='+per_page;
+		api_url = '/products/productListCallback';
+		
+		postData.page = cpage+1;
+		postData.per_page = 30;
+	} else if(itemType==2){	// shop style
+		method_type = 'get';
+		api_url = 'http://api.shopstyle.com/api/v2/products?pid='+shopstyle_api_key
+				+ '&fts='+encodeURIComponent(cate_code)+'+'+encodeURIComponent(search_key)
+				+ '&offset='+(cpage*per_page)
+				+ '&limit='+per_page;
+	} else if(itemType==3){	// My items
+		method_type = 'post';
+		//api_url = '/mypage/itemListCallback?page='+(cpage+1)+'&type=P&per_page='+per_page;
+		api_url = '/products/myProductListCallback';
+		
+		postData.type = 'P';
+		postData.myfeed = 'Y';
+		postData.page = cpage+1;
+		postData.per_page = 30;
 	}
+	
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+	
+	$.ajax({
+	    url     : api_url,
+	    type    : method_type,
+	    dataType: 'json',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+	    	products = json.products;
+	    	$('#itemList').html("");
+	    	if(products.length>0) {
+				cpage++;
+				$.each(products, function (index, product) {
+					var item_api = "";
+					var item_img_url1 = "";
+					var item_img_url2 = "";
+					var item_url = "";
+					var item_id = "";
+					var file_path = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+					var img_directory1 = "original/"
+					var img_directory2 = "medium/"
+					
+					if(itemType==1){	// DB
+						oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+						oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
+						//oPlatform.productStyleDirectory = "/original/";
+						oPlatform.productStyleDirectory = "/removebg/";
+						
+						item_api = "";
+						item_id = product.id;
+						item_img_url1 = product.img_file_name;
+						item_img_url2 = file_path+img_directory2+product.img_file_name;
+						item_url = product.url;
+					} else if(itemType==2){	// shop style
+						oPlatform.productURL = "";	// 상품 이미지 폴더
+						oPlatform.embellishmentURL = "";	// 꾸민 이미지 폴더
+						oPlatform.productStyleDirectory = "";
+						
+						item_api = "shopstyle";
+						item_id = product.id;
+						item_img_url1 = product["image"]["sizes"]["IPhone"]["url"];
+						item_img_url2 = product["image"]["sizes"]["Large"]["url"];
+						item_url = product.clickUrl;
+					} else if(itemType==3){	// My items
+						oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
+						oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
+						//oPlatform.productStyleDirectory = "/original/";
+						oPlatform.productStyleDirectory = "/removebg/";
+						
+						item_api = "";
+						item_id = product.id;
+						item_img_url1 = product.img_file_name;
+						item_img_url2 = file_path+img_directory2+product.img_file_name;
+						item_url = product.url;
+					}
+
+					var li = ''
+					+ '<li class="ui-draggable" style="border:1px solid #CCCCCC;text-align:center;vertical-align:middle">'
+					+ '	<img src='+item_img_url2+'>'
+					+ '	<input type="hidden" name="itemOrigin" value="product">'
+					+ '	<input type="hidden" name="itemAPI" value="'+item_api+'">'
+					+ '	<input type="hidden" name="itemURL" value="'+item_url+'">'
+					+ '	<input type="hidden" name="itemId" value="'+item_id+'">'
+					+ '	<input type="hidden" name="itemImg" value="'+item_img_url1+'">'
+					+ '</li>';
+
+					$('#itemList').append(li);
+				});
+
+
+				// 페이징
+				var pageStr = '' 
+				+ '<ul class="pagging basic">'
+				+ '<li><a class="singleBack btl bbl" href="javascript:goPage(1)"></a></li>';
+				
+				for(i=1;i<=5;i++){
+					if (cpage==i){
+						pageStr += '<li class="active"><a href="javascript:goPage('+i+')">'+i+'</a></li>';
+					} else {
+						pageStr += '<li><a href="javascript:goPage('+i+')">'+i+'</a></li>';
+					}
+				}
+				pageStr += ''
+				+ '	<li>'
+				+ '		<a class="singleForward" href="javascript:goPage(5)"></a>'
+				+ '	</li>'
+				+ '	<div class="clear"></div>'
+				+ '</ul>';
+				
+				$('#pagingDv').html(pageStr);
+
+	    	} else {
+	    		//$('#loadingDiv').hide();
+	    		$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+	    	}
+	    },
+	    error   : function(e){
+	        //$('#loadingDiv').hide();
+	    }
+	});
+	
 }
 
 // 메뉴선택
 function changeType(val){
 	beforeLeave(false);
-	curPage = 0;
+	cpage = 0;
 	itemType = val;
 	
 	for(i=1;i<=3;i++){
@@ -607,33 +640,24 @@ function changeType(val){
 	$("#menu"+val).addClass("publish bBlue small");
 	$('#itemList').html("");
 	$('#pagingDv').html("");
-		
-	var selectStr = ''
-	if(val==3){
-		lastPostFunc(1);
-	} else {
-		selectStr = ''
-		+ '<select id="category" class="medium2" onchange="lastPostFunc(1)">'
-		+ '	<option value="">Choose category</option>'
-		+ '	<option value="Women">Women</option>'
-		+ '	<option value="Bags">Bags</option>'
-		+ '	<option value="Shoes">Shoes</option>'
-		+ '	<option value="Beauty">Beauty</option>'
-		+ '	<option value="Jewelry">Jewelry</option>'
-		+ '	<option value="Kids">Kids</option>'
-		+ '	<option value="Home">Home</option>'
-		+ '	<option value="Men">Men</option>'
-		+ '</select>';
-		
-	}
-	$('#selectDv').html(selectStr);
 	
-	
+	if (val==3) itemList();
+
 }
 
-function goPage(val){
-	lastPostFunc(val);
+// 상품검색
+function item_search(frm){
+	search_key = frm.search_key.value.trim();
+	search_key = search_key.replace( /\  /g, " ");
+	frm.search_key.value = search_key;
+
+	init();
+	itemList();
+
+	return false;
 }
+
+
 
 </script>
 
@@ -663,23 +687,81 @@ function goPage(val){
 	<div class="devider"></div>
 	<div class="clear"></div>
 -->
-	<div id="selectDv" style="padding-left:20px;">
-		<select id="category" onchange="lastPostFunc(1)">
-			<option value="">Choose category</option>
-			<option value="Women">Women</option>
-			<option value="Bags">Bags</option>
-			<option value="Shoes">Shoes</option>
-			<option value="Beauty">Beauty</option>
-			<option value="Jewelry">Jewelry</option>
-			<option value="Kids">Kids</option>
-			<option value="Home">Home</option>
-			<option value="Men">Men</option>
-		</select>
+
+<input type="hidden" id="color_code" value="">
+<input type="hidden" id="cate_code" value="">
+
+	<div id="selectDv" style="padding-left:10px; padding-right:10px;">
+
+	        <div class="navbar">
+	          <div class="navbar-inner" style="border-top:1px solid #CCCCCC">
+	            <div class="container">
+	              
+	              <ul class="nav">
+	                <li>
+	                	<div style="width:150px;">
+<%= form_tag "#", name: "itemSearchFrm", method: "post", class: "navbar-form navbar-right", onsubmit: "return item_search(this)" do %>
+<input id="item_search_key" name="search_key" type="text" placeholder="Search products" value="">
+<% end %>
+	                		
+	                		
+	                	</div>
+	                </li>
+	              </ul>
+	              <ul class="nav pull-right">
+	                <li id="smenu1" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">category<b class="caret"></b></a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu1_sub0" class="smenu1_sub"><a href="javascript:searchCate(0);">clear</a></li>
+	                		<li class="divider"></li>
+	                		<li id="smenu1_sub1" class="smenu1_sub"><a href="javascript:searchCate(1);">Women</a></li>
+	                		<li id="smenu1_sub2" class="smenu1_sub"><a href="javascript:searchCate(2);">Bags</a></li>
+	                		<li id="smenu1_sub3" class="smenu1_sub"><a href="javascript:searchCate(3);">Shoes</a></li>
+	                		<li id="smenu1_sub4" class="smenu1_sub"><a href="javascript:searchCate(4);">Beauty</a></li>
+	                		<li id="smenu1_sub5" class="smenu1_sub"><a href="javascript:searchCate(5);">Jewelry</a></li>
+	                		<li id="smenu1_sub6" class="smenu1_sub"><a href="javascript:searchCate(6);">Kids</a></li>
+	                		<li id="smenu1_sub7" class="smenu1_sub"><a href="javascript:searchCate(7);">Home</a></li>
+	                		<li id="smenu1_sub8" class="smenu1_sub"><a href="javascript:searchCate(8);">Men</a></li>
+	                	</ul>
+	                </li>
+	                <li id="smenu2" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">color<b class="caret"></b></a>
+	                	<ul class="dropdown-menu">
+	                		<li style="padding:10px;">
+<%
+colorlist = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
+			 "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
+			 "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
+
+colorlist.each_with_index do |color,i|
+%>
+<div id="color_<%=color%>" class="color_palette" style="float:left;cursor:pointer;width:20px;height:20px;margin:1px;font-weight:bold;border:2px solid #ffffff;color:#ffffff;background-color:#<%=color%>;" onClick="searchColor('<%=color%>');"></div>
+<%
+	if (i+1)%5==0
+%><div style="clear:both"></div><%
+	end
+end	
+%>
+<div style="width:130px;color:#0088cc;text-align:right;cursor:pointer;" onClick="searchColor('');">clear</div>
+	                			
+	                		</li>
+	                	</ul>
+	                </li>
+	                
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+	        
+	        
+	        
+		
+		
+		
 	</div>
-	
 </div>
 
-<div class="tabBody">
+<div class="tabBody" style="height:530px;">
 	<ul id="itemList" class="items">
 	</ul>
 </div>
@@ -688,12 +770,9 @@ function goPage(val){
 
 <!-- 왼쪽 아이템리스트 끝 -->
             	
-            	
-            	
-            	
-            	
             </div>
         </div>
+        
         <div id="Board">
             <div class="message">
                 <strong style="font-size:20px">Create a collection</strong>

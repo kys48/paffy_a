@@ -1,13 +1,56 @@
 <script language="JavaScript">
 function total_search(frm){
-	frm.searchKey.value = frm.searchKey.value.trim();
-	if(frm.searchKey.value==null || frm.searchKey.value==""){
+	search_key = frm.search_key.value.trim();
+	search_key = search_key.replace( /\  /g, " ");
+	frm.search_key.value = search_key;
+	if(frm.search_key.value==null || frm.search_key.value==""){
 		alert("검색어를 입력하세요");
+		frm.search_key.focus();
 		return false;
 	}
 	return true;
 }
+
+<%
+	cmenu = params[:cmenu]||""
+	cmenu_sub = params[:cmenu_sub]||""
+	if cmenu && cmenu!=""
+%>
+$(document).ready(function(){
+	$("#cmenu<%=cmenu%>").addClass("active");
+<%
+		if cmenu_sub && cmenu_sub!=""
+%>
+	$("#cmenu<%=cmenu%>_sub<%=cmenu_sub%>").addClass("active");
+<%
+		end
+%>
+});
+<%	end %>
+
 </script>
+
+<!-- 팝업 레이어 -->
+<div class="player">
+	<div class="bg"></div>
+	<div id="pop_layer" class="pop-layer">
+		<div class="pop-container">
+			<div class="cdv">
+				<div class="cbtn"></div>
+			</div>
+			<div id="pop_content" class="pop-conts">
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 로딩중 레이어 -->
+<div class="loading-layer">
+	<div class="bg"></div>
+	<div id="loading_pop_layer" class="loading-pop-layer">
+	</div>
+</div>
+
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
@@ -19,37 +62,57 @@ function total_search(frm){
       <%= link_to image_tag("/images/common/logo.png", align: "absmiddle"), root_url, class: "brand", style: "padding:5px;", target: "_self" %>
       <div class="nav-collapse collapse">
         <ul class="nav">
-          <li class="dropdown">
-          	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Everything<b class="caret"></b></a>
+          <li id="cmenu1" class="dropdown">
+          	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Favorite<b class="caret"></b></a>
           	<ul class="dropdown-menu">
-              <li><a href="/">Recommend</a></li>
-              <li><a href="/getProductApi?searchKey=Women">Global</a></li>
-              <li class="divider"></li>
-              <li><a href="/collections">Set&collection</a></li>
+              <li id="cmenu1_sub1"><a href="/main?cmenu=1&cmenu_sub=1">All</a></li>
+              <li id="cmenu1_sub2"><a href="/main?type=P&store_type=F&cmenu=1&cmenu_sub=2">해외직구</a></li>
+              <li id="cmenu1_sub3"><a href="/main?type=P&store_type=I&cmenu=1&cmenu_sub=3">Styles</a></li>
+              <!--li class="divider"></li-->
+              <li id="cmenu1_sub4"><a href="/main?type=C&cmenu=1&cmenu_sub=4">Set&collection</a></li>
             </ul>
           </li>
-          <li class="dropdown">
+          <li id="cmenu2" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Items <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="/getProductApi?searchKey=Women">Women</a></li>
-              <li><a href="/getProductApi?searchKey=Bags">Bags</a></li>
-              <li><a href="/getProductApi?searchKey=Shoes">Shoes</a></li>
-              <li><a href="/getProductApi?searchKey=Beauty">Beauty</a></li>
-              <li><a href="/getProductApi?searchKey=Jewelry">Jewelry</a></li>
-              <li><a href="/getProductApi?searchKey=Kids">Kids</a></li>
-              <li><a href="/getProductApi?searchKey=Home">Home</a></li>
-              <li><a href="/getProductApi?searchKey=Men">Men</a></li>
+              <li id="cmenu2_sub1"><a href="/getProductApi?search_key=Women&cmenu=2&cmenu_sub=1">Women</a></li>
+              <li id="cmenu2_sub2"><a href="/getProductApi?search_key=Bags&cmenu=2&cmenu_sub=2">Bags</a></li>
+              <li id="cmenu2_sub3"><a href="/getProductApi?search_key=Shoes&cmenu=2&cmenu_sub=3">Shoes</a></li>
+              <li id="cmenu2_sub4"><a href="/getProductApi?search_key=Beauty&cmenu=2&cmenu_sub=4">Beauty</a></li>
+              <li id="cmenu2_sub5"><a href="/getProductApi?search_key=Jewelry&cmenu=2&cmenu_sub=5">Jewelry</a></li>
+              <li id="cmenu2_sub6"><a href="/getProductApi?search_key=Kids&cmenu=2&cmenu_sub=6">Kids</a></li>
+              <li id="cmenu2_sub7"><a href="/getProductApi?search_key=Home&cmenu=2&cmenu_sub=7">Home</a></li>
+              <li id="cmenu2_sub8"><a href="/getProductApi?search_key=Men&cmenu=2&cmenu_sub=8">Men</a></li>
             </ul>
           </li>
-          <li><a href="/store/topstore">Stores</a></li>
-          <li><a href="/mypage/myfeed">Following</a></li>
-          <li class="dropdown active">
+          <li id="cmenu3" class="dropdown">
+          	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Stores <b class="caret"></b></a>
+          	<ul class="dropdown-menu">
+              <li id="cmenu3_sub1"><a href="/store/topstore?store_type=I&cmenu=3&cmenu_sub=1">국내</a></li>
+              <li id="cmenu3_sub2"><a href="/store/topstore?store_type=F&cmenu=3&cmenu_sub=2">해외</a></li>
+            </ul>
+          </li>
+          <li id="cmenu4">
+<% if current_user %>
+          	<a href="/mypage/myfeed">Following</a>
+<% else %>
+          	<a href="javascript:login_pop('/mypage/myfeed');">Following</a>
+<% end %>
+          </li>
+          <li id="cmenu5" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">POST <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="/products/post">Product post</a></li>
+<% if current_user %>
+              <li id="cmenu5_sub1"><a href="/products/post">Product post</a></li>
               <li class="divider"></li>
-              <li><a href="/collections/set">Set post</a></li>
-              <li><a href="/collections/collect">Collect post</a></li>
+              <li id="cmenu5_sub2"><a href="/collections/set">Set post</a></li>
+              <li id="cmenu5_sub3"><a href="/collections/collect">Collect post</a></li>
+<% else %>
+              <li id="cmenu5_sub1"><a href="javascript:login_pop('/products/post');">Product post</a></li>
+              <li class="divider"></li>
+              <li id="cmenu5_sub1"><a href="javascript:login_pop('/collections/set');">Set post</a></li>
+              <li id="cmenu5_sub1"><a href="javascript:login_pop('/collections/collect');">Collect post</a ></li>
+<% end %>
               <!--li class="divider"></li>
               <li class="active"><%= link_to '상품등록', new_product_path %></li-->
             </ul>
@@ -58,18 +121,18 @@ function total_search(frm){
         
 	    <ul class="nav pull-right">
 	        <li>
-		        <%= form_tag getProductApi_path, name: "searchFrm", method: "post", class: "navbar-form navbar-right", onsubmit: "return total_search(this)" do %>
-				<input id="searchKey" name="searchKey" type="text" class="form-control" placeholder="Search products, stores">
+		        <%= form_tag "/search", name: "searchFrm", method: "get", class: "navbar-form navbar-right", onsubmit: "return total_search(this)" do %>
+				<input id="search_key" name="search_key" type="text" class="form-control" placeholder="Search products, stores" value="<%#=@search_key%>">
 				<% end %>
 	        </li>
-	        <li><a href="#">Messages</a></li>
-			<li><a href="/mypage">Profile</a></li>
 <% if current_user %>
-    <li>
-    	<%= link_to "Log out", log_out_path %>
-    </li>
+			<li><a href="#">Messages</a></li>
+			<li><a href="/mypage">Profile</a></li>
+			<li><%= link_to "Log out", log_out_path %></li>
 <% else %>
-    <li><%= link_to "Log in", log_in_path %></li>
+			<li><a href="#">Messages</a></li>
+			<li><a href="javascript:login_pop('/mypage');">Profile</a></li>
+			<li><a href="javascript:login_pop('');">Log in</a></li>
 <% end %>
 			</li>
 	    </ul>

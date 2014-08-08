@@ -3,7 +3,12 @@
 class StoreController < ApplicationController
   
   def topstore
-    @store_type = params[:store_type]||"F"
+    cmenu = params[:cmenu]||"3"
+    cmenu_sub = params[:cmenu_sub]||"1"
+    params[:cmenu] = cmenu
+    params[:cmenu_sub] = cmenu_sub
+    
+    @store_type = params[:store_type]||"I"
     @session_user_id = session[:user_id]
     
     str_from = "(
@@ -24,7 +29,8 @@ class StoreController < ApplicationController
     .where("1=1")
     .order("rank ASC")
     
-    
+    # store 2차원배열
+    # @store_list = [{},{}]
     @store_list = Array.new(stores.count) {Array.new(3,nil)}
     
     rcnt = 0
@@ -32,7 +38,7 @@ class StoreController < ApplicationController
       if @store_type=="I"
         products = Product.paginate(page: 1, per_page: 8).where(user_id: store.user_id).order('hit DESC')
       elsif @store_type=="F"
-        params[:searchKey] = store.profile_id
+        params[:search_key] = store.profile_id
         params[:page] = 1
         params[:per_page] = 8
         params[:img_style] = "Large"

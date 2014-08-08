@@ -1,0 +1,73 @@
+<%= render :partial => '/common/pop_header_top' %>
+<%= stylesheet_link_tag    "/css/signin.css", :media => "all" %>
+<script language="javascript">
+function frmcheck(){
+	if ($("#user_email").val()==""){
+		alert("이메일을 입력하세요");
+		$("#user_email").focus();
+		return false;
+	}
+	if ($("#user_password").val()==""){
+		alert("비밀번호를 입력하세요");
+		$("#user_password").focus();
+		return false;
+	}
+	if ($("#user_password_confirmation").val()=="" || $("#user_password").val() != $("#user_password_confirmation").val()){
+		alert("비밀번호 확인이 되지 않습니다. 다시 입력하세요");
+		$("#user_password_confirmation").focus();
+		return false;
+	}
+	if ($("#user_profile_id").val()==""){
+		alert("프로필ID를 입력하세요");
+		$("#user_profile_id").focus();
+		return false;
+	}
+	if ($("#user_user_name").val()==""){
+		alert("이름을 입력하세요");
+		$("#user_user_name").focus();
+		return false;
+	}
+	
+	return true;
+}	
+</script>
+<div class="form-signin" style="padding-top:0px;">
+	<h4 class="form-signin-heading" style="font-family:sans-serif;font-style:italic;">
+		Create an Account
+	</h4>
+	
+<%= form_for(@user, :url => "/sign_up_complete", :html => {:name => "frm", :class => "form-signin", :onSubmit => "return frmcheck();"} ) do |f| %>
+<%#= bootstrap_form_for(@user, layout: :horizontal, label_col: "col-sm-2", control_col: "col-sm-10") do |f| %>
+<input type="hidden" name="backurl" value="<%= @backurl%>" />
+<input type="hidden" name="target" value="<%= @target%>" />
+
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%#= f.hidden_field :user_type, value: "U" %>
+  <%= f.text_field :email, label: "이메일", class: "input-block-level", placeholder: "이메일을 입력하세요", help: "사용하시는 이메일 주소를 입력하세요" %>
+  <%= f.password_field :password, label: "비밀번호", class: "input-block-level", placeholder: "비밀번호를 입력하세요" %>
+  <%= f.password_field :password_confirmation, label: "비밀번호 확인", hide_label: true, class: "input-block-level", placeholder: "비밀번호 확인을 위해 한번 더 입력하세요" %>
+  <%= f.text_field :profile_id, label: "프로필ID", class: "input-block-level", placeholder: "프로필ID를 입력하세요" %>
+  <%= f.text_field :user_name, label: "이름", class: "input-block-level", placeholder: "이름을 입력하세요" %>
+  
+  
+  
+  <div class="actions">
+    <%= f.submit "회원등록", class: "btn btn-lg btn-primary btn-block" %>
+  </div>
+<% end %>
+
+	
+	
+	<%#= link_to '목록으로', users_path, class: "btn btn-lg btn-primary" %>
+</div>

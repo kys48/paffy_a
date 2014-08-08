@@ -7,6 +7,11 @@ function money_point(A) {
 	return A;
 }
 
+function resizePostFrame(){
+	alert("ok");
+	$("#post").css("height",$(document).height());
+}
+
 var ext = ext || {};
 if (!ext.paffy) {
 	ext.paffy = {};
@@ -389,42 +394,6 @@ if (!ext.paffy) {
 			+ '<div class="layer_hd"></div>'
 			+ '<dl class="layer_cnt">'
 			+ '<iframe src="'+AG+'" style="width:100%;height:320px;" frameborder="0" ></iframe>'
-/*			
-			+ '	<dt class="tit">Post Image</dt>'
-			+ '	<dd class="cnt">'
-			+ '		<table class="dec">'
-			+ '			<tr>'
-			+ '				<td width="210px" style="text-align:center">'
-			+ '					<img id="item_img" class="clip_image" src="'+U[AF]+'" >'
-			+ '				</td>'
-			+ '				<td style="text-align:left; padding-left:10px; border-left:1px solid #CCCCCC; vertical-align: top;">'
-			+ '					Title<br/>'
-			+ '					<input type="text" id="item_subject" name="item_subject" value="'+titleStr+'" style="width:100%;" />'
-			+ '					<br /><br />'
-			+ '					Price <br />'
-			+ '					<input type="text" id="item_price" name="item_price" value="" style="width:150px;" />'
-			+ '					<select id="item_price_type" name="item_price_type">'
-			+ '						<option value="￦">KRW(￦)</option>'
-			+ '						<option value="$">USD($)</option>'
-			+ '						<option value="￥">JPY(￥)</option>'
-			+ '						<option value="€">EUR(€)</option>'
-			+ '						<option value="￡">GBP(￡)</option>'
-			+ '						<option value="元">CNY(元)</option>'
-			+ '					</select>'
-			+ '					<br /><br />'
-			+ '					URL<br/>'
-			+ '					<input type="text" id="item_url" name="item_url" value="'+document.location.href+'" style="width:100%;" />'
-			+ '					<br /><br />'
-			+ '					Quick share with friends <input type="checkbox" id="item_share" name="item_share" value="Y" checked />'
-			+ '					<br /><br />'
-			+ '					<a href="javascript:alert(\'하하호호\');"><img src="'+HOST_URL+'/images/common/clip_post.png"></a>'
-			+ '					&nbsp;'
-			+ '					<a href="javascript:parent.ext.paffy.ClipClass.onClickCloseBtn();"><img src="'+HOST_URL+'/images/common/clip_cancel.png"></a>'
-			+ '				</td>'
-			+ '			</tr>'
-			+ '		</table>'
-			+ '	</dd>'
-*/			
 			+ '</dl>'
 			+ '<div class="layer_fn"></div>'
 			+ '<div class="close">'

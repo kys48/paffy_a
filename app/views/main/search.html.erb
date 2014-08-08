@@ -1,0 +1,281 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+
+
+  <div style="margin-top:20px; padding:0px; width:100%;background-color:#FFFFFF;">
+  	<div style="padding:20px 20px 10px 65px;">
+  		<%= form_tag "/search", name: "searchFrmMain", method: "get", onsubmit: "return total_search(this)" do %>
+  		<div style="float:left">
+  		<input type="text" name="search_key" value="<%=@search_key%>" style="font-size:24px;width:500px;height:35px;padding-left:20px;">
+  		</div>
+  		<div style="float:left; padding-left:10px;">
+  		<%= button_tag "search", class: "btn btn-primary", style: "width:100px;height:45px;font-size:18px" %>
+  		</div>
+  		<div style="clear:both"></div>
+  		<% end%>
+    </div>
+  </div>
+
+<input type="hidden" id="price_stat" value="<%=@price_stat%>">
+<input type="hidden" id="color_code" value="<%=@color_code%>">
+<input type="hidden" id="cate_code" value="<%=@cate_code%>">
+<input type="hidden" id="order_by" value="1">
+
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+
+<input id="item_search_key" name="item_search_key" type="text" class="form-control" placeholder="Search products, stores" value="">
+
+        <div style="padding:10px 75px 10px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	              <ul class="nav">
+	                <li id="smenu0" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">price<b class="caret"></b></a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu0_sub0" class="smenu0_sub"><a href="javascript:searchPrice(0);">all</a></li>
+	                		<li class="divider"></li>
+	                		<li id="smenu0_sub1" class="smenu0_sub"><a href="javascript:searchPrice(1);">￦ 20,000 미만</a></li>
+	                		<li id="smenu0_sub2" class="smenu0_sub"><a href="javascript:searchPrice(2);">￦ 20,000 ~ ￦ 50,000</a></li>
+	                		<li id="smenu0_sub3" class="smenu0_sub"><a href="javascript:searchPrice(3);">￦ 50,000 ~ ￦100,000</a></li>
+	                		<li id="smenu0_sub4" class="smenu0_sub"><a href="javascript:searchPrice(4);">￦100,000 ~ ￦200,000</a></li>
+	                		<li id="smenu0_sub5" class="smenu0_sub"><a href="javascript:searchPrice(5);">￦200,000 ~ ￦500,000</a></li>
+	                		<li id="smenu0_sub6" class="smenu0_sub"><a href="javascript:searchPrice(6);">￦500,000 이상</a></li>
+	                	</ul>
+	                </li>
+	                <li id="smenu1" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">category<b class="caret"></b></a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu1_sub0" class="smenu1_sub"><a href="javascript:searchCate(0);">all</a></li>
+	                		<li class="divider"></li>
+	                		<li id="smenu1_sub1" class="smenu1_sub"><a href="javascript:searchCate(1);">Women</a></li>
+	                		<li id="smenu1_sub2" class="smenu1_sub"><a href="javascript:searchCate(2);">Bags</a></li>
+	                		<li id="smenu1_sub3" class="smenu1_sub"><a href="javascript:searchCate(3);">Shoes</a></li>
+	                		<li id="smenu1_sub4" class="smenu1_sub"><a href="javascript:searchCate(4);">Beauty</a></li>
+	                		<li id="smenu1_sub5" class="smenu1_sub"><a href="javascript:searchCate(5);">Jewelry</a></li>
+	                		<li id="smenu1_sub6" class="smenu1_sub"><a href="javascript:searchCate(6);">Kids</a></li>
+	                		<li id="smenu1_sub7" class="smenu1_sub"><a href="javascript:searchCate(7);">Home</a></li>
+	                		<li id="smenu1_sub8" class="smenu1_sub"><a href="javascript:searchCate(8);">Men</a></li>
+	                	</ul>
+	                </li>
+	                <li id="smenu2" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">color<b class="caret"></b></a>
+	                	<ul class="dropdown-menu">
+	                		<li style="padding:10px;">
+<%
+colorlist = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
+			 "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
+			 "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
+
+colorlist.each_with_index do |color,i|
+%>
+<div id="color_<%=color%>" class="color_palette" style="float:left;cursor:pointer;width:20px;height:20px;margin:1px;font-weight:bold;border:2px solid #ffffff;color:#ffffff;background-color:#<%=color%>;" onClick="searchColor('<%=color%>');"></div>
+<%
+	if (i+1)%5==0
+%><div style="clear:both"></div><%
+	end
+end	
+%>
+<div style="width:130px;color:#0088cc;text-align:right;cursor:pointer;" onClick="searchColor('');">clear</div>
+	                			
+	                		</li>
+	                	</ul>
+	                </li>
+	                <!--li id="smenu3"><a href="/">store</a></li-->
+	                <li id="smenu4"><a href="javascript:searchSort()">just in</a></li>
+	                
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
+			
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+				    <ul id="itemList" class="portfolio_list">
+				    </ul>
+			    </div>
+			</div>
+		</div>
+		
+	</div>
+	
+
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+
+<script type="text/javascript">
+$(function() {
+	getProductList();
+});
+
+// scroll event
+$(window).scroll(function(){
+	if($(window).scrollTop() == $(document).height() - $(window).height()){
+		getProductList();
+	}
+});
+
+
+var nextPage = 1;
+var searchYn = true;
+
+// 가격 검색
+function searchPrice(stat){
+	init();
+	$("#price_stat").val(stat);
+	$(".smenu0_sub").removeClass("active");
+	$("#smenu0_sub"+stat).addClass("active");
+	getProductList();
+}
+
+// 카테고리 검색
+function searchCate(stat){
+	var code = "";
+	switch (stat){
+		case 0: code=""; break;
+		case 1: code="Women"; break;
+		case 2: code="Bags"; break;
+		case 3: code="Shoes"; break;
+		case 4: code="Beauty"; break;
+		case 5: code="Jewelry"; break;
+		case 6: code="Kids"; break;
+		case 7: code="Home"; break;
+		case 8: code="Men"; break;
+	}
+	init();
+	$("#cate_code").val(code);
+	$(".smenu1_sub").removeClass("active");
+	$("#smenu1_sub"+stat).addClass("active");
+	getProductList();
+}
+
+// 정렬
+function searchSort(){
+	var order_by = $("#order_by").val();
+	if(order_by=="1"){
+		order_by="2";
+		$("#smenu4").addClass("active");
+	} else if(order_by=="2"){
+		order_by="1";
+		$("#smenu4").removeClass("active");
+	}
+	$("#order_by").val(order_by);
+	nextPage = 1;
+	$("#itemList").empty();
+	getProductList();
+}
+
+// 색상 검색
+function searchColor(code){
+	init();
+	$(".color_palette").css("border","2px solid #ffffff");
+	$("#color_code").val(code);
+	if(code!="") $("#color_"+code).css("border","2px solid #777777");
+	getProductList();
+}
+
+function init(){
+	nextPage = 1;
+	searchYn = true;
+	$("#itemList").empty();
+}
+
+function getProductList(){
+	var order = "hit desc";
+	if($("#order_by").val()=="1") order = "hit desc"; 
+	else if($("#order_by").val()=="2") order = "created_at desc";
+	var postData = new Object();
+	postData.page = nextPage;
+	postData.type = "<%= @item_type%>";
+	postData.search_key = '<%= @search_key%>';
+	postData.price_stat = $("#price_stat").val();
+	postData.color_code = $("#color_code").val();
+	postData.cate_code = $("#cate_code").val();
+	postData.per_page = 16;
+	postData.type = "P";
+	postData.order = order;
+
+	if (searchYn){
+		layer_open_loading("loading_pop_layer",5,"N");
+		
+		setTimeout( function() {
+			
+			// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+			
+			$.ajax({
+			    url     : '/main/itemListCallback',
+			    type    : 'post',
+			    data	: $.param(postData),
+			    dataType: 'json',
+			    async   : false,  
+			    success : function(json){
+			    	collections = json.collections;
+			    	layer_close_loading("loading_pop_layer");
+		
+			    	if(json.status){
+						if(collections.length>0) {
+							nextPage++;
+							$.each(collections, function (index, collection) {
+								var li = '<li>'
+								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle;">';
+								
+								if(collection.item_type=='C'){
+									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+									+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
+									+ '</div>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+									+ '</div>'
+									+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+								}else if(collection.item_type=='P'){
+									var priceStr = getMoneyType(collection.price,collection.price_type);
+									 
+									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+									+ '</div>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+									+ priceStr + "&nbsp;"
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+									+ '</div>'
+									+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+								}
+								li += '</div>'
+								+ '</li>';
+								
+								$('#itemList').append(li);
+							});
+						} else {	// 결과값이 없을경우
+							searchYn = false;
+							if(nextPage==1){
+								$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+							} else {
+								$('#itemList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">No results found</li>');
+							}
+						}
+		
+			    	} else {
+			    		searchYn = false;
+			    		notify('error', json.msg);
+			    	}
+			    	
+			    },
+			    error   : function(e){
+			        searchYn = false;
+			        semafors['ajax'] = false;
+			        //notify('error', TranslationLabels['could_not_complete_request']);
+			    }
+			});
+		}, 10 );
+	}	// if(searchYn){
+		
+}
+
+</script>
