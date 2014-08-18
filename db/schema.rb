@@ -11,7 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140808052630) do
+ActiveRecord::Schema.define(:version => 20140812092055) do
+
+  create_table "board_comments", :force => true do |t|
+    t.string   "comment_type"
+    t.integer  "ref_id"
+    t.text     "contents"
+    t.string   "reg_id"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
 
   create_table "board_contents", :force => true do |t|
     t.string   "subject"
@@ -86,6 +95,7 @@ ActiveRecord::Schema.define(:version => 20140808052630) do
     t.string   "cate_code"
     t.string   "color_code_o",     :limit => 10
     t.string   "color_code_s",     :limit => 10
+    t.string   "store_type"
     t.string   "subject",          :limit => 1000
     t.string   "price",            :limit => 20
     t.string   "sale_price",       :limit => 20
@@ -103,7 +113,6 @@ ActiveRecord::Schema.define(:version => 20140808052630) do
     t.datetime "updated_at"
     t.string   "category1",        :limit => 500
     t.string   "category2",        :limit => 500
-    t.string   "store_type"
   end
 
   create_table "user_items", :force => true do |t|

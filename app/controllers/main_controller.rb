@@ -59,6 +59,7 @@ class MainController < ApplicationController
     
     #collections = []
     
+    # 시간 오래 걸림... 해결방법 찾아라
     collectionList.each_with_index do |collection,i|
       price = 0.0
       

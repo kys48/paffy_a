@@ -26,26 +26,60 @@ class CollectionsController < ApplicationController
 
   # 콜렉션 상세정보
   def show
+    @session_user_id = session[:user_id]||""
     collection_id = params[:id]
     @collection = Collection.find(collection_id)
     @user = User.find(@collection.user_id)
     
-    if session[:user_id]
-      @session_user = User.find(session[:user_id])
+    if @session_user_id && @session_user_id!=""
+      @session_user = User.find(@session_user_id)
     end
     
     #@products = Product.paginate(page: params[:page], per_page: 40).where(collection_id: @collection.id).order('created_at DESC')
     #@collection_products = CollectionProduct.paginate(page: params[:page], per_page: 10).order('created_at DESC')
     
+    str_select = "A.product_id, A.white_bck, A.flip, A.flop
+                , A.height, A.top, A.left, A.cssleft, A.csstop
+                , A.zindex, A.rotate, A.caption, B.id, B.subject, B.price
+                , B.price_type, B.img_file_name, B.url, B.user_id
+                , B.merchant, B.hit, C.profile_id, C.user_name
+                , F_COUNT_GETS(A.product_id,'L') AS cnt_like
+                , CASE WHEN CHAR_LENGTH(F_REMOVE_HTML(subject))<25 THEN F_REMOVE_HTML(subject) ELSE CONCAT(SUBSTRING(F_REMOVE_HTML(subject),1,25),'..') END AS subject
+                , subject AS subject_full"
+                 
+    if @session_user_id && @session_user_id!=""
+      str_select += ", F_COUNT_GETS_USER(A.product_id,'L','#{@session_user_id}') AS cnt_like_user"
+    else
+      str_select += ", 0 AS cnt_like_user"
+    end
+    
     @collection_products = CollectionProduct
-    .select('A.product_id, A.white_bck, A.flip, A.flop
-           , A.height, A.top, A.left, A.cssleft, A.csstop
-           , A.zindex, A.rotate, A.caption, B.id, B.subject, B.price
-           , B.price_type, B.img_file_name, B.url, B.user_id
-           , B.merchant, C.profile_id, C.user_name')
-    .from( 'collection_products A, products B, users C')
-    .where('A.product_id = B.id AND B.user_id=C.id
-        AND collection_id = '+collection_id)
+    .select(str_select)
+    .from( "collection_products A, products B, users C")
+    .where("A.product_id = B.id AND B.user_id=C.id
+        AND collection_id = "+collection_id)
+
+    # 시간 오래 걸림... 해결방법 찾아라
+    @collection_products.each_with_index do |collection,i|
+      price = 0.0
+      
+      if collection.price_type!='KRW'
+        case collection.price_type
+          when 'USD'
+            price = GoogCurrency.usd_to_krw(collection.price).to_i
+          when 'JPY'
+            price = GoogCurrency.jpy_to_krw(collection.price).to_i
+          when 'EUR'
+            price = GoogCurrency.eur_to_krw(collection.price).to_i
+          when 'GBP'
+            price = GoogCurrency.gbp_to_krw(collection.price).to_i
+          when 'CNY'
+            price = GoogCurrency.eur_to_krw(collection.price).to_i
+        end
+        collection.price = price
+        collection.price_type = 'KRW'
+      end
+    end
     
     # 좋아요 수 가져오기
     @cnt_like = Get.where(get_type: 'L', item_type: 'C', ref_id: collection_id).count
@@ -56,14 +90,14 @@ class CollectionsController < ApplicationController
     @cnt_scrap = Get.where(get_type: 'S', item_type: 'C', ref_id: collection_id).count
     
     # 찜 수 가져오기
-    @cnt_wish = Wish.where(item_type: 'C', ref_id: collection_id).count
+    #@cnt_wish = Wish.where(item_type: 'C', ref_id: collection_id).count
     
     # 조회수 증가
     @collection.hit += 1
     @collection.save! 
-    
+
     # 로그인 사용자의 좋아요 가져오기
-    @cnt_like_user = Get.where(get_type: 'L', item_type: 'C', ref_id: collection_id, user_id: session[:user_id]).count
+    @cnt_like_user = Get.where(get_type: 'L', item_type: 'C', ref_id: collection_id, user_id: @session_user_id).count
 
     respond_to do |format|
       format.html # show.html.erb
@@ -73,9 +107,14 @@ class CollectionsController < ApplicationController
   
   # 상품 상세정보
   def pshow
+    @session_user_id = session[:user_id]||""
     product_id = params[:id]
     @product = Product.find(product_id)
     @user = User.new
+    
+    if @session_user_id && @session_user_id!=""
+      @session_user = User.find(@session_user_id)
+    end
 =begin    
     # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
     if @product.img_file_name
@@ -95,30 +134,83 @@ class CollectionsController < ApplicationController
     end
 =end
 
+=begin
+    file_name = @product.img_file_name 
+
+    # 썸네일
+    if file_name
+      dataFilePath = "/public/data/product/"
+      
+      tmpimg = Magick::Image.read(RAILS_ROOT+dataFilePath+'original/'+file_name).first
+      
+      thumbSize = 600
+      # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+      if tmpimg.columns>tmpimg.rows
+        if thumbSize>tmpimg.columns
+          thumbSize = tmpimg.columns
+        end
+      elsif tmpimg.columns<tmpimg.rows
+        if thumbSize>tmpimg.rows
+          thumbSize = tmpimg.rows
+        end
+      else
+        if thumbSize>tmpimg.columns
+          thumbSize = tmpimg.columns
+        end
+      end
+      
+      # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+      ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+      
+      thumb = tmpimg.resize!(ipos[0],ipos[1])
+      
+      bg = Magick::Image.new(thumbSize, thumbSize){
+        self.background_color = 'white'
+        self.format = 'PNG'
+      }
+      bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+      bg.write(RAILS_ROOT+dataFilePath+file_name)
+    end
+=end
+
     if @product.user_id 
       @user = User.find(@product.user_id)
     else
       @user.profile_id = 'guest'
       @user.user_name = 'guest'
     end
+  
+    price = 0.0
     
-    if session[:user_id]
-      @session_user = User.find(session[:user_id])
+    if @product.price_type!='KRW'
+      case @product.price_type
+        when 'USD'
+          price = GoogCurrency.usd_to_krw(@product.price).to_i
+        when 'JPY'
+          price = GoogCurrency.jpy_to_krw(@product.price).to_i
+        when 'EUR'
+          price = GoogCurrency.eur_to_krw(@product.price).to_i
+        when 'GBP'
+          price = GoogCurrency.gbp_to_krw(@product.price).to_i
+        when 'CNY'
+          price = GoogCurrency.eur_to_krw(@product.price).to_i
+      end
+      @product.price = price
+      @product.price_type = 'KRW'
     end
+    
     
     # 좋아요 수 가져오기
     @cnt_like = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id).count
 
-    #get = Get.find_by_sql "SELECT COUNT(id) AS count FROM gets WHERE get_type='L' AND item_type='C'"
+    # 팔로우 여부 가져오기
+    @follow_count = Follow.where(user_id: @session_user_id, follow_id: @user.id).count
     
     # 스크랩 수 가져오기
     @cnt_scrap = Get.where(get_type: 'S', item_type: 'P', ref_id: product_id).count
     
     # 찜 수 가져오기
-    @cnt_wish = Wish.where(item_type: 'P', ref_id: product_id).count
-    
-
-    
+    #@cnt_wish = Wish.where(item_type: 'P', ref_id: product_id).count
     
     # 조회수 증가
     @product.hit += 1

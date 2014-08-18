@@ -9,7 +9,7 @@
 </div>
 
 <script language="JavaScript">
-function productApi(){
+function getShopStyleScript(){
 	$.ajax({
 	    url     : 'http://api.shopstyle.com/api/v2/products?pid=<%=SHOPSTYLE_KEY%>&fts=red+dress&offset=0&limit=10',
 	    type    : 'get',
@@ -22,9 +22,6 @@ function productApi(){
 	    		limit = data.limit;
 	    		total = data.total;
 	    		category = data.category;
-	    		
-	    		alert(category.id);
-
 	    	}
 	    },
 	    error   : function(e){
@@ -33,6 +30,115 @@ function productApi(){
 	});
 }
 
+// ShopStyle API 호출
+function getShopStyleNext(){
+	page = parseInt($("#shopstyle_page").val());
+	if(page>4){
+		alert("종료~!");
+	} else {
+		$("#shopstyle_page").val(page+1);
+		getShopStyle();
+	}
+	
+}
+function getShopStyle(){
+	page = $("#shopstyle_page").val();
+	per_page = $("#shopstyle_per_page").val();
+	search_key = $("#shopstyle_search_key").val();
+	cate_code = $("#shopstyle_cate_code").val();
+	
+	chkpass = true;
+	if(search_key==""){
+		alert("검색어를 입력하세요.");
+		chkpass = false;
+		$("#shopstyle_search_key").focus();
+	}
+	if(cate_code==""){
+		alert("카테고리코드를 입력하세요.");
+		chkpass = false;
+		$("#shopstyle_cate_code").focus();
+	}
+	if(page==""){
+		alert("시작값을 입력하세요.");
+		chkpass = false;
+		$("#shopstyle_page").focus();
+	}
+	if(per_page==""){
+		alert("표시줄 수를 입력하세요.");
+		chkpass = false;
+		$("#shopstyle_per_page").focus();
+	}
+	
+	if(chkpass){
+		var postData = new Object();
+		postData.page = page;
+		postData.search_key = search_key;
+		postData.per_page = per_page;
+		postData.cate_code = cate_code;
+		postData.sort = '';
+		
+		var img_style = 'Large';
+		
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+	
+		$.ajax({
+		    url     : '/getShopStyleCallback',
+		    type    : 'post',
+		    data	: $.param(postData),
+		    async   : false,  
+		    success : function(json){
+		    	products = json.products;
+		    	rcnt = parseInt($("#shopstyleDvCnt").val());
+		    	rcnt += products.length;
+		    	$("#shopstyleDvCnt").val(rcnt);
+		    	$('#shopstyleDv').append("--page("+page+")--");
+
+		    	if(products.length>0) {
+/*
+					$.each(products, function (index, product) {
+						var item_url = product.url;
+						var img_url = product.img_file_name;
+						var product_name = product.subject;
+						//product_name = cropByte(product_name,40);
+
+						var li = ''
+						+ '<div style="font-size:12px;text-align:left; border-bottom:1px dashed #cccccc;">'
+						//+ '<a href="'+item_link_url+'" target="_blank">(변환링크)</a>'
+						+ '<a href="'+item_url+'" target="_blank"><img src="'+img_url+'">"</a>'
+						+ '	<font color="#000000">'+product_name+'</font>'
+						+ '</div>';
+
+						$('#shopstyleDv').append(li);
+
+					});
+*/					
+		    	} else {
+		    		//notify('error', json.msg);
+		    		// the end
+		    		//alert("종료~!!!");
+		    	}
+		    	
+				setTimeout(function() {
+					getShopStyleNext(); // 다음페이지 call
+				}, 100);
+		    	
+		    },
+		    error   : function(e){
+		    	$('#shopstyleDv').append("----------error-------------");
+		    }
+		});
+		
+	}
+}
+
+
+
+// LinkPrice API 호출
 function linkprice(){
 	var url = document.getElementById("url").value;
 
@@ -51,6 +157,7 @@ function linkprice(){
 }
 
 
+// lookie API 호출
 function getlookie(){
 	var url = '/getLookUrl';
 	
@@ -69,6 +176,8 @@ function getlookie(){
 	});
 }
 
+
+// Naver API 호출
 function getNaverNext(){
 	page = parseInt($("#naver_page").val());
 	if(page>11){
@@ -77,9 +186,7 @@ function getNaverNext(){
 		$("#naver_page").val(page+1);
 		getNaver();
 	}
-	
 }
-
 function getNaver(){
 	page = $("#naver_page").val();
 	per_page = $("#naver_per_page").val();
@@ -198,7 +305,17 @@ function getNaver(){
 </script>
 
 <div style="border:1px solid black; padding:20px; margin-top:5px;">
-	2. <a href="javascript:productApi()">Shop Sensw상품 API 호출</a>
+	2. Shop Sensw상품 API 호출<br/>
+	<br/>
+	검색어 : <input type="text" id="shopstyle_search_key" name="shopstyle_search_key" value="" style="width:150px">,
+	내부카테고리코드 : <input type="text" id="shopstyle_cate_code" name="shopstyle_cate_code" value="" style="width:150px">,
+	시작 : <input type="text" id="shopstyle_page" name="shopstyle_page" value="1" style="width:50px">,
+	줄수 : <input type="text" id="shopstyle_per_page" name="shopstyle_per_page" value="16" style="width:50px">
+	<%= button_tag "호출하기", onclick: "$('#shopstyleDvCnt').val(0);$('#shopstyleDv').html('');getShopStyle();" %>
+	
+	<div id="shopstyleDv"></div>
+	<%= button_tag "다음페이지", onclick: "getShopStyleNext()" %>
+	총상품수:<input type="text" id="shopstyleDvCnt" name="shopstyleDvCnt" value="0" style="width:40px;">
 </div>
 
 <div style="border:1px solid black; padding:20px; margin-top:5px;">

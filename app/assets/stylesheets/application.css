@@ -5,6 +5,14 @@
  *= require_self
  *= require_tree .
 */
+i {
+	font-size:14px;
+}
+
+.title_font {
+	font-style:italic;
+	font-family:'freight-display-pro','Times New Roman','Lucida Sans Unicode','Lucida Grande',sans-serif;
+}
 
 .like_icon {
 	display:inline-block;

@@ -156,7 +156,7 @@ class ProductsController < ApplicationController
     page = params[:page]||1
     item_type = params[:type]
     #user = User.where(profile_id: @profile_id).first
-puts params[:myfeed]
+
     # 찜한 상품, 콜렉션
     collections = Collection.new
     if profile_id

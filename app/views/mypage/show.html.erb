@@ -3,76 +3,99 @@
 <div id="Profile" class="centerHolder" style="padding-top:20px;width:100%;">
 	<div class="userInfoBox">
 		<br/>
-		<div class="row-fluid">		
-			<div class="span2">
+		<div class="row-fluid" style="padding:0px 35px 0px 35px;">
 		<% if @user.img_file_name %>
-				<%= image_tag("/data/user/medium/"+@user.img_file_name) %>
-		<% else %>
-			<% if @user.user_type=="U" %>
-				<%= image_tag("/images/common/profile_u.png") %>
-			<% elsif @user.user_type=="S" %>
-				<%= image_tag("/images/common/profile_s.png") %>
-			<% else%>
-				<%= image_tag("/images/common/profile_u.png") %>
-			<% end %>
-		<% end %>
-				<!--img src="<%= @user.img_file_name%>" style="width:150px;height:100px"-->
-				
+			<div class="span2">
+				<%= image_tag("/data/user/medium/"+@user.img_file_name, class: "img-polaroid") %>
 			</div>
 			<div class="span6">
-				<h4>@<%= @user.profile_id%></h4>
-				<%= @user.user_name%>
-				<br/>
-<% if @session_user_id %>
-				<div onclick="alert('프로필수정');" class="bGreen" style="cursor:pointer; width:120px; margin-top:5px;">프로필</div>
-	<% if @session_user_id != @user.id %>
-		<% if @follow_count>0 %>
-				<div id="cnt_scrap" onclick="follow();" class="bGray" style="cursor:pointer; width:150px; margin-top:5px;">팔로잉</div>
 		<% else %>
-				<div id="cnt_scrap" onclick="follow();" class="bBlue" style="cursor:pointer; width:150px; margin-top:5px;">팔로우하기</div>
+			<div class="span8">
+			<%#= image_tag("/images/common/profile_u.png") %>
+			<%#= image_tag("/images/common/profile_s.png") %>
 		<% end %>
+				<span class="title_font" style="font-size:32px;"><%= @user.profile_id%></span>
+				
+<% if @user.url && @user.url!="" %>
+				<div>
+					<a href="<%= @user.url%>" target="_blank"><%= @user.url%></a>
+				</div>
+<% end %>
+
+				<div style="padding-top:10px;">
+<% if @session_user_id != @user.id %>
+	<% if @follow_count>0 %>
+				<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="follow();" style="cursor:pointer;width:150px;text-align:left;">
+					<i class="icon-user"></i>
+					<span style="font-size:12px; padding-left:10px;">Following</span>
+				</button>
+	<% else %>
+				<button id="followDv" type="button" class="btn btn-default btn-inverse" onClick="follow();" style="width:150px;text-align:left;">
+					<i class="icon-user"></i>
+					<span style="font-size:12px; padding-left:10px;">Follow</span>
+				</button>
 	<% end %>
 <% end %>
-				<!--p>
-					<a class="btn btn-success" href="#">프로필</a>
-					<a class="btn btn-primary" href="#">팔로우</a>
-				</p-->
+				</div>
+
 			</div>
-			<div class="span4">
-				<ul class="right">
-					<li class="icon views">
-						<p>스토어 : 1</p>
-					</li>
-					<li class="icon place">
-						<p>팔로워 : 0</p>
-					</li>
-					<li class="icon gender">
-						<p>팔로잉 : 0</p>
-					</li>
-					<li class="icon age">
-						<p>콜렉션 : 0</p>
-					</li>
-				</ul>
+			<div class="span3">
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:17px;">
+					<i class="icon-eye-open"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_view, :unit => "", :precision => 0)%> views</span>
+				</div>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-heart"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_like, :unit => "", :precision => 0)%> likes</span>
+				</div>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-user"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_follower, :unit => "", :precision => 0)%> followers</span>
+				</div>
+<%
+	if @user.user_type=="S"
+%>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-shopping-cart"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_product, :unit => "", :precision => 0)%> products</span>
+				</div>
+<%
+	else
+%>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-user" style="color:#999999"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_following, :unit => "", :precision => 0)%> following</span>
+				</div>
+<%
+	end
+%>				
 			</div>
+			<div class="span1">
+			</div>
+			
 		</div>
+		
 	</div>
 </div>
 
 
 
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
-		<ul>
-			<li>
-				<a href="/mypage/<%=@profile_id%>" <% if @item_type!='C' && @item_type!='P'  %> class="active" <% end %> >전체</a>
-			</li>
-			<li>
-				<a href="/mypage/<%=@profile_id%>?type=P" <% if @item_type=='P' %> class="active" <% end %> >상품</a>
-			</li>
-			<li>
-				<a href="/mypage/<%=@profile_id%>?type=C" <% if @item_type=='C' %> class="active" <% end %> >콜렉션</a>
-			</li>
-		</ul>
-			
+		
+        <div style="padding:10px 75px 0px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	              <ul class="nav">
+	                <li <% if @item_type!="P" && @item_type!="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>">All</a></li>
+	                <li <% if @item_type=="P" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=P">Product</a></li>
+	                <li <% if @item_type=="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=C">Set&collection</a></li>
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
+		
 		<div id="products" class="products">
 			<a name="top"></a>
 			<div class="freshdesignweb">
@@ -107,8 +130,10 @@ $(window).scroll(function(){
 });
 
 var nextPage = 1;
+var searchYn = true;
+
 function itemList(){
-	layer_open_loading("loading_pop_layer",5,"N");
+	
 	
 	var postData = new Object();
     postData.page = nextPage;
@@ -117,86 +142,102 @@ function itemList(){
     postData.order = 'created_at DESC';
     postData.myfeed = 'Y'
     
-    setTimeout( function() {
-    	// ajax post 에서 세션 유지 시키기 위함
-		$.ajaxSetup({
-		  beforeSend: function(xhr) {
-		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
-		  }
-		});
+    if (searchYn){
+    	layer_open_loading("loading_pop_layer",5,"N");
+	    
+	    setTimeout( function() {
+	    	// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+			
+			$.ajax({
+			    url     : '/mypage/itemListCallback',
+			    type    : 'post',
+			    dataType: 'json',
+			    data	: $.param(postData),
+			    async   : false,  
+			    success : function(json){
+			    	collections = json.collections;
+			    	
+			    	layer_close_loading("loading_pop_layer");
 		
-		$.ajax({
-		    url     : '/mypage/itemListCallback',
-		    type    : 'post',
-		    dataType: 'json',
-		    data	: $.param(postData),
-		    async   : false,  
-		    success : function(json){
-		    	collections = json.collections;
-		    	
-		    	layer_close_loading("loading_pop_layer");
-	
-		    	if(json.status){
-					if(collections.length>0) nextPage++;
-					$.each(collections, function (index, collection) {
-						var cnt_like_user = collection.cnt_like_user
-						var class_like = "like_icon"
-						if(cnt_like_user>0){
-							class_like = "like_icon_on"
+			    	if(json.status){
+						if(collections.length>0){
+							nextPage++;
+							 
+							$.each(collections, function (index, collection) {
+								var cnt_like_user = collection.cnt_like_user
+								var class_like = "like_icon"
+								if(cnt_like_user>0){
+									class_like = "like_icon_on"
+								}
+								
+								var li = '<li>' 
+								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+								
+								if(collection.item_type=='C'){
+									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+									+ '	<img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
+									+ '</div>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
+									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
+									+ '</div>'
+									+ '<div style="text-align:right;padding-right:10px;">'
+									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span class="view_icon"></span>'
+									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ '</div>';
+								}else if(collection.item_type=='P'){
+									var priceStr = getMoneyType(collection.price,collection.price_type);
+									
+									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+									+ '</div>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
+									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
+									+ priceStr + "&nbsp;"
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+									+ '</div>'
+									+ '<div style="text-align:right;padding-right:10px;">'
+									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span class="view_icon"></span>'
+									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ '</div>';
+								}
+								li += '</div>'
+								+ '</li>';
+								
+								$('#itemList').append(li);
+							});
+						} else {
+							searchYn = false;
+							if(nextPage==1){
+								$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+							} else {
+								$('#itemList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">No results found</li>');
+							}
 						}
 						
-						var li = '<li>' 
-						+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
-						
-						if(collection.item_type=='C'){
-							li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-							+ '	<img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
-							+ '</div>'
-							+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-							+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-							+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-							+ '</div>'
-							+ '<div style="text-align:right;padding-right:10px;">'
-							+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-							+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
-							+ '	<span class="view_icon"></span>'
-							+ '	<span class="view_count">'+collection.hit+'</span>'
-							+ '</div>';
-						}else if(collection.item_type=='P'){
-							var priceStr = getMoneyType(collection.price,collection.price_type);
-							
-							li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-							+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
-							+ '</div>'
-							+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-							+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-							+ priceStr + "&nbsp;"
-							+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-							+ '</div>'
-							+ '<div style="text-align:right;padding-right:10px;">'
-							+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-							+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
-							+ '	<span class="view_icon"></span>'
-							+ '	<span class="view_count">'+collection.hit+'</span>'
-							+ '</div>';
-						}
-						li += '</div>'
-						+ '</li>';
-						
-						$('#itemList').append(li);
-					});
-					
-		    	} else {
-		    		notify('error', json.msg);
-		    	}
-		    	
-		    },
-		    error   : function(e){
-		        semafors['ajax'] = false;
-		        //notify('error', TranslationLabels['could_not_complete_request']);
-		    }
-		});
-	}, 10 );
+			    	} else {
+			    		searchYn = false;
+			    		notify('error', json.msg);
+			    	}
+			    	
+			    },
+			    error   : function(e){
+			    	searchYn = false;
+			        semafors['ajax'] = false;
+			        //notify('error', TranslationLabels['could_not_complete_request']);
+			    }
+			});
+		}, 10 );
+	}
 }
 
 // 좋아요
@@ -204,12 +245,12 @@ function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
 		var item_type = "";
 		var id = obj.id;
-		arrId = id.split("_");
+		var arrId = id.split("_");
 		if(arrId[0]=="pid") item_type = "P";
 		else if(arrId[0]=="cid") item_type = "C";
 		likeItem(item_type,arrId[1]);
 <%	else %>
-		login_pop('/');
+		login_pop(document.location.href);
 <%	end %>
 }
 
@@ -217,7 +258,7 @@ function like(obj){
 function follow(){
     var postData = new Object();
     postData.follow_id = "<%= @user.id%>";
-    postData.follow_type = "U";
+    postData.follow_type = "<%= @user.user_type%>";
 
 	// ajax post 에서 세션 유지 시키기 위함
 	$.ajaxSetup({
@@ -233,14 +274,14 @@ function follow(){
         data	: $.param(postData),
         async   : false,  
         success : function(json){
-        	$('#cnt_scrap').removeClass();
-
+        	$('#followDv').removeClass();
     		if(json.follow_status=='Y'){
-    			$('#cnt_scrap').html("팔로잉");
-    			$('#cnt_scrap').addClass('bGray');
+    			$('#followDv').html('<i class="icon-user"></i> <span style="font-size:12px; padding-left:10px;">Following</span>');
+    			$('#followDv').addClass('btn btn-default btn-inverse disabled');
+    			$('#followDv').attr('style','cursor:pointer;width:150px;text-align:left;');
     		}else{
-    			$('#cnt_scrap').html("팔로우");
-    			$('#cnt_scrap').addClass('bBlue');
+    			$('#followDv').html('<i class="icon-user"></i> <span style="font-size:12px; padding-left:10px;">Follow</span>');
+    			$('#followDv').addClass('btn btn-default btn-inverse');
     		}
         },
         error   : function(e){

@@ -29,6 +29,7 @@ class Product < ActiveRecord::Base
   validates_attachment_content_type :img, :content_type => /\Aimage\/.*\Z/
 
 
+  # 엑셀파일에서 상품 insert
   def self.import(file,store_id)
     spreadsheet = open_spreadsheet(file)
     #header = spreadsheet.row(3)
@@ -57,13 +58,38 @@ puts("[i:"+i.to_s+"]")
         r = open(img_url)
         bytes = r.read
         tmpimg = Magick::Image.from_blob(bytes).first
-        tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+        
+        thumbSize = 650
+        # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+        if tmpimg.columns>tmpimg.rows
+          if thumbSize>tmpimg.columns
+            thumbSize = tmpimg.columns
+          end
+        elsif tmpimg.columns<tmpimg.rows
+          if thumbSize>tmpimg.rows
+            thumbSize = tmpimg.rows
+          end
+        else
+          if thumbSize>tmpimg.columns
+            thumbSize = tmpimg.columns
+          end
+        end
+        
+        # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+        ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+        thumb = tmpimg.resize!(ipos[0],ipos[1])
+        bg = Magick::Image.new(thumbSize, thumbSize){
+          self.background_color = 'white'
+          self.format = 'PNG'
+        }
+        bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+        bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
     
-        tmpimg.resize!(220,220)
-        tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+        bg.resize!(220,220)
+        bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
     
-        tmpimg.resize!(75,75)
-        tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+        bg.resize!(75,75)
+        bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
         
         product.img_file_name = product_file_name
         product.img_content_type = "image/png"
@@ -78,6 +104,7 @@ puts("Complete!")
   end
   
   
+  # 엑셀파일에서  상품 카테고리 update
   def self.category_update(file)
     spreadsheet = open_spreadsheet(file)
     #header = spreadsheet.row(3)
@@ -96,6 +123,7 @@ puts("[i:"+i.to_s+"]")
 puts("Complete!")
   end
   
+  # 엑셀파일형식 체크
   def self.open_spreadsheet(file)
     case File.extname(file.original_filename)
     when ".csv" then Roo::Csv.new(file.path, nil, :ignore)
@@ -105,7 +133,7 @@ puts("Complete!")
     end
   end
   
-
+  # shopstyle 상품상세정보 API
   def self.getItemApi(id,session_user_id)
     product_url = 'http://api.shopstyle.com/api/v2/products/'+id+'?pid=uid7025-24947295-7'
 
@@ -145,18 +173,38 @@ puts("Complete!")
       r = open(img_url)
       bytes = r.read
       tmpimg = Magick::Image.from_blob(bytes).first
-      #tmpimg.resize_to_fit!(650,650)
-      tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
-
-      #tmpimg.resize!(220,220)
-      #tmpimg.resize_to_fit!(220,520)
-      tmpimg.resize_to_fit!(220,220)
-      tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
-
-      #tmpimg.resize!(75,75)
-      #tmpimg.resize_to_fit!(75,175)
-      tmpimg.resize_to_fit!(75,75)
-      tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+      
+      thumbSize = 650
+      # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+      if tmpimg.columns>tmpimg.rows
+        if thumbSize>tmpimg.columns
+          thumbSize = tmpimg.columns
+        end
+      elsif tmpimg.columns<tmpimg.rows
+        if thumbSize>tmpimg.rows
+          thumbSize = tmpimg.rows
+        end
+      else
+        if thumbSize>tmpimg.columns
+          thumbSize = tmpimg.columns
+        end
+      end
+      
+      # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+      ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+      thumb = tmpimg.resize!(ipos[0],ipos[1])
+      bg = Magick::Image.new(thumbSize, thumbSize){
+        self.background_color = 'white'
+        self.format = 'PNG'
+      }
+      bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+      bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+  
+      bg.resize!(220,220)
+      bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+  
+      bg.resize!(75,75)
+      bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
 
       # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
       %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
@@ -206,15 +254,17 @@ puts("Complete!")
   end
 
   
-  
+  # shopstyle 상품list API
   def self.getItemListApi(params)
-    @products = []
-    @product_list = []
+    products = []
+    product_list = []
     
-    search_key = params[:search_key]||""
-    page = params[:page]||1
-    per_page = params[:per_page]||8
-    img_style = params[:img_style]||"Large"
+    search_key  = params[:search_key]||""
+    page        = params[:page]||1
+    per_page    = params[:per_page]||8
+    cate_code   = params[:cate_code]||""
+    img_style   = params[:img_style]||"Original"
+    save_yn     = params[:save_yn]||""
 
     page = page.to_i
     per_page = per_page.to_i
@@ -222,13 +272,30 @@ puts("Complete!")
     # a search has been performed
     client = Shopsense::API.new({'partner_id' => 'uid7025-24947295-7'})
     response = client.search(search_key,((page-1)*per_page),per_page);
-    
+
     metadata = JSON.parse(response)["metadata"]
     raw_products = JSON.parse(response)["products"]
 
     rcnt = 0;
-    @products = raw_products.map! do |product|
-      tmpProduct = Product.new
+    products = raw_products.map! do |product|
+      link_url = product["clickUrl"]
+  
+      # 이미지 저장
+      cnt_product = Product.where(url: link_url).count
+      add_product = Product.new
+      if cnt_product>0
+        add_product = Product.where(url: link_url).first
+  
+        # DB 수정
+        add_product.subject = product["name"]
+        add_product.price_type = product["currency"]
+        add_product.price = product["price"].to_s
+        add_product.sale_price = product["salePrice"].to_s
+        add_product.save!
+        
+      else
+      
+       add_product = Product.new
 =begin
           puts("id : " + product["id"].to_s)
           puts("name : " + product["name"])
@@ -253,34 +320,136 @@ puts("Complete!")
           #product["alternateImages"] # 다른이미지 배열
           #product["alternateImages"]["sizes"]["Original"]["url"])
 =end
-      tmpProduct.subject = product["name"]
-      #puts("brandedName : " + product["brandedName"])
-      #puts("unbrandedName : " + product["unbrandedName"])
-      tmpProduct.price_type = product["currency"]
-      #puts("priceLabel : " + product["priceLabel"])
-      #puts("salePriceLabel : " + product["salePriceLabel"].to_s)
-      tmpProduct.price = product["price"].to_s
-      tmpProduct.sale_price = product["salePrice"].to_s
-      #puts("retailer_name : " + product["retailer"]["name"])
-      #puts("brand_name : " + product["brand"]["name"])
-      tmpProduct.url = product["clickUrl"]
-      #product["pageUrl"]
-      #product["colors"] # 색상 배열 
-      #product["categories"]  # 카테고리 배열 (id, name 가져오기)
+puts cate_code
+        add_product.cate_code = cate_code
+        add_product.subject = product["name"]
+        #puts("brandedName : " + product["brandedName"])
+        #puts("unbrandedName : " + product["unbrandedName"])
+        add_product.price_type = product["currency"]
+        #puts("priceLabel : " + product["priceLabel"])
+        #puts("salePriceLabel : " + product["salePriceLabel"].to_s)
+        add_product.price = product["price"].to_s
+        add_product.sale_price = product["salePrice"].to_s
+        #puts("retailer_name : " + product["retailer"]["name"])
+        #puts("brand_name : " + product["brand"]["name"])
+        add_product.url = link_url
+        #product["pageUrl"]
+        #product["colors"] # 색상 배열 
+        #product["categories"]  # 카테고리 배열 (id, name 가져오기)
+        
+        #puts("extractDate : " + product["extractDate"])
+        #puts("image_id : " + product["image"]["id"].to_s)
+        add_product.img_file_name = product["image"]["sizes"][img_style]["url"]
+        
+        store_name = product["retailer"]["name"]
+        profile_id = store_name.gsub(/ /,'')
+        
+        add_product.merchant = profile_id
+        #product["alternateImages"] # 다른이미지 배열
+        #product["alternateImages"]["sizes"]["Original"]["url"])
+        add_product.store_type = "F"
+        add_product.hit = 1
+        add_product.use_yn = "Y"
+        
+        
+        if save_yn=="Y"
+          
+          # 스토어 확인
+          cnt_store1 = User.where(profile_id: profile_id, user_type: 'S').count
+          cnt_store2 = User.where(email: profile_id, user_type: 'S').count
+          
+          if cnt_store1>0
+            store = User.where(profile_id: profile_id, user_type: 'S').first
+          elsif cnt_store2>0
+            store = User.where(email: profile_id, user_type: 'S').first
+          else
+            store = User.addStore(profile_id,profile_id)
+          end
+          
+          add_product.user_id = store.id
+  
+          # 이미지 저장
+          product_file_name = ""
+          product_content_type = ""
+          if add_product.img_file_name
+            dataFilePath = "/public/data/product/"
+            
+            product_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
+            product_content_type = "image/png"
       
-      #puts("extractDate : " + product["extractDate"])
-      #puts("image_id : " + product["image"]["id"].to_s)
-      tmpProduct.img_file_name = product["image"]["sizes"][img_style]["url"]
-      tmpProduct.merchant = domain_name(product["clickUrl"])
-      #product["alternateImages"] # 다른이미지 배열
-      #product["alternateImages"]["sizes"]["Original"]["url"])
-    
-      @product_list << tmpProduct
+            r = open(add_product.img_file_name)
+            bytes = r.read
+            tmpimg = Magick::Image.from_blob(bytes).first
+            
+            thumbSize = 650
+            # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+            if tmpimg.columns>tmpimg.rows
+              if thumbSize>tmpimg.columns
+                thumbSize = tmpimg.columns
+              end
+            elsif tmpimg.columns<tmpimg.rows
+              if thumbSize>tmpimg.rows
+                thumbSize = tmpimg.rows
+              end
+            else
+              if thumbSize>tmpimg.columns
+                thumbSize = tmpimg.columns
+              end
+            end
+            
+            # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+            ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+            thumb = tmpimg.resize!(ipos[0],ipos[1])
+            bg = Magick::Image.new(thumbSize, thumbSize){
+              self.background_color = 'white'
+              self.format = 'PNG'
+            }
+            bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+            bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+        
+            bg.resize!(220,220)
+            bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+        
+            bg.resize!(75,75)
+            bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+      
+            # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
+            %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+      
+            # 이미지 대표색상코드 추출
+            colors = Product.get_product_color(product_file_name)
+            add_product.color_code_o = colors[0] 
+            add_product.color_code_s = colors[1]
+            
+            add_product.img_file_name = product_file_name
+            add_product.img_content_type = "image/png"
+            add_product.img_file_size = 0
+      
+          end
+  
+          add_product.save!
+          
+          # 스토어 상품 연결 정보 저장
+          cnt_store_item = UserItem.where(user_id: store.id, ref_id: add_product.id).count
+          if cnt_store_item==0
+            store_item = UserItem.new
+            store_item.user_id = store.id
+            store_item.ref_id = add_product.id
+            store_item.item_type = 'P'
+            store_item.save!
+          end
+          
+        end
+        
+        
+      end
+      
+      product_list << add_product
       
       rcnt += 1
     end
 
-    return @product_list
+    return product_list
     
   end
   
@@ -304,8 +473,6 @@ puts("Complete!")
     color_code  = params[:color_code]||""
     cate_code   = params[:cate_code]||""
     order       = params[:order]||"hit DESC"
-    
-    puts color_code
     
     if search_key && search_key!=""
       search_key = search_key.gsub(/\+/," ")
@@ -361,6 +528,28 @@ puts("Complete!")
     extension = File.extname(img_file_name).downcase
     #self.img.instance_write(:file_name, "#{milisec}#{extension}")
     self.img.instance_write(:file_name, "#{ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)}#{extension}")
+  end
+  
+  # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+  def self.get_resize_fit(rsize,iwidth,iheight)
+      isize = [] 
+      
+      iw = rsize
+      ih = rsize
+      if iwidth > iheight
+        iw = rsize
+        ih = (iheight*rsize)/iwidth
+      elsif iwidth < iheight
+        iw = (iwidth*rsize)/iheight
+        ih = rsize
+      end
+      
+      isize[0] = iw
+      isize[1] = ih
+      isize[2] = (rsize-isize[0].to_i)/2  # 정사각형 이미지배경에서 위치될 썸네일 left
+      isize[3] = (rsize-isize[1].to_i)/2  # 정사각형 이미지배경에서 위치될 썸네일 top
+      
+      return isize
   end
   
   def self.domain_name(url)

@@ -23,15 +23,32 @@ class MypageController < ApplicationController
     # 팔로우 여부 가져오기
     @follow_count = Follow.where(user_id: @session_user_id, follow_id: @user.id).count
     
-    # 스크랩 수 가져오기
-    #@cnt_scrap = Get.where(get_type: 'S', item_type: 'C', ref_id: collection_id).count
-    @cnt_scrap = 10
+    # 조회 수 가져오기
+    cnt_view_product = Product.select("IFNULL(SUM(hit),0) AS hit").from("products").where(user_id: @user.id).first
+    cnt_view_collection = Collection.select("IFNULL(SUM(hit),0) AS hit").from("collections").where(user_id: @user.id).first
+    @cnt_view = cnt_view_product.hit + cnt_view_collection.hit
     
-    # 포스팅한 상품, 콜렉션
-    #@collections = Collection.paginate(page: params[:page], per_page: 16).where(user_id: @user.id).order('created_at DESC')
-
-    # 찜한 상품, 콜렉션
-    #@collections = Collection.itemList(params)
+    # 좋아요 수 가져오기
+    cnt_like_product = Get.select("A.id")
+                          .from("gets A, products B")
+                          .where("A.ref_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
+                          .count
+                          
+    cnt_like_collection = Get.select("A.id")
+                          .from("gets A, collections B")
+                          .where("A.ref_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
+                          .count
+    
+    @cnt_like = cnt_like_product + cnt_like_collection
+    
+    # follower 수 가져오기
+    @cnt_follower = Follow.select("id").from("follows").where(follow_id: @user.id).count
+    
+    # following 수 가져오기
+    @cnt_following = Follow.select("id").from("follows").where(user_id: @user.id).count
+    
+    # 상품 수 가져오기
+    @cnt_product = Product.select("id").from("products").where(user_id: @user.id).count
     
     respond_to do |format|
       format.html # show.html.erb
@@ -50,6 +67,7 @@ class MypageController < ApplicationController
     # 찜한 상품, 콜렉션
     collectionList = Collection.itemList(params)
     
+    # 시간 오래 걸림... 해결방법 찾아라
     collectionList.each_with_index do |collection,i|
       price = 0.0
       

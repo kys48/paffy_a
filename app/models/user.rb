@@ -76,13 +76,38 @@ class User < ActiveRecord::Base
         bytes = r.read
         #tmpimg = Magick::Image.read(img_original).first
         tmpimg = Magick::Image.from_blob(bytes).first
-        tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+        
+        thumbSize = 650
+        # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+        if tmpimg.columns>tmpimg.rows
+          if thumbSize>tmpimg.columns
+            thumbSize = tmpimg.columns
+          end
+        elsif tmpimg.columns<tmpimg.rows
+          if thumbSize>tmpimg.rows
+            thumbSize = tmpimg.rows
+          end
+        else
+          if thumbSize>tmpimg.columns
+            thumbSize = tmpimg.columns
+          end
+        end
+        
+        # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+        ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+        thumb = tmpimg.resize!(ipos[0],ipos[1])
+        bg = Magick::Image.new(thumbSize, thumbSize){
+          self.background_color = 'white'
+          self.format = 'PNG'
+        }
+        bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+        bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
     
-        tmpimg.resize!(220,220)
-        tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+        bg.resize!(220,220)
+        bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
     
-        tmpimg.resize!(75,75)
-        tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+        bg.resize!(75,75)
+        bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
         
         user.img_file_name = product_file_name
         user.img_content_type = "image/png"
@@ -135,7 +160,7 @@ class User < ActiveRecord::Base
       end
 
       user.save!
-puts("start 5 : #{Time.zone.now}")      
+      
     end
   end
   

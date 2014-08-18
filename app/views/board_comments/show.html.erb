@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Comment type:</b>
+  <%= @board_comment.comment_type %>
+</p>
+
+<p>
+  <b>Ref:</b>
+  <%= @board_comment.ref_id %>
+</p>
+
+<p>
+  <b>Contents:</b>
+  <%= @board_comment.contents %>
+</p>
+
+<p>
+  <b>Reg:</b>
+  <%= @board_comment.reg_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_board_comment_path(@board_comment) %> |
+<%= link_to 'Back', board_comments_path %>

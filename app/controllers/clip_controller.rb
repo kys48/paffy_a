@@ -14,7 +14,7 @@ class ClipController < ApplicationController
     
     respond_to do |format|
       format.html # clip.html.erb
-      format.json { render json: @product }
+      #format.json { render json: @url }
     end
   end
   
@@ -57,15 +57,40 @@ class ClipController < ApplicationController
       r = open(@item_imgurl)
       bytes = r.read
       tmpimg = Magick::Image.from_blob(bytes).first
-      tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+      #tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+
+      thumbSize = 650
+      # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+      if tmpimg.columns>tmpimg.rows
+        if thumbSize>tmpimg.columns
+          thumbSize = tmpimg.columns
+        end
+      elsif tmpimg.columns<tmpimg.rows
+        if thumbSize>tmpimg.rows
+          thumbSize = tmpimg.rows
+        end
+      else
+        if thumbSize>tmpimg.columns
+          thumbSize = tmpimg.columns
+        end
+      end
       
-      #tmpimg.resize!(220,220)
-      tmpimg.resize_to_fit!(220,220)
-      tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
       
-      #tmpimg.resize!(75,75)
-      tmpimg.resize_to_fit!(75,75)
-      tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+      # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+      ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+      thumb = tmpimg.resize!(ipos[0],ipos[1])
+      bg = Magick::Image.new(thumbSize, thumbSize){
+        self.background_color = 'white'
+        self.format = 'PNG'
+      }
+      bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+      bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+  
+      bg.resize!(220,220)
+      bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+  
+      bg.resize!(75,75)
+      bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
       
       # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
       %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}

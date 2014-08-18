@@ -313,12 +313,12 @@ ul.productActions > li > a > span {
 }
 
 .centerHolder > div.left.tools {
-    width: 1000px;
+    width: 1200px;
     margin-bottom: 10px;
 }
 
 .centerHolder > div.right {
-    width: 300px;
+    width: 350px;
     float: left;
     display: block;
     color: #7c8792;

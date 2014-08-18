@@ -1,5 +1,8 @@
 PaffyA::Application.routes.draw do
 
+  match 'comments/deleteCallback', to: 'board_comments#deleteCallback'
+  match 'comments/commentListCallback', to: 'board_comments#commentListCallback'
+  match 'comments/writeCallback', to: 'board_comments#writeCallback'
   match 'admin/setColorCallback', to: 'admin#setColorCallback'
   match 'admin/removeBgCallback', to: 'admin#removeBgCallback'
   match 'admin/productList', to: 'admin#productList'
@@ -41,8 +44,8 @@ PaffyA::Application.routes.draw do
   get 'item/getProductApi'
   match 'getProductApi', to: 'item#getProductApi'
   
-  get 'item/getProductApiCallback'
-  match 'getProductApiCallback', to: 'item#getProductApiCallback'
+  get 'item/getShopStyleCallback'
+  match 'getShopStyleCallback', to: 'item#getShopStyleCallback'
   
   get 'products/post'
   match 'products/post', to: 'products#post'
@@ -121,6 +124,7 @@ PaffyA::Application.routes.draw do
   resources :cates
   resources :follows
   resources :user_ranks
+  resources :board_comments
   
   # scope '(:locale)' do
     # root :to => 'products#index', as: 'products'

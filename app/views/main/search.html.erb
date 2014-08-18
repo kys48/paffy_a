@@ -22,8 +22,6 @@
 
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
 
-<input id="item_search_key" name="item_search_key" type="text" class="form-control" placeholder="Search products, stores" value="">
-
         <div style="padding:10px 75px 10px 65px;">
 	        <div class="navbar">
 	          <div class="navbar-inner">
@@ -115,7 +113,6 @@ $(window).scroll(function(){
 		getProductList();
 	}
 });
-
 
 var nextPage = 1;
 var searchYn = true;
@@ -222,6 +219,12 @@ function getProductList(){
 						if(collections.length>0) {
 							nextPage++;
 							$.each(collections, function (index, collection) {
+								var cnt_like_user = collection.cnt_like_user
+								var class_like = "like_icon"
+								if(cnt_like_user>0){
+									class_like = "like_icon_on"
+								}
+								
 								var li = '<li>'
 								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle;">';
 								
@@ -229,23 +232,33 @@ function getProductList(){
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
 									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
 									+ '</div>'
-									+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+									+ '<div style="text-align:right;padding-right:10px;">'
+									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span class="view_icon"></span>'
+									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ '</div>';
 								}else if(collection.item_type=='P'){
 									var priceStr = getMoneyType(collection.price,collection.price_type);
-									 
+
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
-									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
+									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
 									+ priceStr + "&nbsp;"
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
 									+ '</div>'
-									+ '<div style="text-align:right;color:#aaaaaa;font-size:11px">'+collection.cnt_like+' Like / '+collection.hit+' View</div>';
+									+ '<div style="text-align:right;padding-right:10px;">'
+									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span class="view_icon"></span>'
+									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ '</div>';
 								}
 								li += '</div>'
 								+ '</li>';
@@ -278,4 +291,17 @@ function getProductList(){
 		
 }
 
+// 좋아요
+function like(obj){
+<%	if @session_user_id && @session_user_id!="" %>
+		var item_type = "";
+		var id = obj.id;
+		var arrId = id.split("_");
+		if(arrId[0]=="pid") item_type = "P";
+		else if(arrId[0]=="cid") item_type = "C";
+		likeItem(item_type,arrId[1]);
+<%	else %>
+		login_pop(document.location.href);
+<%	end %>
+}
 </script>

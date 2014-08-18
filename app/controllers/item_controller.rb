@@ -14,30 +14,32 @@ class ItemController < ApplicationController
     params[:per_page] = params[:per_page]||16
     params[:cmenu] = "2"
 
-    #@products = Product.getApi(params)
-    
     respond_to do |format|
       format.html # getProductApi.html.erb
-      format.json { render json: @products }
+      #format.json { render json: @search_key }
     end
   end
   
   
-  # product API ajax
-  def getProductApiCallback
+  # shopstyle API ajax
+  def getShopStyleCallback
     params[:per_page] = params[:per_page]||16
+    params[:save_yn] = "Y"
+    
+puts params
+    
+puts("start{#{params[:page]}} : #{Time.zone.now}")
 
     # 찜한 상품, 콜렉션
-    @products = Product.getApi(params)
+    productList = Product.getItemListApi(params)
+   
+puts("end : #{Time.zone.now}")   
    
     respond_to do |format|
-      #format.json { render json: @products.to_json }
-      format.json { render :json => { status: true, products: @products }.to_json }
+      #format.json { render json: productList.to_json }
+      format.json { render :json => { status: true, products: productList }.to_json }
     end
   end
-  
-  
-  
   
   
 end

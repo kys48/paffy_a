@@ -23,4 +23,6 @@ composite -compose CopyOpacity %TARGET_IMG_TMP_PATH_NAME%_erode_matte.png %TARGE
 
 convert %TARGET_IMG_TMP_PATH_NAME%_finished.png -bordercolor white -border 1x1 -matte -fill none -fuzz  %THRESHOLD%%% -draw "matte 1,1 floodfill" -shave 1x1 %TARGET_IMG_PATH_NAME%
 
+convert %TARGET_IMG_PATH_NAME% -fuzz 2%% -transparent white %TARGET_IMG_PATH_NAME%
+
 rm %TARGET_IMG_PATH%tmp/*

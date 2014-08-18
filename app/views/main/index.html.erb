@@ -108,7 +108,7 @@
 							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
 							 		<img src="/data/collection/thumb/<%= collection.img_file_name%>" onClick="document.location.href='/collections/<%= collection.id%>'" style="cursor:pointer">
 							 	</div>
-							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
+							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">
 							 		<span style="color:#000000"><%= collection.subject%></span><br/>
 							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088cc"><%=collection.user_name%></a>
 							 	</div>
@@ -152,12 +152,11 @@
 		      	price_str = number_to_currency(collection.price, :unit => price_type_str, :precision => 0)
 		    end
 %>
-<div class="heart-shape before"></div>
 							<div class="thumbnail" style="width:230px;height:305px;display:table-cell;text-align:center;vertical-align:middle">
 							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
 							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/products/<%= collection.id%>'" style="cursor:pointer">
 							 	</div>
-							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">
+							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">
 							 		<a href="javascript:goProductUrl('<%=collection.url%>','<%=collection.merchant%>')"><span style="color:#000000"><%= collection.subject%></span></a>
 							 		<br/>
 							 		<%= price_str%>&nbsp;
@@ -254,7 +253,7 @@ function itemList(){
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
 									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
 									+ '</div>'
@@ -271,7 +270,7 @@ function itemList(){
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:50px; ">'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
 									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
 									+ priceStr + "&nbsp;"
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
@@ -319,7 +318,7 @@ function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
 		var item_type = "";
 		var id = obj.id;
-		arrId = id.split("_");
+		var arrId = id.split("_");
 		if(arrId[0]=="pid") item_type = "P";
 		else if(arrId[0]=="cid") item_type = "C";
 		likeItem(item_type,arrId[1]);

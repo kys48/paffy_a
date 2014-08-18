@@ -16,7 +16,8 @@ class SessionsController < ApplicationController
     @target = params[:target]
     
     if session[:user_id]
-      redirect_to root_url
+      #redirect_to root_url
+      render "createpop"
     end
   end
 

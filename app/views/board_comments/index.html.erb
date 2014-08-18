@@ -1,0 +1,29 @@
+<h1>Listing board_comments</h1>
+
+<table>
+  <tr>
+    <th>Comment type</th>
+    <th>Ref</th>
+    <th>Contents</th>
+    <th>Reg</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @board_comments.each do |board_comment| %>
+  <tr>
+    <td><%= board_comment.comment_type %></td>
+    <td><%= board_comment.ref_id %></td>
+    <td><%= board_comment.contents %></td>
+    <td><%= board_comment.reg_id %></td>
+    <td><%= link_to 'Show', board_comment %></td>
+    <td><%= link_to 'Edit', edit_board_comment_path(board_comment) %></td>
+    <td><%= link_to 'Destroy', board_comment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Board comment', new_board_comment_path %>

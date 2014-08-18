@@ -8,8 +8,6 @@ include ERB::Util
 class AdminController < ApplicationController
   after_filter :cors_set_access_control_headers
 
-
-
   def importProduct
     respond_to do |format|
       format.html # importProductExcel.html.erb
@@ -145,23 +143,46 @@ puts("start~")
                 r = open(img_url)
                 bytes = r.read
                 tmpimg = Magick::Image.from_blob(bytes).first
-                tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+                
+                thumbSize = 650
+                # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+                if tmpimg.columns>tmpimg.rows
+                  if thumbSize>tmpimg.columns
+                    thumbSize = tmpimg.columns
+                  end
+                elsif tmpimg.columns<tmpimg.rows
+                  if thumbSize>tmpimg.rows
+                    thumbSize = tmpimg.rows
+                  end
+                else
+                  if thumbSize>tmpimg.columns
+                    thumbSize = tmpimg.columns
+                  end
+                end
+                
+                # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+                ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+                thumb = tmpimg.resize!(ipos[0],ipos[1])
+                bg = Magick::Image.new(thumbSize, thumbSize){
+                  self.background_color = 'white'
+                  self.format = 'PNG'
+                }
+                bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+                bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
             
-                #tmpimg.resize!(220,220)
-                tmpimg.resize_to_fit!(220,220)
-                tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+                bg.resize!(220,220)
+                bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
             
-                #tmpimg.resize!(75,75)
-                tmpimg.resize_to_fit!(75,75)
-                tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+                bg.resize!(75,75)
+                bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
                 
                 # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
                 %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
                 
                 # 이미지 대표색상코드 추출
                 colors = Product.get_product_color(product_file_name)
-                @product.color_code_o = colors[0] 
-                @product.color_code_s = colors[1]
+                product.color_code_o = colors[0] 
+                product.color_code_s = colors[1]
               end
               
               # DB 저장
@@ -364,15 +385,39 @@ puts("start!")
               r = open(image)
               bytes = r.read
               tmpimg = Magick::Image.from_blob(bytes).first
-              tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+              #tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
           
-              #tmpimg.resize!(220,220)
-              tmpimg.resize_to_fit!(220,220)
-              tmpimg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+              thumbSize = 650
+              # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+              if tmpimg.columns>tmpimg.rows
+                if thumbSize>tmpimg.columns
+                  thumbSize = tmpimg.columns
+                end
+              elsif tmpimg.columns<tmpimg.rows
+                if thumbSize>tmpimg.rows
+                  thumbSize = tmpimg.rows
+                end
+              else
+                if thumbSize>tmpimg.columns
+                  thumbSize = tmpimg.columns
+                end
+              end
+              
+              # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+              ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+              thumb = tmpimg.resize!(ipos[0],ipos[1])
+              bg = Magick::Image.new(thumbSize, thumbSize){
+                self.background_color = 'white'
+                self.format = 'PNG'
+              }
+              bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+              bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
           
-              #tmpimg.resize!(75,75)
-              tmpimg.resize_to_fit!(75,75)
-              tmpimg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+              bg.resize!(220,220)
+              bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+          
+              bg.resize!(75,75)
+              bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
               
               # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
               %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}

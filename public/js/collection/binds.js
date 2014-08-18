@@ -537,7 +537,7 @@ $(function(){
          });
     });
     
-    $document.textAreaCounter({selector: 'textarea'});
+    //$document.textAreaCounter({selector: 'textarea'});
     
     $(window).load(function(e) {
          fixHeights();

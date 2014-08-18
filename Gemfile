@@ -64,7 +64,7 @@ gem 'thin'
 gem 'devise', '2.2.8'
 gem 'omniauth-facebook'
 
-gem 'rmagick'
+gem 'rmagick', :require => false
 
 #gem 'skimlinks'
 gem 'roo'

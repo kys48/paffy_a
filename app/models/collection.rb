@@ -52,6 +52,21 @@ class Collection < ActiveRecord::Base
     end
     
     str_from = "(
+                  SELECT id, item_type
+                       , MAX(user_id) AS user_id
+                       , MAX(img_file_name) AS img_file_name
+                       , MAX(collection_type) AS collection_type
+                       , MAX(hit) AS hit
+                       , MAX(created_at) AS created_at
+                       , MAX(img_updated_at) AS img_updated_at
+                       , MAX(profile_id) AS profile_id
+                       , MAX(user_name) AS user_name
+                       , MAX(price) AS price
+                       , MAX(price_type) AS price_type
+                       , MAX(merchant) AS merchant
+                       , MAX(url) AS url
+                       , MAX(subject) AS subject
+                FROM (
                     SELECT id, user_id, img_file_name, collection_type, subject
                          , hit, created_at, img_updated_at, '' AS item_type
                          , 0 AS profile_id, '' AS user_name, 0 AS price, '' AS price_type, '' AS merchant, '' AS url
@@ -168,68 +183,68 @@ class Collection < ActiveRecord::Base
     end
     
     str_from2 = " UNION ALL
-                   SELECT A.id, B.user_id, A.img_file_name, '' AS collection_type, A.subject, A.hit, B.created_at, A.img_updated_at, 'P' AS item_type
-                        , C.profile_id, C.user_name, A.price, A.price_type, A.merchant, A.url
-                    FROM products A, user_items B, users C
-                   WHERE A.id = B.ref_id
-                     AND B.user_id = C.id
-                     AND B.item_type = 'P'"
+                   SELECT B.id, A.user_id, B.img_file_name, '' AS collection_type, B.subject, B.hit, A.created_at, B.img_updated_at, 'P' AS item_type
+                        , C.profile_id, C.user_name, B.price, B.price_type, B.merchant, B.url
+                    FROM user_items A, products B, users C
+                   WHERE B.id = A.ref_id
+                     AND A.user_id = C.id
+                     AND A.item_type = 'P'"
     if myfeed != "Y"
       str_from2 += "    AND C.user_type='S'"
     end
     
     if profile_id
       str_from2 += "    AND ("
-      str_from2 += "          B.user_id=#{user.id}"
+      str_from2 += "          A.user_id=#{user.id}"
       if myfeed == "Y"
-        str_from2 += "       OR B.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = #{user.id})"
+        str_from2 += "       OR A.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = #{user.id})"
       end
       str_from2 += "    )"
     end
     
     if search_key && search_key!=""
       str_from2 += "    AND ("
-      str_from2 += "          LOWER(A.subject) LIKE '%#{search_key}%' "
-      str_from2 += "       OR LOWER(A.cate_code) LIKE '%#{search_key}%' "
-      str_from2 += "       OR LOWER(A.merchant) LIKE '%#{search_key}%' "
+      str_from2 += "          LOWER(B.subject) LIKE '%#{search_key}%' "
+      str_from2 += "       OR LOWER(B.cate_code) LIKE '%#{search_key}%' "
+      str_from2 += "       OR LOWER(B.merchant) LIKE '%#{search_key}%' "
       
       search_keys.each do |key|
-        str_from2 += "       OR LOWER(A.subject) LIKE '%#{key}%' "
-        str_from2 += "       OR LOWER(A.cate_code) LIKE '%#{key}%' "
-        str_from2 += "       OR LOWER(A.merchant) LIKE '%#{key}%' "
+        str_from2 += "       OR LOWER(B.subject) LIKE '%#{key}%' "
+        str_from2 += "       OR LOWER(B.cate_code) LIKE '%#{key}%' "
+        str_from2 += "       OR LOWER(B.merchant) LIKE '%#{key}%' "
       end
             
       str_from2 += "    )"
     end
 
     if price_stat && price_stat!="" && price_stat!="0"
-      str_from2 += "    AND A.price IS NOT NULL "
+      str_from2 += "    AND B.price IS NOT NULL "
       case price_stat
         when "1"
-          str_from2 += "    AND A.price<=20000 "
+          str_from2 += "    AND B.price<=20000 "
         when "2"
-          str_from2 += "    AND A.price BETWEEN 20000 AND 50000"
+          str_from2 += "    AND B.price BETWEEN 20000 AND 50000"
         when "3"
-          str_from2 += "    AND A.price BETWEEN 50000 AND 100000"
+          str_from2 += "    AND B.price BETWEEN 50000 AND 100000"
         when "4"
-          str_from2 += "    AND A.price BETWEEN 100000 AND 200000"
+          str_from2 += "    AND B.price BETWEEN 100000 AND 200000"
         when "5"
-          str_from2 += "    AND A.price BETWEEN 200000 AND 500000"
+          str_from2 += "    AND B.price BETWEEN 200000 AND 500000"
         when "6"
-          str_from2 += "    AND A.price >= 500000"
+          str_from2 += "    AND B.price >= 500000"
       end
     end
     
     if color_code && color_code!=""
-      str_from2 += "    AND A.color_code_s IN ('#{color_code}') "
+      str_from2 += "    AND B.color_code_s IN ('#{color_code}') "
     end
     
     if cate_code && cate_code!=""
-      str_from2 += "    AND A.cate_code='#{cate_code}'"
+      str_from2 += "    AND B.cate_code='#{cate_code}'"
     end
     
     if store_type && store_type!=""
-      str_from2 += "    AND A.store_type='#{store_type}'"
+      str_from2 += "    AND B.store_type='#{store_type}'"
     end
       
     if item_type=='C'
@@ -241,11 +256,23 @@ class Collection < ActiveRecord::Base
       str_from += str_from2
     end
     
-    str_from += ") X"
+    str_from += ") Y
+                 GROUP BY id, item_type
+                 ) X"
 
-    str_select = "id, user_id, img_file_name, collection_type
-               , hit, created_at, img_updated_at, item_type
-               , profile_id, user_name, price, price_type, merchant, url
+    str_select = "id, item_type
+               , user_id
+               , img_file_name
+               , collection_type
+               , hit
+               , created_at
+               , img_updated_at
+               , profile_id
+               , user_name
+               , price
+               , price_type
+               , merchant
+               , url
                , F_COUNT_GETS(id,'L') AS cnt_like"
     if session_user_id && session_user_id!=""
       str_select += ", F_COUNT_GETS_USER(id,'L','#{session_user_id}') AS cnt_like_user"
