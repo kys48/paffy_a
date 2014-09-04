@@ -6,15 +6,16 @@ require 'open-uri'
 
 class Product < ActiveRecord::Base
   attr_accessible :cate_code, :subject, :price, :sale_price, :price_type, :url, :hit, :user_id,
-                  :use_yn, :merchant, :cate_code, :img
+                  :use_yn, :merchant, :cate_code, :img, :style_type
                   
   has_many :collection_products, dependent: :destroy
   
   has_attached_file :img,
-                    :styles => {
-                      :medium => "220x220>", 
-                      :thumb => "75x75>" 
-                    },
+                    #:styles => {
+                    #  :removebg => "650x650>",
+                    #  :medium => "220x220>", 
+                    #  :thumb => "75x75>" 
+                    #},
                     :default_url => "/imgs/:style/missing.png",
                     #:path => ":rails_root/public/:attachment/:id/:style/:basename.:extension",
                     #:url => "/:attachment/:id/:style/:basename.:extension"
@@ -207,7 +208,8 @@ puts("Complete!")
       bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
 
       # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
-      %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+      #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+      %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
 
       # 이미지 대표색상코드 추출
       colors = Product.get_product_color(product_file_name)
@@ -320,7 +322,7 @@ puts("Complete!")
           #product["alternateImages"] # 다른이미지 배열
           #product["alternateImages"]["sizes"]["Original"]["url"])
 =end
-puts cate_code
+
         add_product.cate_code = cate_code
         add_product.subject = product["name"]
         #puts("brandedName : " + product["brandedName"])
@@ -414,7 +416,8 @@ puts cate_code
             bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
       
             # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
-            %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+            #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+            %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
       
             # 이미지 대표색상코드 추출
             colors = Product.get_product_color(product_file_name)
@@ -469,10 +472,11 @@ puts cate_code
     page = page.to_i
     per_page = per_page.to_i
     
-    search_key   = params[:search_key]||""
-    color_code  = params[:color_code]||""
-    cate_code   = params[:cate_code]||""
-    order       = params[:order]||"hit DESC"
+    search_key = params[:search_key]||""
+    color_code = params[:color_code]||""
+    cate_code  = params[:cate_code]||""
+    style_type = params[:style_type]||"P"
+    order      = params[:order]||"hit DESC"
     
     if search_key && search_key!=""
       search_key = search_key.gsub(/\+/," ")
@@ -510,14 +514,79 @@ puts cate_code
     if cate_code && cate_code!=""
       where_str += "    AND cate_code='"+cate_code+"'"
     end
+    
+    if style_type && style_type!=""
+      where_str += "    AND style_type='"+style_type+"'"
+    end
 
     products = Product.paginate(page: page, per_page: per_page)
-                    .select("id, user_id, img_file_name, F_REMOVE_HTML(subject) AS subject, hit, url, created_at, img_updated_at")
-                      .from("products")
-                     .where(" use_yn='Y' " + where_str)
-                     .order(order)
+              .select("id, user_id, img_file_name, F_REMOVE_HTML(subject) AS subject, hit, url, created_at, img_updated_at")
+                .from("products")
+               .where(" use_yn='Y' " + where_str)
+               .order(order)
 
     return products
+
+  end
+
+
+  # 상품 리스트 카운트
+  def self.productListCount(params)
+    page = params[:page]||1
+    per_page = params[:per_page]||16
+    page = page.to_i
+    per_page = per_page.to_i
+    
+    search_key = params[:search_key]||""
+    color_code = params[:color_code]||""
+    cate_code  = params[:cate_code]||""
+    style_type = params[:style_type]||"P"
+    order      = params[:order]||"hit DESC"
+    
+    if search_key && search_key!=""
+      search_key = search_key.gsub(/\+/," ")
+      search_key = search_key.gsub(/\=/," ")
+      search_key = search_key.gsub(/_/," ")
+      search_key = search_key.gsub(/%/," ")
+      search_key = search_key.gsub(/\|/," ")
+      search_key = search_key.gsub(/\&/," ")
+      search_key = search_key.strip().downcase
+      
+      search_keys = search_key.split(" ")
+    end
+    
+    where_str = ""
+  
+    if search_key && search_key!=""
+      where_str += "    AND ("
+      where_str += "          LOWER(subject) LIKE '%#{search_key}%' "
+      where_str += "       OR LOWER(cate_code) LIKE '%#{search_key}%' "
+      where_str += "       OR LOWER(merchant) LIKE '%#{search_key}%' "
+      
+      search_keys.each do |key|
+        where_str += "       OR LOWER(subject) LIKE '%#{key}%' "
+        where_str += "       OR LOWER(cate_code) LIKE '%#{key}%' "
+        where_str += "       OR LOWER(merchant) LIKE '%#{key}%' "
+      end
+      
+      where_str += "    )"
+    end
+    
+    if color_code && color_code!=""
+      where_str += "    AND color_code_s IN ('#{color_code}') "
+    end
+    
+    if cate_code && cate_code!=""
+      where_str += "    AND cate_code='"+cate_code+"'"
+    end
+    
+    if style_type && style_type!=""
+      where_str += "    AND style_type='"+style_type+"'"
+    end
+
+    products_count = Product.where(" use_yn='Y' " + where_str).count
+    
+    return products_count
 
   end
 

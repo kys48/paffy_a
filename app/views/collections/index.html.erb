@@ -95,14 +95,16 @@ $(document).ready(function(){
 
 // scroll event
 $(window).scroll(function(){
-	if($(window).scrollTop() == $(document).height() - $(window).height()){
+	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>2 && searchYn){
 		lastPostFunc();
 	}
 });
 
 var nextPage = 2;
+var searchYn = true;
 function lastPostFunc(){
 	//nextPage++;
+	searchYn = false;
 	$.ajax({
 	    url     : '/main/itemListCallback?page='+nextPage+'&type=<%= @item_type%>',
 	    type    : 'get',
@@ -145,6 +147,7 @@ function lastPostFunc(){
 					
 					$('#itemList').append(li);
 				});
+				searchYn = true;
 				
 	    	} else {
 	    		notify('error', json.msg);

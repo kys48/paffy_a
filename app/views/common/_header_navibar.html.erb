@@ -75,14 +75,18 @@ $(document).ready(function(){
           <li id="cmenu2" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Items <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li id="cmenu2_sub1"><a href="/getProductApi?search_key=Women&cmenu=2&cmenu_sub=1">Women</a></li>
-              <li id="cmenu2_sub2"><a href="/getProductApi?search_key=Bags&cmenu=2&cmenu_sub=2">Bags</a></li>
-              <li id="cmenu2_sub3"><a href="/getProductApi?search_key=Shoes&cmenu=2&cmenu_sub=3">Shoes</a></li>
-              <li id="cmenu2_sub4"><a href="/getProductApi?search_key=Beauty&cmenu=2&cmenu_sub=4">Beauty</a></li>
-              <li id="cmenu2_sub5"><a href="/getProductApi?search_key=Jewelry&cmenu=2&cmenu_sub=5">Jewelry</a></li>
-              <li id="cmenu2_sub6"><a href="/getProductApi?search_key=Kids&cmenu=2&cmenu_sub=6">Kids</a></li>
-              <li id="cmenu2_sub7"><a href="/getProductApi?search_key=Home&cmenu=2&cmenu_sub=7">Home</a></li>
-              <li id="cmenu2_sub8"><a href="/getProductApi?search_key=Men&cmenu=2&cmenu_sub=8">Men</a></li>
+              <li id="cmenu2_sub0"><a href="/item/getProductList?cate_code=All&cmenu=2&cmenu_sub=0">All</a></li>
+              <li class="divider"></li>
+<%
+catelist = ["Tops", "Dresses", "Jeans", "Pants",   
+			 "Skirts", "Shoes", "Bags", "Jewelry",  
+			 "Beauty", "Kids", "Home", "Men"]
+catelist.each_with_index do |cate,i|
+%>
+              <li id="cmenu2_sub<%=i%>"><a href="/item/getProductList?cate_code=<%=catelist[i]%>&cmenu=2&cmenu_sub=<%=i%>"><%=catelist[i]%></a></li>
+<%	
+end
+%>
             </ul>
           </li>
           <li id="cmenu3" class="dropdown">
@@ -93,26 +97,18 @@ $(document).ready(function(){
             </ul>
           </li>
           <li id="cmenu4">
-<% if current_user %>
+
           	<a href="/mypage/myfeed">Following</a>
-<% else %>
-          	<a href="javascript:login_pop('/mypage/myfeed');">Following</a>
-<% end %>
+
+
+
           </li>
           <li id="cmenu5" class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">POST <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Posting <b class="caret"></b></a>
             <ul class="dropdown-menu">
-<% if current_user %>
-              <li id="cmenu5_sub1"><a href="/products/post">Product post</a></li>
-              <li class="divider"></li>
-              <li id="cmenu5_sub2"><a href="/collections/set">Set post</a></li>
-              <li id="cmenu5_sub3"><a href="/collections/collect">Collect post</a></li>
-<% else %>
-              <li id="cmenu5_sub1"><a href="javascript:login_pop('/products/post');">Product post</a></li>
-              <li class="divider"></li>
-              <li id="cmenu5_sub1"><a href="javascript:login_pop('/collections/set');">Set post</a></li>
-              <li id="cmenu5_sub1"><a href="javascript:login_pop('/collections/collect');">Collect post</a ></li>
-<% end %>
+              <li id="cmenu5_sub1"><a href="/collections/set">Set</a></li>
+              <li id="cmenu5_sub2"><a href="/collections/collect">Collection</a></li>
+              <li id="cmenu5_sub3"><a href="/products/post">Product</a></li>
               <!--li class="divider"></li>
               <li class="active"><%= link_to '상품등록', new_product_path %></li-->
             </ul>
@@ -122,7 +118,7 @@ $(document).ready(function(){
 	    <ul class="nav pull-right">
 	        <li>
 		        <%= form_tag "/search", name: "searchFrm", method: "get", class: "navbar-form navbar-right", onsubmit: "return total_search(this)" do %>
-				<input id="search_key" name="search_key" type="text" class="form-control" placeholder="Search products, stores" value="<%#=@search_key%>">
+				<input id="search_key" name="search_key" type="text" class="form-control" placeholder="Search products, stores" value="<%#=@search_key%>" style="width:150px;">
 				<% end %>
 	        </li>
 <% if current_user %>

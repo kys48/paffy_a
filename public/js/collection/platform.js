@@ -230,11 +230,7 @@ alert(111);
         });
     }
     
-    /**
-    * Configures data and dasboard
-    * according to platform type and
-    * items.    
-    */
+    // 아이템을 배치    
     self.initData = function(oData){
         //FIX ONLY FOR TEMPLATESS!!!!
         if(self.platformType == 'template'){
@@ -317,7 +313,6 @@ alert(111);
                 self.addImageOnInit(value, self.board);
                 
             }else if(value.itemOrigin == 'placeholder'){
-                
                 self.board.find('.message').hide();
                     
                 var placeHolder = $('<div class="image placeholder"><span class="hint">'+value.hint+'</span></div>');
@@ -465,10 +460,10 @@ alert(111);
         self.publishSubmit.children('span').html(self.publishSubmit.find('input[name="inactive"]').val());
 
         //var url = self.publishURL+'/'+self.platformType+'/';
-        var url = self.publishURL;
+        var url = self.publishURL+"?type=set";
 
         if(self.board.data('id'))
-            url += self.board.data('id');
+            url += "&id="+self.board.data('id');
 
 		// ajax post 에서 세션 유지 시키기 위함
 		$.ajaxSetup({
@@ -478,7 +473,7 @@ alert(111);
 		});
 
         //$.ajax(url+'?action=publish', {
-        $.ajax(url+'?type=set', {
+        $.ajax(url, {
             type: 'post',
             data: $.param(postData),
             cache: false,
@@ -518,7 +513,12 @@ alert(111);
     * Displays publish popup box
     */
     self.showPublish = function() {
-        showPopup(self.Publish, false, true);
+    	if ($("#session_chk").val()=="Y"){
+    		layer_close();
+    		showPopup(self.Publish, false, true);
+    	} else {
+    		login_pop_stay();
+    	}
     }
     
     /**
@@ -852,7 +852,7 @@ alert(111);
         //imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;	// DB에 있는 상품
         imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;
         
-alert(imgPointer.src)
+//alert(imgPointer.src)
         
         imgPointer.onload = function(){
             self.board.find('.message').hide();
@@ -983,18 +983,24 @@ alert(imgPointer.src)
         self.selectImage(imageWrapper);
     }
 
-    
+    // 아이템 개별 배치(이미지로드)
     self.addImageOnInit = function(initData, target){
-alert('addImageOnInit');    
+//alert(self.productURL+'original/'+initData.itemURL);
+		var imgStyle = "removebg";
+/*		
+		if (!initData.whiteBck){
+			imgStyle = "removebg";
+		}
+*/		
         var imgPointer = new Image();
 
         self.items++;
         self.itemsCreated++;
 
         if(initData.itemOrigin === 'product')
-            imgPointer.src = self.productURL+initData.itemId+'.png';
+            imgPointer.src = self.productURL+imgStyle+'/'+initData.itemImg;
         else if(initData.itemOrigin === 'embellishment')
-            imgPointer.src = self.embellishmentURL+initData.itemId+'.png';
+            imgPointer.src = self.embellishmentURL+imgStyle+'/'+initData.itemImg;
 
         imgPointer.onload = function(){
             if(self.hasTemplate && target.hasClass('placeholder')){
@@ -1012,24 +1018,19 @@ alert('addImageOnInit');
                             
     }
     
-    /**
-    * Adds image on initialization
-    * If platformType is not template 
-    * it checks cropping, flipping and makes it draggable
-    * If platfomrType is template and the item is placeholder
-    * it makes it droppable so images can be put in it
-    */
+    // 아이템 개별 배치(이미지배치)
     self.addPreoloadedImageOnInit = function(image, itemId, itemOrigin, itemImg, itemAPI, itemURL, initData, target) {
-alert('addPreoloadedImageOnInit');
+//alert('addPreoloadedImageOnInit');
         var imageWrapper = $('<div class="image"><img src="'+image.src+'"></div>');
-        
+
         imageWrapper.data({
             imageURL   : image.src,
+            imageOriginURL   : self.productURL+'/original/'+itemImg,
             itemId     : itemId,
             itemOrigin : itemOrigin,
             itemImg    : itemImg,
             itemAPI    : itemAPI,
-            itemURL    : itemURL,
+            itemURL    : itemURL
         });
         
         imageWrapper.appendTo(target).hide();

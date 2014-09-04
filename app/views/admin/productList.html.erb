@@ -1,38 +1,195 @@
 <br/>
 <h2>상품 리스트</h2>
 <div style="border:1px solid black; padding:20px;">
-	1. 상품 배경이미지 제거<br/><br/>
+	0. 상품 배경이미지 제거 + 대표색상추출(from DB)<br/><br/>
+	시작페이지 수 : <input type="text" id="removebgcolor_page" name="removebgcolor_page" value="1" style="width:50px">,
+	변환데이터 수 : <input type="text" id="removebgcolor_per_page" name="removebgcolor_per_page" value="10" style="width:50px">
+	반복 횟수 : <input type="text" id="removebgcolor_loop" name="removebgcolor_loop" value="3" style="width:50px">
+	<%= button_tag "호출하기", onclick: "removeBgColor();" %>
+	<div id="removebgcolorDv" style="font-size:12px;text-align:left; "></div>
+	총 변환 상품 수:<input type="text" id="removebgcolorDvCnt" name="removebgcolorDvCnt" value="0" style="width:40px;">
+</div>
+<div style="border:1px solid black; padding:20px; margin-top:10px;">
+	00. 이미지(background,decoration) 등록(from File list)<br/><br/>
+	<%= button_tag "이미지등록(background)", onclick: "insertImglist('B');" %>
+	&nbsp;
+	<%= button_tag "이미지등록(decoration)", onclick: "insertImglist('D');" %>
+	<div id="insertImglistDv" style="font-size:12px;text-align:left; "></div>
+</div>
+<div style="display:none;border:1px solid black; padding:20px; margin-top:10px;">
+	1. 상품 배경이미지 제거(from File list)<br/><br/>
 	<%= button_tag "호출하기", onclick: "removeBg();" %>
 	<div id="removeBgDv" style="font-size:12px;text-align:left; "></div>
 </div>
-<div style="border:1px solid black; padding:20px; margin-top:10px;">
-	2. 상품 대표색상 추출<br/><br/>
+<div style="display:none;border:1px solid black; padding:20px; margin-top:10px;">
+	2. 상품 대표색상 추출(from File list)<br/><br/>
 	시작페이지 수 : <input type="text" id="color_page" name="color_page" value="1" style="width:50px">,
 	변환데이터 수 : <input type="text" id="color_per_page" name="color_per_page" value="16" style="width:50px">
 	반복 횟수 : <input type="text" id="color_loop" name="color_loop" value="3" style="width:50px">
 	<%= button_tag "호출하기", onclick: "initColor();" %>
 	
-	<div id="colorDv" style="font-size:12px;text-align:left;border:1px solid red;">
+	<div id="colorDv" style="font-size:12px;text-align:left;">
 		&nbsp;
 	</div>
 	<%= button_tag "다음페이지", onclick: "colorListNext()" %>
 	총 변환 상품 수:<input type="text" id="colorDvCnt" name="colorDvCnt" value="0" style="width:40px;">
 </div>
+
 <div style="border:1px solid black; padding:20px; margin-top:10px;">
-	3. 엑셀파일로 상품등록<br/><br/>
-	검색어 : <input type="text" id="search_key" name="search_key" value="" style="width:150px">,
-	카테고리코드 : <input type="text" id="cate_code" name="cate_code" value="" style="width:100px">,
-	시작 : <input type="text" id="page" name="page" value="1" style="width:50px">,
-	줄수 : <input type="text" id="per_page" name="per_page" value="16" style="width:50px">
-	<%= button_tag "호출하기", onclick: "$('#productDvCnt').val(0);$('#productDv').html('');getProductList();" %>
+	3. 상품정보관리<br/><br/>
+	검색어 : <input type="text" id="product_search_key" name="product_search_key" value="" style="width:80px">,
+	카테고리코드 : <input type="text" id="product_cate_code" name="product_cate_code" value="" style="width:50px">,
+	스타일구분 :
+	<select id="product_style_type" style="width:90px;">
+		<option value="">전체</option>
+		<option value="S">스타일</option>
+		<option value="P">상품</option>
+	</select>,
 	
-	<div id="productDv" style="width:100%; height:500px; overflow:auto; border:1px solid red; font-size:12px;text-align:left; ">
+	사용여부 :
+	<select id="product_use_yn" style="width:90px;">
+		<option value="">전체</option>
+		<option value="Y">사용</option>
+		<option value="N">사용안함</option>
+	</select>,
+
+	국내/해외 : 
+	<select id="product_store_type" style="width:80px;">
+		<option value="">전체</option>
+		<option value="I">국내</option>
+		<option value="F">해외</option>
+	</select>,
+	
+	시작 : <input type="text" id="product_page" name="product_page" value="1" style="width:40px">,
+	줄수 : <input type="text" id="product_per_page" name="product_per_page" value="16" style="width:40px">
+	<%= button_tag "호출하기", onclick: "$('#productDvCnt').val(0);$('#productDv').html('');getProductList();" %>
+
+	<div id="productDv" style="width:100%; border:1px solid #cccccc; font-size:12px;text-align:left;">
 	</div>
 	<%= button_tag "다음페이지", onclick: "getProductListNext()" %>
 	총 상품수:<input type="text" id="productDvCnt" name="productDvCnt" value="0" style="width:40px;">
 </div>
 
 <script language="JavaScript">
+// 배경이미지 제거+대표색상추출 다음 페이지
+function removebgColorListNext(){
+	page = parseInt($("#removebgcolor_page").val());
+	loop = parseInt($("#removebgcolor_loop").val());
+	if(page>=loop){
+		$('#removebgcolorDv').append('==＞<strong style="color:blue">end!</strong>');
+	} else {
+		$("#removebgcolor_page").val(page+1);
+		removeBgColor();
+	}
+}
+
+// 배경이미지 제거+대표색상추출
+function removeBgColor(){
+	page = parseInt($("#removebgcolor_page").val());
+	per_page = parseInt($("#removebgcolor_per_page").val());
+	
+	if(page==""){
+		alert("시작값을 입력하세요.");
+		chkpass = false;
+		$("#removebgcolor_page").focus();
+	}
+	if(per_page==""){
+		alert("표시줄 수를 입력하세요.");
+		chkpass = false;
+		$("#removebgcolor_per_page").focus();
+	}
+	
+	var postData = new Object();
+	postData.page = page;
+	postData.per_page = per_page;
+	
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+	$.ajax({
+	    url     : '/admin/removeBgColorCallback',
+	    type    : 'post',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+	    	rcnt = parseInt($("#removebgcolorDvCnt").val());
+		    //rcnt += products.length;
+	    	rcnt += parseInt(per_page);
+	    	$("#removebgcolorDvCnt").val(rcnt);
+	    	$("#removebgcolorDv").append("==＞page("+page+")");
+/*	    	
+	    	products = json.product_list;
+	    	
+	    	if(products.length>0) {
+				$.each(products, function (index, product) {
+					var img_name = product.substring(product.lastIndexOf("/")+1,product.length);
+					//var li = '<img src="/data/product/removebg/'+img_name+'" style="width:100px;height:100px;">';
+					//$('#removeBgColorDv').append(li);
+				});
+				chkGet = true;
+	    	} else {
+	    		//notify('error', json.msg);
+	    		// the end
+	    		//alert("종료~!!!");
+	    	}
+*/
+			setTimeout(function() {
+				removebgColorListNext(); // 다음페이지 call
+			}, 100);
+	    },
+	    error   : function(e){
+	    	$('#removeBgColorDv').append("----------error-------------");
+	    }
+	});
+}
+
+
+// 이미지리스트 등록
+function insertImglist(img_type){
+	var postData = new Object();
+	postData.img_type = img_type;
+	
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+	$.ajax({
+	    url     : '/admin/insertImglistCallback',
+	    type    : 'post',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+/*	    	
+	    	products = json.product_list;
+	    	
+	    	if(products.length>0) {
+				$.each(products, function (index, product) {
+					var img_name = product.substring(product.lastIndexOf("/")+1,product.length);
+					//var li = '<img src="/data/product/removebg/'+img_name+'" style="width:100px;height:100px;">';
+					//$('#insertImglistDv').append(li);
+				});
+				chkGet = true;
+	    	} else {
+	    		//notify('error', json.msg);
+	    		// the end
+	    		//alert("종료~!!!");
+	    	}
+*/	    	
+	    	alert("종료~!!!");
+	    },
+	    error   : function(e){
+	    	$('#insertImglistDv').append("----------error-------------");
+	    }
+	});
+}
+
 // 배경이미지 제거
 function removeBg(){
 	var postData = new Object();
@@ -95,7 +252,6 @@ function colorListNext(){
 		$("#color_page").val(page+1);
 		colorList();
 	}
-	
 }
 
 // 대표색상 추출
@@ -181,38 +337,32 @@ function colorList(){
 
 }
 
+var cateList = new Array();
+<%
+	@cateList.each_with_index do |cate,i|
+%>cateList[<%=i%>]='<%=cate.c_cd%>';
+<%
+	end
+%>
 
 
 function getProductListNext(){
-	page = parseInt($("#page").val());
-	if(page>2){
-		alert("종료~!");
-	} else {
-		$("#page").val(page+1);
-		getProductList();
-	}
-	
+	page = parseInt($("#product_page").val());
+	$("#product_page").val(page+1);
+	getProductList();
 }
 
 function getProductList(){
-	page = $("#page").val();
-	per_page = $("#per_page").val();
-	search_key = $("#search_key").val();
-	cate_code = $("#cate_code").val();
+	page = $("#product_page").val();
+	per_page = $("#product_per_page").val();
+	search_key = $("#product_search_key").val();
+	cate_code = $("#product_cate_code").val();
+	use_yn = $("#product_use_yn").val();
+	store_type = $("#product_store_type").val();
+	style_type = $("#product_style_type").val();
 	
 	chkpass = true;
-/*	
-	if(search_key==""){
-		alert("검색어를 입력하세요.");
-		chkpass = false;
-		$("#search_key").focus();
-	}
-	if(cate_code==""){
-		alert("카테고리 코드를 입력하세요.");
-		chkpass = false;
-		$("#cate_code").focus();
-	}
-*/	
+	
 	if(page==""){
 		alert("시작값을 입력하세요.");
 		chkpass = false;
@@ -227,9 +377,13 @@ function getProductList(){
 	if(chkpass){
 		var postData = new Object();
 		postData.page = page;
+		postData.per_page = per_page;
 		postData.search_key = search_key;
 		postData.cate_code = cate_code;
-		postData.per_page = per_page;
+		postData.use_yn = use_yn;
+		postData.store_type = store_type;
+		postData.style_type = style_type;
+		
 		postData.order = 'created_at DESC';
 		
 		chkGet = false;
@@ -251,23 +405,115 @@ function getProductList(){
 		    	rcnt = parseInt($("#productDvCnt").val());
 		    	rcnt += products.length;
 		    	$("#productDvCnt").val(rcnt);
-		    	$('#productDv').append("--page("+page+")--");
+		    	$('#productDv').append("<div style='text-align:center;font-size:14px;font-weight:bold;color:red;'>───────────────────────────────── "+page+" page ────────────────────────────────</div>");
 
 		    	if(products.length>0) {
 					$.each(products, function (index, product) {
 						var url = product.url;
 						var img_file_name = product.img_file_name;
 						var subject = product.subject;
+						
+						var colorStr = "";
+						if (product.color_code_s!=null && product.color_code_s!=''){
+							colorStr = 'color:#'+product.color_code_s+';';
+						}
+						
+						var style_type_S = '';
+						var style_type_P = '';
+						if (product.style_type=='S') style_type_S = ' selected ';
+						else if (product.style_type=='P') style_type_P = ' selected ';
+						
+						var use_yn_Y = '';
+						var use_yn_N = '';
+						if (product.use_yn=='Y') use_yn_Y = ' selected ';
+						else if (product.use_yn=='N') use_yn_N = ' selected ';
+						
+						var store_type_I = '';
+						var store_type_F = '';
+						if (product.store_type=='I') store_type_I = ' selected ';
+						else if (product.store_type=='F') store_type_F = ' selected ';
+						
+						var bckcolor = "";
+						if (product.tmp_update=='Y') bckcolor = "background-color:#eeeeee;" 
 
 						var li = ''
-						+ '<div style="border-bottom:1px dashed #cccccc;">'
-						+ '<img src="/data/product/original/'+img_file_name+'" style="width:100px;height:100px;"> &nbsp; '
-						+ '<a href="/collections/pshow/'+product.id+'" target="_blank">'+subject+'</a>'
-						+ ' &nbsp; <a href="'+url+'" target="_blank">(원본링크)</a>'
-						//+ '<input type="text" value="'+item_url+'">'
+						+ '<div id="pdv_'+product.id+'" style="border-bottom:1px dashed #cccccc;padding-top:5px;'+bckcolor+'">'
+						+ '<input type="hidden" id="id_'+product.id+'" value="'+product.id+'">'
+						+ '<input type="hidden" id="color_code_s_'+product.id+'" value="'+product.color_code_s+'">'
+						
+						+ '<div style="float:left;text-align:center;width:150px;line-height:130%;">'
+						+ '<a href="/data/product/original/'+img_file_name+'" target="_blank"><img src="/data/product/medium/'+img_file_name+'" style="width:100px;height:100px;"></a>'
+						+ '</div>'
+						+ '<div style="float:left;width:400px;">'
+						+ '<input type="text" id="subject_'+product.id+'" value="'+subject+'" style="width:380px;">'
+						+ '<br/><a href="/collections/pshow/'+product.id+'" target="_blank">(상품보기)</a> / <a href="'+url+'" target="_blank">(상품원본링크)</a>'
+						+ '</div>'
+						+ '<div style="float:left;text-align:center;width:110px;">'
+						+ '<select id="cate_code_'+product.id+'" style="width:100px;">';
+						
+						for(i=0;i<cateList.length;i++){
+							li += '<option value="'+cateList[i]+'"';
+							if (cateList[i]==product.cate_code) li += ' selected ';
+							li += '>'+cateList[i]+'</option>';
+						}
+						
+						li += ''
+						+ '</select>'
+						+ '</div>'
+						+ '<div style="float:left;text-align:center;width:90px;">'
+						+ '<select id="style_type_'+product.id+'" style="width:80px;">'
+						+ '<option value="S"'+style_type_S+'>스타일</option>'
+						+ '<option value="P"'+style_type_P+'>상품</option>'
+						+ '</select>'
+						+ '</div>'
+						
+						+ '<div style="float:left;text-align:center;width:80px;font-family:gulim;">'
+						+ '<div class="btn-group">'
+						+ '  <a class="btn btn-default" id="set_color_'+product.id+'" style="'+colorStr+'font-family:gulim;">■</a>'
+						+ '  <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">▼</a>'
+						+ '  <ul class="dropdown-menu">'
+						+ '		<li style="padding:10px;">'
+<%
+	colorlist = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
+				 "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
+				 "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
+
+	colorlist.each_with_index do |color,i|
+%>
+						+ '<div class="color_palette" style="float:left;cursor:pointer;width:20px;height:20px;margin:1px;font-weight:bold;border:2px solid #ffffff;color:#ffffff;background-color:#<%=color%>;" onClick="setColor(\''+product.id+'\',\'<%=color%>\');"></div>'
+<%
+	if (i+1)%5==0
+%>
+						+ '<div style="clear:both"></div>'
+<%
+		end
+	end	
+%>
+						+ '		</li>'
+						+ '  </ul>'
+						+ '</div>'
+						+ '</div>'
+						
+						+ '<div style="float:left;text-align:center;width:100px;">'
+						+ '<select id="use_yn_'+product.id+'" style="width:90px;">'
+						+ '<option value="Y"'+use_yn_Y+'>사용</option>'
+						+ '<option value="N"'+use_yn_N+'>사용안함</option>'
+						+ '</select>'
+						+ '</div>'
+						+ '<div style="float:left;text-align:center;width:90px;">'
+						+ '<select id="store_type_'+product.id+'" style="width:80px;">'
+						+ '<option value="I"'+store_type_I+'>국내</option>'
+						+ '<option value="F"'+store_type_F+'>해외</option>'
+						+ '</select>'
+						+ '</div>'
+						+ '<div style="float:left;text-align:center;width:50px;">'
+						+ '<input type="button" value="수정" onClick="updateProduct(\''+product.id+'\');">'
+						+ '</div>'
+						+ '<div style="clear:both"></div>'
+						
 						+ '</div>';
 
-						//$('#productDv').append(li);
+						$('#productDv').append(li);
 						
 					});
 					chkGet = true;
@@ -289,6 +535,43 @@ function getProductList(){
 		});
 		
 	}
+}
+
+function setColor(id,color_code){
+	$("#color_code_s_"+id).val(color_code);
+	$("#set_color_"+id).attr("style","color:#"+color_code);
+}
+
+// 상품update
+function updateProduct(id){
+	var postData = new Object();
+	postData.id				= id;
+	postData.color_code_s	= $("#color_code_s_"+id).val();
+	postData.subject		= $("#subject_"+id).val();
+	postData.cate_code		= $("#cate_code_"+id).val();
+	postData.style_type		= $("#style_type_"+id).val();
+	postData.use_yn			= $("#use_yn_"+id).val();
+	postData.store_type		= $("#store_type_"+id).val();
+
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+
+	$.ajax({
+	    url     : '/admin/updateProductCallback',
+	    type    : 'post',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+	    	$("#pdv_"+id).attr("style","border-bottom:1px dashed #cccccc;padding-top:5px;background-color:#eeeeee;");
+	    },
+	    error   : function(e){
+	    	//$('#removeBgDv').append("----------error-------------");
+	    }
+	});
 }
 </script>
 

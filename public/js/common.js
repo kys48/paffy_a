@@ -87,6 +87,15 @@ function login_pop(url){
 	}
 }
 
+// 로그인 팝업(로그인 후 페이지 이동안함. 스크립트로 처리위함)
+function login_pop_stay(){
+	if(CHKMOBILE=='Y'){
+		document.location.href = "/login_pop?stay=Y","Paffy 로그인","width=450,height=400,scrollbars=no,resizeable=no,left=400,top=200";
+	} else {
+		layer_open("/login_pop?stay=Y",400,330,"no","pop_layer","pop_content");
+	}
+}
+
 //	문자열 지정한 길이만큼 자르기
 function chr_byte(chr){
 	if(escape(chr).length > 4)      return 2;
@@ -216,6 +225,7 @@ function deleteCommaStr(str) {
 }
 
 function getMoneyType(price,priceType){
+	price = parseInt(price);
 	var priceStr = addCommaStr(price);
 	if(priceType=='KRW'){
 		priceStr = "￦"+priceStr;

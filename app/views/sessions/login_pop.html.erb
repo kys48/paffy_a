@@ -96,18 +96,22 @@ function authFB(){
 
 function reload(){
 	layer_open_loading("loading_pop_layer",8,"Y");
-<% if @backurl && @backurl!='' %>
+<% if @stay && @stay!='' %>
+	parent.goSubmit();
+<% else %>
+<% 	if @backurl && @backurl!='' %>
 	<% if @target=='self' %>
 		document.location.href = '<%=@backurl%>';
 	<% else %>
 		parent.document.location.href = '<%=@backurl%>';
 	<% end %>
-<% else %>
+<% 	else %>
 	<% if @target=='self' %>
 		document.location.href = document.location.href;
 	<% else %>
 		parent.document.location.href = parent.document.location.href;
 	<% end %>
+<% 	end %>
 <% end %>
 	layer_close();
 }

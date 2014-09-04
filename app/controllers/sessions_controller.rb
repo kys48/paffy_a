@@ -14,6 +14,7 @@ class SessionsController < ApplicationController
   def login_pop
     @backurl = params[:backurl]
     @target = params[:target]
+    @stay = params[:stay]
     
     if session[:user_id]
       #redirect_to root_url

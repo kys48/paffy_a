@@ -177,7 +177,8 @@ puts("start~")
                 bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
                 
                 # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
-                %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+                #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+                %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
                 
                 # 이미지 대표색상코드 추출
                 colors = Product.get_product_color(product_file_name)
@@ -293,7 +294,29 @@ puts("start!")
           url_str = MetaInspector.new(link)
           ori_link = URI.extract(url_str.to_s,/http(s)?/).first
           ori_link = (ori_link.to_s).gsub(/\'\);/,'')
+          ori_link = (ori_link.to_s).gsub(/jkhomme.com/,'www.jkhomme.com')
+          ori_link = (ori_link.to_s).gsub(/mitoshop.co.kr/,'www.mitoshop.co.kr')
+          ori_link = (ori_link.to_s).gsub(/fashionpia.com/,'www.fashionpia.com')
+          ori_link = (ori_link.to_s).gsub(/fashionpia.com/,'www.fashionpia.com')
+          ori_link = (ori_link.to_s).gsub(/koreasang.co.kr/,'www.koreasang.co.kr')
+          ori_link = (ori_link.to_s).gsub(/1200m.com/,'www.1200m.com')
+          ori_link = (ori_link.to_s).gsub(/1300k.com/,'www.1300k.com')
+          ori_link = (ori_link.to_s).gsub(/chicfox.co.kr/,'www.chicfox.co.kr')
+          ori_link = (ori_link.to_s).gsub(/perifit.co.kr/,'www.perifit.co.kr')
+          ori_link = (ori_link.to_s).gsub(/ogage.halfclub.com/,'ogage.halfclub.com')
+          ori_link = (ori_link.to_s).gsub(/penagero.com/,'www.penagero.com')
+          ori_link = (ori_link.to_s).gsub(/whosgirl.co.kr/,'www.whosgirl.co.kr')
+          ori_link = (ori_link.to_s).gsub(/eranzi.co.kr/,'www.eranzi.co.kr')
+          ori_link = (ori_link.to_s).gsub(/chichera.co.kr/,'www.chichera.co.kr')
+          ori_link = (ori_link.to_s).gsub(/coii.kr/,'www.coii.kr')
+          ori_link = (ori_link.to_s).gsub(/styleberry.co.kr/,'www.styleberry.co.kr')
+          ori_link = (ori_link.to_s).gsub(/boribori.co.kr/,'www.boribori.co.kr')
           ori_link = (ori_link.to_s).gsub(/yuuzit.com/,'www.yuuzit.com')
+          ori_link = (ori_link.to_s).gsub(/gabangpop.co.kr/,'www.gabangpop.co.kr')
+          ori_link = (ori_link.to_s).gsub(/istyle24.com/,'www.istyle24.com')
+          ori_link = (ori_link.to_s).gsub(/enter6mall.com/,'www.enter6mall.com')
+          ori_link = (ori_link.to_s).gsub(/fashionplus.co.kr/,'www.fashionplus.co.kr')
+          
           ori_link = (ori_link.to_s).gsub(/www.www./,'www.')
           
           link_url = ori_link
@@ -420,7 +443,8 @@ puts("start!")
               bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
               
               # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
-              %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+              #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+              %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
               
               # 이미지 대표색상코드 추출
               colors = Product.get_product_color(product_file_name)
@@ -441,7 +465,7 @@ puts("start!")
             add_product.user_id = store.id
             add_product.use_yn = "Y"
             add_product.merchant = merchant
-            
+            add_product.store_type = "I"
             add_product.save!
             
             # 스토어 상품 연결 정보 저장
@@ -481,9 +505,11 @@ puts(Time.zone.now)
   
   # 상품 리스트
   def productList
+    @cateList = Cate.all()
+    #@cateList = Cate.where("id>0").to_json
+    
     respond_to do |format|
       format.html # productList.html.erb
-      format.json { render json: {status: true} }
     end
   end
   
@@ -493,43 +519,100 @@ puts(Time.zone.now)
     per_page = params[:per_page]||20
     cate_code = params[:cate_code]||''
     search_key = params[:search_key]||''
+    use_yn = params[:use_yn]||''
+    store_type = params[:store_type]||''
+    style_type = params[:style_type]||''
+    
     order = params[:order]||'created_at DESC'
+    
+    if search_key && search_key!=""
+      search_key = search_key.gsub(/\+/," ")
+      search_key = search_key.gsub(/\=/," ")
+      search_key = search_key.gsub(/_/," ")
+      search_key = search_key.gsub(/%/," ")
+      search_key = search_key.gsub(/\|/," ")
+      search_key = search_key.gsub(/\&/," ")
+      search_key = search_key.strip().downcase
+      
+      search_keys = search_key.split(" ")
+    end
     
     where_str = "1=1"
     if cate_code && cate_code!=''
       where_str += " AND cate_code='#{cate_code}'"
     end
     
-    if search_key && search_key!=''
-      where_str += " AND ("
-      where_str += "         subject LIKE '%#{search_key}%'"
-      where_str += "      OR merchant LIKE '%#{search_key}%'"
-      where_str += "      OR url LIKE '%#{search_key}%'"
-      where_str += "     )"
+    if use_yn && use_yn!=''
+      where_str += " AND use_yn='#{use_yn}'"
     end
     
-    @products = Product.paginate(page: page, per_page: per_page)
+    if store_type && store_type!=''
+      where_str += " AND store_type='#{store_type}'"
+    end
+    
+    if style_type && style_type!=''
+      where_str += " AND style_type='#{style_type}'"
+    end
+    
+    if search_key && search_key!=""
+      where_str += "    AND ("
+      where_str += "          LOWER(subject) LIKE '%#{search_key}%' "
+      where_str += "       OR LOWER(cate_code) LIKE '%#{search_key}%' "
+      where_str += "       OR LOWER(merchant) LIKE '%#{search_key}%' "
+      where_str += "       OR LOWER(url) LIKE '%#{search_key}%' "
+      
+      search_keys.each do |key|
+        where_str += "       OR LOWER(subject) LIKE '%#{key}%' "
+        where_str += "       OR LOWER(cate_code) LIKE '%#{key}%' "
+        where_str += "       OR LOWER(merchant) LIKE '%#{key}%' "
+        where_str += "       OR LOWER(url) LIKE '%#{key}%' "
+      end
+      
+      where_str += "    )"
+    end
+    
+    
+    products = Product.paginate(page: page, per_page: per_page)
                 .where(where_str)
                 .order(order)
 
-=begin    
-    @products.each_width_index do |product, i|
-      
-      if product.remove_check!='Y'
-        # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
-        %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
-      end
-      
-      # 이미지 대표색상코드 추출
-      colors = Product.get_product_color(product_file_name)
-      product.color_code_o = colors[0] 
-      product.color_code_s = colors[1]
-        
+    respond_to do |format|
+      format.json { render :json => { status: true, product_list: products }.to_json }
     end
-=end    
+  end
+    
+  # 상품 이미지 배경제거+대표색상추출 ajax
+  def removeBgColorCallback
+    page = params[:page]||'1'
+    per_page = params[:per_page]||'10'
+    records = Product.where("color_code_o IS NULL OR color_code_o=''").order("id asc").limit(per_page.to_i)
+    
+    products = []
+    rcnt = 0
+    puts("start...[#{page} : " + Time.zone.now.to_s+"]")
+    
+    records.each_with_index do |product, i|
+      if product.img_file_name && product.img_file_name!=''
+
+        # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
+        %x{sh remove_bg #{RAILS_ROOT}/public/data/product/original/ #{product.img_file_name} #{RAILS_ROOT}/public/data/product/removebg/ 7}
+        
+        colors = Product.get_product_color(product.img_file_name)
+        product.color_code_o = colors[0] 
+        product.color_code_s = colors[1]
+        product.save!
+        
+        products[rcnt] = product.img_file_name
+      end
+
+      rcnt += 1
+       
+    end
+    
+    puts("end.....[" + Time.zone.now.to_s+"]")
     
     respond_to do |format|
-      format.json { render :json => { status: true, product_list: @products }.to_json }
+      format.json { render :json => { status: true, product_list: products }.to_json }
     end
   end
     
@@ -553,7 +636,7 @@ puts(Time.zone.now)
           product_file_name = img_file_name[last+1..img_file_name.length]
           
           # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
-          %x{remove_bg.bat #{RAILS_ROOT}/public/data/product/original/ #{product_file_name} #{RAILS_ROOT}/public/data/product/removebg/ 7}
+          %x{sh remove_bg #{RAILS_ROOT}/public/data/product/original/ #{product_file_name} #{RAILS_ROOT}/public/data/product/removebg/ 7}
           
           products[rcnt] = product_file_name
         end
@@ -602,7 +685,129 @@ puts(Time.zone.now)
       format.json { render :json => { status: true }.to_json }
     end
   end
+  
+  # 상품정보 수정
+  def updateProductCallback
+    id  = params[:id]
+    color_code_s  = params[:color_code_s]
+    subject       = params[:subject]
+    cate_code     = params[:cate_code]
+    style_type    = params[:style_type]
+    use_yn        = params[:use_yn]
+    store_type    = params[:store_type]
+    
+    product = Product.find(id)
+    
+    product.color_code_s = color_code_s
+    product.subject      = subject
+    product.cate_code    = cate_code
+    product.style_type   = style_type
+    product.use_yn       = use_yn
+    product.store_type   = store_type
+    product.tmp_update   = "Y"
+    product.save!
+    
+    respond_to do |format|
+      format.json { render :json => { status: true }.to_json }
+    end
+  end
 
+
+    
+  # 이미지리스트 등록 ajax
+  def insertImglistCallback
+    img_type = params[:img_type]
+    img_type_nm = ""
+    if img_type=="B"
+      img_type_nm = "background"
+    elsif img_type=="D"
+      img_type_nm = "decoration"
+    end
+    
+    records = Dir.glob(RAILS_ROOT+"/public/data/#{img_type_nm}/*.*")
+    
+    products = []
+    
+    rcnt = 0
+    puts("start...[" + Time.zone.now.to_s+"]")
+
+    records.each_with_index do |img_file_name, i|
+      product = Product.new
+      product.img_content_type = "image/png"
+
+      dataFilePath = "/public/data/product/"
+      tmpimg = Magick::Image.read(img_file_name).first
+      
+      if tmpimg
+        product.subject = "#{img_type_nm}#{i}"
+        product.use_yn = "Y"
+        product.style_type = img_type
+        product_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
+        
+        thumbSize = 650
+        # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
+        if tmpimg.columns>tmpimg.rows
+          if thumbSize>tmpimg.columns
+            thumbSize = tmpimg.columns
+          end
+        elsif tmpimg.columns<tmpimg.rows
+          if thumbSize>tmpimg.rows
+            thumbSize = tmpimg.rows
+          end
+        else
+          if thumbSize>tmpimg.columns
+            thumbSize = tmpimg.columns
+          end
+        end
+        
+        # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
+        ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+        thumb = tmpimg.resize!(ipos[0],ipos[1])
+        bg = Magick::Image.new(thumbSize, thumbSize){
+          if img_type=="B"
+            self.background_color = 'transparent'
+          elsif img_type=="D"
+            self.background_color = 'white'  
+          end
+          
+          self.format = 'PNG'
+        }
+        bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
+        bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+    
+        bg.resize!(220,220)
+        bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
+    
+        bg.resize!(75,75)
+        bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
+  
+        # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
+        #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
+        #system "remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7" 
+        #system "rm -f #{RAILS_ROOT+dataFilePath}original/#{@product.img_file_name}"
+        if img_type=="B"
+          %x{cp -f #{RAILS_ROOT+dataFilePath}original/#{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/#{product_file_name}}
+        elsif img_type=="D"
+          %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}  
+        end
+
+        product.img_file_name = product_file_name
+        product.save!
+        
+        products[rcnt] = product_file_name
+        
+      end
+      
+      rcnt += 1
+       
+    end
+    
+    puts("end.....[" + Time.zone.now.to_s+"]")
+    
+    respond_to do |format|
+      format.json { render :json => { status: true, product_list: products }.to_json }
+    end
+  end
   
   private
   

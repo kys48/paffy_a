@@ -78,7 +78,17 @@
 	</div>
 </div>
 
+<input type="hidden" id="currency_usd" value="<%=@currency_usd%>">
+<input type="hidden" id="currency_jpy" value="<%=@currency_jpy%>">
+<input type="hidden" id="currency_eur" value="<%=@currency_eur%>">
+<input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
+<input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
 
+<input type="hidden" id="item_type" value="<%=@item_type%>">
+<input type="hidden" id="price_stat" value="">
+<input type="hidden" id="color_code" value="">
+<input type="hidden" id="cate_code" value="">
+<input type="hidden" id="order_by" value="2">
 
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
 		
@@ -87,9 +97,101 @@
 	          <div class="navbar-inner">
 	            <div class="container">
 	              <ul class="nav">
+<%
+	if @user.user_type=="S"
+%>
+	                <li id="smenu0" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span id="smenu0_title">Category (All)</span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu0_sub_All" class="smenu0_sub active"><a href="javascript:searchCate('All');">All</a></li>
+	                		<li class="divider"></li>
+	                		<li id="smenu0_sub_Tops" class="smenu0_sub"><a href="javascript:searchCate('Tops');">Tops</a></li>
+	                		<li id="smenu0_sub_Outwear" class="smenu0_sub"><a href="javascript:searchCate('Outwear');">Outwear</a></li>
+	                		<li id="smenu0_sub_Dresses" class="smenu0_sub"><a href="javascript:searchCate('Dresses');">Dresses</a></li>
+	                		<li id="smenu0_sub_Jackets" class="smenu0_sub"><a href="javascript:searchCate('Jackets');">Jackets</a></li>
+	                		<li id="smenu0_sub_Sweaters" class="smenu0_sub"><a href="javascript:searchCate('Sweaters');">Sweaters</a></li>
+	                		<li id="smenu0_sub_Jeans" class="smenu0_sub"><a href="javascript:searchCate('Jeans');">Jeans</a></li>
+	                		<li id="smenu0_sub_Pants" class="smenu0_sub"><a href="javascript:searchCate('Pants');">Pants</a></li>
+	                		<li id="smenu0_sub_Skirts" class="smenu0_sub"><a href="javascript:searchCate('Skirts');">Skirts</a></li>
+	                		<li id="smenu0_sub_Shorts" class="smenu0_sub"><a href="javascript:searchCate('Shorts');">Shorts</a></li>
+	                		<li id="smenu0_sub_Shoes" class="smenu0_sub"><a href="javascript:searchCate('Shoes');">Shoes</a></li>
+	                		<li id="smenu0_sub_Bags" class="smenu0_sub"><a href="javascript:searchCate('Bags');">Bags</a></li>
+	                		<li id="smenu0_sub_Easywear" class="smenu0_sub"><a href="javascript:searchCate('Easywear');">Easywear</a></li>
+	                		<li id="smenu0_sub_Swimwear" class="smenu0_sub"><a href="javascript:searchCate('Swimwear');">Swimwear</a></li>
+	                		<li id="smenu0_sub_Accessories" class="smenu0_sub"><a href="javascript:searchCate('Accessories');">Accessories</a></li>
+	                		<li id="smenu0_sub_Jewelry" class="smenu0_sub"><a href="javascript:searchCate('Jewelry');">Jewelry</a></li>
+	                		<li id="smenu0_sub_Beauty" class="smenu0_sub"><a href="javascript:searchCate('Beauty');">Beauty</a></li>
+	                		<li id="smenu0_sub_Kids" class="smenu0_sub"><a href="javascript:searchCate('Kids');">Kids</a></li>
+	                		<li id="smenu0_sub_Home" class="smenu0_sub"><a href="javascript:searchCate('Home');">Home</a></li>
+	                		<li id="smenu0_sub_Men" class="smenu0_sub"><a href="javascript:searchCate('Men');">Men</a></li>
+	                	</ul>
+	                </li>
+	                <li id="smenu1" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span id="smenu1_title">Price (All)</span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu1_sub_0" class="smenu1_sub active"><a href="javascript:searchPrice(0);">All</a></li>
+	                		<li class="divider"></li>
+	                		<li id="smenu1_sub_1" class="smenu1_sub"><a href="javascript:searchPrice(1);">￦ 20,000 미만</a></li>
+	                		<li id="smenu1_sub_2" class="smenu1_sub"><a href="javascript:searchPrice(2);">￦ 20,000 ~ ￦ 50,000</a></li>
+	                		<li id="smenu1_sub_3" class="smenu1_sub"><a href="javascript:searchPrice(3);">￦ 50,000 ~ ￦100,000</a></li>
+	                		<li id="smenu1_sub_4" class="smenu1_sub"><a href="javascript:searchPrice(4);">￦100,000 ~ ￦200,000</a></li>
+	                		<li id="smenu1_sub_5" class="smenu1_sub"><a href="javascript:searchPrice(5);">￦200,000 ~ ￦500,000</a></li>
+	                		<li id="smenu1_sub_6" class="smenu1_sub"><a href="javascript:searchPrice(6);">￦500,000 이상</a></li>
+	                	</ul>
+	                </li>
+
+	                <li id="smenu2" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span>Color </span>
+	                		<span id="smenu2_title"></span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li style="padding:10px;">
+<%
+colorlist = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
+			 "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
+			 "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
+
+colorlist.each_with_index do |color,i|
+%>
+<div id="color_<%=color%>" class="color_palette" style="float:left;cursor:pointer;width:20px;height:20px;margin:1px;font-weight:bold;border:2px solid #ffffff;color:#ffffff;background-color:#<%=color%>;" onClick="searchColor('<%=color%>');"></div>
+<%
+	if (i+1)%5==0
+%><div style="clear:both"></div><%
+	end
+end	
+%>
+<div style="width:130px;color:#0088cc;text-align:right;cursor:pointer;" onClick="searchColor('');">clear</div>
+	                			
+	                		</li>
+	                	</ul>
+	                </li>
+	                <li id="smenu3" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span id="smenu3_title">Sort (All)</span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu3_sub_1" class="smenu3_sub active"><a href="javascript:searchSort(1);">Hit</a></li>
+	                		<li id="smenu3_sub_2" class="smenu3_sub"><a href="javascript:searchSort(2);">Just in</a></li>
+	                	</ul>
+	                </li>
+<%
+	else
+%>
 	                <li <% if @item_type!="P" && @item_type!="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>">All</a></li>
 	                <li <% if @item_type=="P" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=P">Product</a></li>
 	                <li <% if @item_type=="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=C">Set&collection</a></li>
+<%
+	end
+%>
 	              </ul>
 	            </div>
 	          </div>
@@ -101,7 +203,6 @@
 			<div class="freshdesignweb">
 			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
 				    <ul id="itemList" class="portfolio_list">
-
 				    </ul>
 			    </div>
 			</div>
@@ -124,7 +225,7 @@ $(document).ready(function(){
 
 // scroll event
 $(window).scroll(function(){
-	if($(window).scrollTop() == $(document).height() - $(window).height()){
+	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
 		itemList();
 	}
 });
@@ -132,15 +233,90 @@ $(window).scroll(function(){
 var nextPage = 1;
 var searchYn = true;
 
-function itemList(){
+function init(){
+	nextPage = 1;
+	searchYn = true;
+	$("#itemList").empty();
+}
+
+// 정렬
+function searchSort(stat){
+	init();
+	var tit = "";
+	if (stat==1) tit = "Hit";
+	else if (stat==2) tit = "Just in";
+	$("#smenu3_title").html("Sort ("+tit+")");
+	$("#order_by").val(stat);
+	$(".smenu3_sub").removeClass("active");
+	$("#smenu3_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 카테고리 검색
+function searchCate(stat){
+	init();
+	$("#smenu0_title").html("Category ("+$("#smenu0_sub_"+stat+" a").html()+")");
+	$("#cate_code").val(stat);
+	$(".smenu0_sub").removeClass("active");
+	$("#smenu0_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 가격 검색
+function searchPrice(stat){
+	init();
+	$("#smenu1_title").html("Price ("+$("#smenu1_sub_"+stat+" a").html()+")");
+	$("#price_stat").val(stat);
+	$(".smenu1_sub").removeClass("active");
+	$("#smenu1_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 색상 검색
+function searchColor(code){
+	init();
+	if (code==""){
+		$("#smenu2_title").html("");
+		$("#smenu2_title").css("background-color","#"+code);
+		$("#smenu2_title").css("border","0px");
+	}else{
+		$("#smenu2_title").html("&nbsp;&nbsp;&nbsp;");
+		$("#smenu2_title").css("background-color","#"+code);
+		if (code=="ffffff"){
+			$("#smenu2_title").css("border","1px solid #cccccc");
+		}else{
+			$("#smenu2_title").css("border","0px");	
+		}
+	}
 	
+	$(".color_palette").css("border","2px solid #ffffff");
+	$("#color_code").val(code);
+	if(code!="") $("#color_"+code).css("border","2px solid #777777");
+	itemList();
+}
+
+function itemList(){
+	var order = "hit desc";
+	if($("#order_by").val()=="1") order = "hit desc"; 
+	else if($("#order_by").val()=="2") order = "created_at desc";
 	
 	var postData = new Object();
     postData.page = nextPage;
+    postData.currency_usd = $("#currency_usd").val();
+	postData.currency_jpy = $("#currency_jpy").val();
+	postData.currency_eur = $("#currency_eur").val();
+	postData.currency_gbp = $("#currency_gbp").val();
+	postData.currency_cny = $("#currency_cny").val();
+	
     postData.id = '<%= @profile_id%>';
-    postData.type = '<%= @item_type%>';
-    postData.order = 'created_at DESC';
     postData.myfeed = 'Y'
+	postData.type = $("#item_type").val();
+	postData.search_key = "<%= @search_key%>";
+	postData.cate_code = $("#cate_code").val();
+	postData.price_stat = $("#price_stat").val();
+	postData.color_code = $("#color_code").val();
+	postData.per_page = 16;
+	postData.order = order;
     
     if (searchYn){
     	layer_open_loading("loading_pop_layer",5,"N");
@@ -176,7 +352,7 @@ function itemList(){
 								}
 								
 								var li = '<li>' 
-								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+								+ '<div id="'+collection.item_type+'dv_'+collection.id+'" class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
 								
 								if(collection.item_type=='C'){
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
@@ -191,9 +367,24 @@ function itemList(){
 									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\',\''+collection.item_type+'\','+collection.id+')"><i class="icon-trash"></i></span>'
 									+ '</div>';
 								}else if(collection.item_type=='P'){
-									var priceStr = getMoneyType(collection.price,collection.price_type);
+									var change_price = collection.price;
+									var change_price_type = "KRW";
+									if (collection.price_type=="USD") {
+										change_price = $('#currency_usd').val()*change_price;
+									} else if (collection.price_type=="JPY") {
+										change_price = $('#currency_jpy').val()*change_price;
+									} else if (collection.price_type=="EUR") {
+										change_price = $('#currency_eur').val()*change_price;
+									} else if (collection.price_type=="GBP") {
+										change_price = $('#currency_gbp').val()*change_price;
+									} else if (collection.price_type=="CNY") {
+										change_price = $('#currency_cny').val()*change_price;
+									}
+									
+									var priceStr = getMoneyType(change_price,change_price_type);
 									
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
@@ -208,6 +399,7 @@ function itemList(){
 									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\',\''+collection.item_type+'\','+collection.id+')"><i class="icon-trash"></i></span>'
 									+ '</div>';
 								}
 								li += '</div>'
@@ -287,6 +479,38 @@ function follow(){
         error   : function(e){
         }
     });
+}
+
+function removeItem(get_yn,stat,id){
+	if(confirm("정말 항목을 삭제하시겠습니까?")){
+	
+		var postData = new Object();
+		postData.get_yn = get_yn;
+		postData.stat = stat;
+		postData.ref_id = id;
+	
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+	
+		$.ajax({
+		    url     : '/item/removeItemCallback',
+		    type    : 'post',
+		    dataType: 'json',
+		    data	: $.param(postData),
+		    async   : false,  
+		    success : function(json){
+				init();
+				itemList();	
+		    },
+		    error   : function(e){
+		    }
+		});
+	}
+
 }
 
 </script>

@@ -31,7 +31,7 @@ $(document).ready(function(){
 
 // scroll event
 $(window).scroll(function(){
-	if($(window).scrollTop() == $(document).height() - $(window).height()){
+	if($(window).scrollTop() == $(document).height() - $(window).height() && curPage>1 && chkGet){
 		if(chkGet) lastPostFunc();
 	}
 });

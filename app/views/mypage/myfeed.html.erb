@@ -1,5 +1,11 @@
 <%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
 <%= render :partial => '/common/landing' %>
+<input type="hidden" id="currency_usd" value="<%=@currency_usd%>">
+<input type="hidden" id="currency_jpy" value="<%=@currency_jpy%>">
+<input type="hidden" id="currency_eur" value="<%=@currency_eur%>">
+<input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
+<input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
+
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
         <div style="padding:10px 75px 0px 65px;">
 	        <div class="navbar">
@@ -38,7 +44,7 @@ $(document).ready(function(){
 
 // scroll event
 $(window).scroll(function(){
-	if($(window).scrollTop() == $(document).height() - $(window).height()){
+	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
 		itemList();
 	}
 });
@@ -49,10 +55,21 @@ var searchYn = true;
 function itemList(){
     var postData = new Object();
     postData.page = nextPage;
-    postData.id = '<%= @profile_id%>';
+    postData.currency_usd = $("#currency_usd").val();
+	postData.currency_jpy = $("#currency_jpy").val();
+	postData.currency_eur = $("#currency_eur").val();
+	postData.currency_gbp = $("#currency_gbp").val();
+	postData.currency_cny = $("#currency_cny").val();
+	
     postData.type = '<%= @item_type%>';
     postData.order = 'hit DESC';
+<%	if @session_user_id && @session_user_id!="" %>
+    postData.id = '<%= @profile_id%>';
     postData.myfeed = 'Y';
+    postData.follow = 'Y';
+<%  else %>
+	postData.limit_hit = 2;    
+<%	end %>
     
     if (searchYn){
     	layer_open_loading("loading_pop_layer",5,"N");
@@ -106,7 +123,21 @@ function itemList(){
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 									+ '</div>';
 								}else if(collection.item_type=='P'){
-									var priceStr = getMoneyType(collection.price,collection.price_type);
+									var change_price = collection.price;
+									var change_price_type = "KRW";
+									if (collection.price_type=="USD") {
+										change_price = $('#currency_usd').val()*change_price;
+									} else if (collection.price_type=="JPY") {
+										change_price = $('#currency_jpy').val()*change_price;
+									} else if (collection.price_type=="EUR") {
+										change_price = $('#currency_eur').val()*change_price;
+									} else if (collection.price_type=="GBP") {
+										change_price = $('#currency_gbp').val()*change_price;
+									} else if (collection.price_type=="CNY") {
+										change_price = $('#currency_cny').val()*change_price;
+									}
+									
+									var priceStr = getMoneyType(change_price,change_price_type);
 									
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'

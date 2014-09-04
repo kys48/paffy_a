@@ -33,40 +33,43 @@ function getShopStyleScript(){
 // ShopStyle API 호출
 function getShopStyleNext(){
 	page = parseInt($("#shopstyle_page").val());
-	if(page>4){
+	loop = parseInt($("#shopstyle_loop").val());
+	if(page>=loop){
 		alert("종료~!");
 	} else {
 		$("#shopstyle_page").val(page+1);
 		getShopStyle();
 	}
-	
 }
+
 function getShopStyle(){
 	page = $("#shopstyle_page").val();
 	per_page = $("#shopstyle_per_page").val();
 	search_key = $("#shopstyle_search_key").val();
 	cate_code = $("#shopstyle_cate_code").val();
+	loop = $("#shopstyle_loop").val();
 	
 	chkpass = true;
 	if(search_key==""){
 		alert("검색어를 입력하세요.");
 		chkpass = false;
 		$("#shopstyle_search_key").focus();
-	}
-	if(cate_code==""){
+	}else if(cate_code==""){
 		alert("카테고리코드를 입력하세요.");
 		chkpass = false;
 		$("#shopstyle_cate_code").focus();
-	}
-	if(page==""){
+	}else if(page==""){
 		alert("시작값을 입력하세요.");
 		chkpass = false;
 		$("#shopstyle_page").focus();
-	}
-	if(per_page==""){
+	}else if(per_page==""){
 		alert("표시줄 수를 입력하세요.");
 		chkpass = false;
 		$("#shopstyle_per_page").focus();
+	}else if(loop==""){
+		alert("반복횟수를 입력하세요.");
+		chkpass = false;
+		$("#shopstyle_loop").focus();
 	}
 	
 	if(chkpass){
@@ -180,7 +183,8 @@ function getlookie(){
 // Naver API 호출
 function getNaverNext(){
 	page = parseInt($("#naver_page").val());
-	if(page>11){
+	loop = parseInt($("#naver_loop").val());
+	if(page>=loop){
 		alert("종료~!");
 	} else {
 		$("#naver_page").val(page+1);
@@ -193,32 +197,33 @@ function getNaver(){
 	search_key = $("#naver_search_key").val();
 	search_domain = $("#naver_mall_domain").val();
 	cate_code = $("#naver_cate_code").val();
+	loop = $("#naver_loop").val();
 	
 	chkpass = true;
 	if(search_key==""){
 		alert("검색어를 입력하세요.");
 		chkpass = false;
 		$("#naver_search_key").focus();
-	}
-	if(search_domain==""){
+	}else if(search_domain==""){
 		alert("도메인명을 입력하세요.");
 		chkpass = false;
 		$("#naver_mall_domain").focus();
-	}
-	if(cate_code==""){
+	}else if(cate_code==""){
 		alert("카테고리 코드를 입력하세요.");
 		chkpass = false;
 		$("#naver_cate_code").focus();
-	}
-	if(page==""){
+	}else if(page==""){
 		alert("시작값을 입력하세요.");
 		chkpass = false;
 		$("#naver_page").focus();
-	}
-	if(per_page==""){
+	}else if(per_page==""){
 		alert("표시줄 수를 입력하세요.");
 		chkpass = false;
 		$("#naver_per_page").focus();
+	}else if(loop==""){
+		alert("반복횟수를 입력하세요.");
+		chkpass = false;
+		$("#naver_loop").focus();
 	}
 	
 	if(chkpass){
@@ -254,6 +259,7 @@ function getNaver(){
 		    	$('#naverDv').append("--page("+page+")--");
 
 		    	if(products.length>0) {
+/*		    		
 					$.each(products, function (index, product) {
 						var item_url = product.url;
 						var item_ori_url = product.ori_url;
@@ -277,11 +283,8 @@ function getNaver(){
 						+ '</div>';
 
 						//$('#naverDv').append(li);
-						
-
-						
-						
 					});
+*/
 					chkGet = true;
 		    	} else {
 		    		//notify('error', json.msg);
@@ -290,7 +293,6 @@ function getNaver(){
 		    	}
 		    	
 				setTimeout(function() {
-					
 					getNaverNext(); // 다음페이지 call
 				}, 100);
 		    	
@@ -311,6 +313,7 @@ function getNaver(){
 	내부카테고리코드 : <input type="text" id="shopstyle_cate_code" name="shopstyle_cate_code" value="" style="width:150px">,
 	시작 : <input type="text" id="shopstyle_page" name="shopstyle_page" value="1" style="width:50px">,
 	줄수 : <input type="text" id="shopstyle_per_page" name="shopstyle_per_page" value="16" style="width:50px">
+	반복횟수 : <input type="text" id="shopstyle_loop" name="shopstyle_loop" value="1" style="width:50px">
 	<%= button_tag "호출하기", onclick: "$('#shopstyleDvCnt').val(0);$('#shopstyleDv').html('');getShopStyle();" %>
 	
 	<div id="shopstyleDv"></div>
@@ -345,6 +348,7 @@ function getNaver(){
 	내부카테고리코드 : <input type="text" id="naver_cate_code" name="naver_cate_code" value="" style="width:100px">,
 	시작 : <input type="text" id="naver_page" name="naver_page" value="1" style="width:50px">,
 	줄수 : <input type="text" id="naver_per_page" name="naver_per_page" value="16" style="width:50px">
+	반복횟수 : <input type="text" id="naver_loop" name="naver_loop" value="1" style="width:50px">
 	<%= button_tag "호출하기", onclick: "$('#naverDvCnt').val(0);$('#naverDv').html('');getNaver();" %>
 	
 	<div id="naverDv"></div>
@@ -352,7 +356,11 @@ function getNaver(){
 	총상품수:<input type="text" id="naverDvCnt" name="naverDvCnt" value="0" style="width:40px;">
 </div>
 
-
+<div style="border:1px solid black; padding:20px; margin-top:5px;">
+	6. 상품관리<br/>
+	<br/>
+	<%= button_tag "호출하기", onclick: "document.location.href='/admin/productList';" %>
+</div>
 
 
 

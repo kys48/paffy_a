@@ -4,14 +4,17 @@
 #   Ensure the SQLite 3 gem is defined in your Gemfile
 #   gem 'sqlite3'
 development:
+development:
   adapter: mysql2
 #  encoding: euckr
   reconnect: false
-  database: paffy
+  database: "paffy"
   pool: 5
-  username: paffy
-  password: paffy123
-  host: 203.228.244.59
+  username: "paffy"
+  password: "paffy123"
+  host: "localhost"
+#  password: "1111"
+#  host: "175.126.74.122"
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

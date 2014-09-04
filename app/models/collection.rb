@@ -30,7 +30,23 @@ class Collection < ActiveRecord::Base
     color_code  = params[:color_code]||""
     cate_code   = params[:cate_code]||""
     store_type  = params[:store_type]||""
+    style_type  = params[:style_type]||""
     session_user_id = params[:session_user_id]||""
+    limit_hit   = params[:limit_hit]||""
+    follow = params[:follow]||""
+    
+    currency_usd  = params[:currency_usd]||"1"
+    currency_jpy  = params[:currency_jpy]||"1"
+    currency_eur  = params[:currency_eur]||"1"
+    currency_gbp  = params[:currency_gbp]||"1"
+    currency_cny  = params[:currency_cny]||"1"
+
+    if cate_code == "All"
+      cate_code = ""
+    end
+    if store_type == "All"
+      store_type = ""
+    end
 
     page      = page.to_i
     per_page  = per_page.to_i
@@ -46,6 +62,8 @@ class Collection < ActiveRecord::Base
       
       search_keys = search_key.split(" ")
     end
+    
+    chk_union = false
 
     if profile_id
       user = User.where(profile_id: profile_id).first
@@ -53,6 +71,7 @@ class Collection < ActiveRecord::Base
     
     str_from = "(
                   SELECT id, item_type
+                       , MAX(get_yn) AS get_yn
                        , MAX(user_id) AS user_id
                        , MAX(img_file_name) AS img_file_name
                        , MAX(collection_type) AS collection_type
@@ -66,25 +85,25 @@ class Collection < ActiveRecord::Base
                        , MAX(merchant) AS merchant
                        , MAX(url) AS url
                        , MAX(subject) AS subject
-                FROM (
-                    SELECT id, user_id, img_file_name, collection_type, subject
-                         , hit, created_at, img_updated_at, '' AS item_type
-                         , 0 AS profile_id, '' AS user_name, 0 AS price, '' AS price_type, '' AS merchant, '' AS url
-                      FROM collections WHERE 1=0"
+                FROM ( "
     
     if myfeed == "Y"
-      str_from_myfeed1 = " UNION ALL
+      str_from_myfeed1 = "
       
-                    SELECT B.id, B.user_id, B.img_file_name, B.collection_type, B.subject
+                    SELECT 'Y' AS get_yn, B.id, B.user_id, B.img_file_name, B.collection_type, B.subject
                          , B.hit, B.created_at, B.img_updated_at, A.item_type
                          , C.profile_id, C.user_name, 0 AS price, '' AS price_type, '' AS merchant, '' AS url
                       FROM gets A, collections B, users C
-                     WHERE A.ref_id = B.id AND B.user_id = C.id AND A.item_type = 'C'"
+                     WHERE A.ref_id = B.id AND B.user_id = C.id
+                       AND A.item_type = 'C'
+                       AND B.use_yn = 'Y'"
       
       if profile_id && profile_id!=""
         str_from_myfeed1 += "    AND ("
         str_from_myfeed1 += "          A.user_id=#{user.id}"
-        str_from_myfeed1 += "       OR A.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = #{user.id})"
+        if follow=="Y"
+          str_from_myfeed1 += "       OR A.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = #{user.id})"
+        end
         str_from_myfeed1 += "    )"
       end
       
@@ -100,17 +119,22 @@ class Collection < ActiveRecord::Base
       end
     
       
-      str_from_myfeed2 = " UNION ALL   
-                    SELECT B.id, B.user_id, B.img_file_name, '' AS collection_type, B.subject
+      str_from_myfeed2 = "   
+                    SELECT 'Y' AS get_yn, B.id, B.user_id, B.img_file_name, '' AS collection_type, B.subject
                          , B.hit, B.created_at, B.img_updated_at, A.item_type
                          , C.profile_id, C.user_name, B.price, B.price_type, B.merchant, B.url
                       FROM gets A, products B, users C 
-                     WHERE A.ref_id = B.id AND B.user_id = C.id AND A.item_type = 'P'"
+                     WHERE A.ref_id = B.id
+                       AND B.user_id = C.id
+                       AND B.use_yn = 'Y'
+                       AND A.item_type = 'P'"
       
       if profile_id
         str_from_myfeed2 += "    AND ("
         str_from_myfeed2 += "          A.user_id=#{user.id}"
-        str_from_myfeed2 += "       OR A.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = "+user.id.to_s+")"
+        if follow=="Y"
+          str_from_myfeed2 += "       OR A.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = "+user.id.to_s+")"
+        end
         str_from_myfeed2 += "    )"
       end
       
@@ -141,6 +165,14 @@ class Collection < ActiveRecord::Base
         str_from_myfeed2 += "    AND B.store_type='#{store_type}'"
       end
       
+      if style_type && style_type!=""
+        str_from_myfeed2 += "    AND B.style_type='#{style_type}'"
+      end
+      
+      if limit_hit && limit_hit!=""
+        str_from_myfeed2 += "    AND B.hit>=#{limit_hit}"
+      end
+      
       if item_type=='C' || item_type=='P'
         if item_type=='C'
           str_from += str_from_myfeed1
@@ -149,21 +181,25 @@ class Collection < ActiveRecord::Base
         end
       else
         str_from += str_from_myfeed1
+        str_from += " UNION ALL "
         str_from += str_from_myfeed2
       end
+      
+      chk_union = true
     
     end
     
     
-    str_from1 = " UNION ALL
-                   SELECT A.id, A.user_id, A.img_file_name, A.collection_type, A.subject, A.hit, A.created_at, A.img_updated_at, 'C' AS item_type
+    str_from1 = " 
+                   SELECT 'N' AS get_yn, A.id, A.user_id, A.img_file_name, A.collection_type, A.subject, A.hit, A.created_at, A.img_updated_at, 'C' AS item_type
                         , B.profile_id, B.user_name, 0 AS price, '' AS price_type, '' AS merchant, '' AS url
                     FROM collections A, users B
-                   WHERE A.user_id = B.id"
+                   WHERE A.user_id = B.id
+                     AND A.use_yn = 'Y'"
     if profile_id
       str_from1 += "    AND ("
       str_from1 += "          A.user_id=#{user.id}"
-      if myfeed == "Y"
+      if myfeed=="Y" && follow=="Y"
         str_from1 += "       OR A.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = "+user.id.to_s+")"
       end
       str_from1 += "    )"
@@ -182,12 +218,13 @@ class Collection < ActiveRecord::Base
       str_from1 += "    )"
     end
     
-    str_from2 = " UNION ALL
-                   SELECT B.id, A.user_id, B.img_file_name, '' AS collection_type, B.subject, B.hit, A.created_at, B.img_updated_at, 'P' AS item_type
+    str_from2 = " 
+                   SELECT 'N' AS get_yn, B.id, A.user_id, B.img_file_name, '' AS collection_type, B.subject, B.hit, A.created_at, B.img_updated_at, 'P' AS item_type
                         , C.profile_id, C.user_name, B.price, B.price_type, B.merchant, B.url
                     FROM user_items A, products B, users C
                    WHERE B.id = A.ref_id
                      AND A.user_id = C.id
+                     AND B.use_yn = 'Y'
                      AND A.item_type = 'P'"
     if myfeed != "Y"
       str_from2 += "    AND C.user_type='S'"
@@ -196,7 +233,7 @@ class Collection < ActiveRecord::Base
     if profile_id
       str_from2 += "    AND ("
       str_from2 += "          A.user_id=#{user.id}"
-      if myfeed == "Y"
+      if myfeed=="Y" && follow=="Y"
         str_from2 += "       OR A.user_id IN (SELECT C1.follow_id FROM follows C1, users C2 WHERE C1.follow_id = C2.id AND C1.follow_type='U' AND C1.user_id = #{user.id})"
       end
       str_from2 += "    )"
@@ -221,17 +258,65 @@ class Collection < ActiveRecord::Base
       str_from2 += "    AND B.price IS NOT NULL "
       case price_stat
         when "1"
-          str_from2 += "    AND B.price<=20000 "
+          str_from2 += "    AND (B.price*( CASE B.price_type 
+                                           WHEN 'USD' THEN "+currency_usd+"
+                                           WHEN 'JPY' THEN "+currency_jpy+"
+                                           WHEN 'EUR' THEN "+currency_eur+"
+                                           WHEN 'GBP' THEN "+currency_gbp+"
+                                           WHEN 'CNY' THEN "+currency_cny+"
+                                           ELSE 1 
+                                           END )
+                                ) <=20000 "
         when "2"
-          str_from2 += "    AND B.price BETWEEN 20000 AND 50000"
+          str_from2 += "    AND (B.price*( CASE B.price_type 
+                                           WHEN 'USD' THEN "+currency_usd+"
+                                           WHEN 'JPY' THEN "+currency_jpy+"
+                                           WHEN 'EUR' THEN "+currency_eur+"
+                                           WHEN 'GBP' THEN "+currency_gbp+"
+                                           WHEN 'CNY' THEN "+currency_cny+"
+                                           ELSE 1 
+                                           END )
+                                ) BETWEEN 20000 AND 50000"
         when "3"
-          str_from2 += "    AND B.price BETWEEN 50000 AND 100000"
+          str_from2 += "    AND (B.price*( CASE B.price_type 
+                                           WHEN 'USD' THEN "+currency_usd+"
+                                           WHEN 'JPY' THEN "+currency_jpy+"
+                                           WHEN 'EUR' THEN "+currency_eur+"
+                                           WHEN 'GBP' THEN "+currency_gbp+"
+                                           WHEN 'CNY' THEN "+currency_cny+"
+                                           ELSE 1 
+                                           END )
+                                ) BETWEEN 50000 AND 100000"
         when "4"
-          str_from2 += "    AND B.price BETWEEN 100000 AND 200000"
+          str_from2 += "    AND (B.price*( CASE B.price_type 
+                                           WHEN 'USD' THEN "+currency_usd+"
+                                           WHEN 'JPY' THEN "+currency_jpy+"
+                                           WHEN 'EUR' THEN "+currency_eur+"
+                                           WHEN 'GBP' THEN "+currency_gbp+"
+                                           WHEN 'CNY' THEN "+currency_cny+"
+                                           ELSE 1 
+                                           END )
+                                ) BETWEEN 100000 AND 200000"
         when "5"
-          str_from2 += "    AND B.price BETWEEN 200000 AND 500000"
+          str_from2 += "    AND (B.price*( CASE B.price_type 
+                                           WHEN 'USD' THEN "+currency_usd+"
+                                           WHEN 'JPY' THEN "+currency_jpy+"
+                                           WHEN 'EUR' THEN "+currency_eur+"
+                                           WHEN 'GBP' THEN "+currency_gbp+"
+                                           WHEN 'CNY' THEN "+currency_cny+"
+                                           ELSE 1 
+                                           END )
+                                ) BETWEEN 200000 AND 500000"
         when "6"
-          str_from2 += "    AND B.price >= 500000"
+          str_from2 += "    AND (B.price*( CASE B.price_type 
+                                           WHEN 'USD' THEN "+currency_usd+"
+                                           WHEN 'JPY' THEN "+currency_jpy+"
+                                           WHEN 'EUR' THEN "+currency_eur+"
+                                           WHEN 'GBP' THEN "+currency_gbp+"
+                                           WHEN 'CNY' THEN "+currency_cny+"
+                                           ELSE 1 
+                                           END )
+                                ) >= 500000"
       end
     end
     
@@ -246,13 +331,26 @@ class Collection < ActiveRecord::Base
     if store_type && store_type!=""
       str_from2 += "    AND B.store_type='#{store_type}'"
     end
+    
+    if style_type && style_type!=""
+      str_from2 += "    AND B.style_type='#{style_type}'"
+    end
+    
+    if limit_hit && limit_hit!=""
+      str_from2 += "    AND B.hit>=#{limit_hit}"
+    end
       
+    if chk_union  
+      str_from += " UNION ALL "
+    end
+    
     if item_type=='C'
       str_from += str_from1
     elsif item_type=='P'
       str_from += str_from2
     else
       str_from += str_from1
+      str_from += " UNION ALL "
       str_from += str_from2
     end
     
@@ -261,6 +359,7 @@ class Collection < ActiveRecord::Base
                  ) X"
 
     str_select = "id, item_type
+               , get_yn
                , user_id
                , img_file_name
                , collection_type
@@ -280,7 +379,7 @@ class Collection < ActiveRecord::Base
       str_select += ", 0 AS cnt_like_user"
     end
                
-    str_select += ", CASE WHEN CHAR_LENGTH(F_REMOVE_HTML(subject))<25 THEN F_REMOVE_HTML(subject) ELSE CONCAT(SUBSTRING(F_REMOVE_HTML(subject),1,25),'..') END AS subject
+    str_select += ", CASE WHEN CHAR_LENGTH(F_REMOVE_HTML(subject))<20 THEN F_REMOVE_HTML(subject) ELSE CONCAT(SUBSTRING(F_REMOVE_HTML(subject),1,20),'..') END AS subject
                 , subject AS subject_full"
 
     collections = Collection.paginate(page: page, per_page: per_page)

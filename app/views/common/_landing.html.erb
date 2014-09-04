@@ -3,20 +3,55 @@
 	if session[:user_id]
 		landing_height = "160px"
 	end
+	
+	cmenu = params[:cmenu]
+	cmenu_sub = params[:cmenu_sub]
 %>
   <div id="landingDv" style="margin-top:20px; padding:0px; background:url('/images/landing.png') repeat-x; height:<%=landing_height%>; width:100%;">
   	<div style="padding:10px 10px 10px 150px; width:400px;">
-	    <h2>What's Your Style?</h2>
-	    <p style="padding-left:20px;">Find Great Fashion!!<br/>
-	    	Play Styles!!<br/>
-		    Share with Friends!!<br/>
-		    Get Items!
+	    <h2 class="title_font">
+<%
+	if cmenu=="3"
+%>
+			Find Your Favorite Stores !!
+<%
+	else
+%>
+	    	What's Your Style?
+<%
+	end
+%>
+	    </h2>
+	    <p style="padding-left:20px;">
+<%
+	if cmenu=="4"
+		if !session[:user_id]
+%>
+	    	<br/>Find the Member's Favorite styles !!<br/>
+	    	<br/>
+			and Follow Styles You Love !!
+<%
+		else
+%>
+			<br/>My Wish !!<br/>
+			My Following Styles !!
+<%
+		end
+	else
+%>
+	    	Find Great Fashion !!<br/>
+	    	Play Styles !!<br/>
+		    Share with Friends !!<br/>
+		    Get Items !
+<%
+	end
+%>
 	    </p>
 <%
 	if !session[:user_id]
 %>
 	    <p style="text-align:right">
-	    	<a href="/log_in" class="btn btn-primary btn-small" style="width:110px;">Join Now</a>
+	    	<a href="javascript:login_pop(document.location.href);" class="btn btn-primary btn-small" style="width:110px;">Join Now</a>
 	    	<br/>
 	    	(Facebook / Kakao)
 	    </p>

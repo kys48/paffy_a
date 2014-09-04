@@ -13,7 +13,7 @@
 }
 
 #Create #Dashboard {
-    padding: 0px;
+    padding-top: 20px;
     display: block;
 }
 
@@ -28,7 +28,7 @@
 }
 
 #Create #Navigator > .icons {
-    margin-top: 39px;
+    margin-top: 5px;
     background-color: #d7dcde;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
@@ -202,7 +202,7 @@
     display: none;
     position: absolute;
     right: 30px;
-    top: 149px;
+    top: 70px;
     z-index: 90;
 }
 
@@ -480,7 +480,7 @@
 
 #Create #Products .tabBody,
 #Create #Products .tabFoot {
-    border-top: 1px solid #dadada;
+    border-top: 0px solid #dadada;
 }
 
 #Create #Products .tabBody *:first-child {
@@ -506,7 +506,7 @@
     width: 650px;
     height: 650px;
     z-index: 1;
-    top: 128px;
+    top: 60px;
     right: 10px;
     background: #fff;
     z-index: 89;
@@ -516,7 +516,7 @@
 }
 
 #Create #Dashboard #Board.collectionBoard {
-    top: 88px;
+    top: 20px;
     height: 690px;
 }
 

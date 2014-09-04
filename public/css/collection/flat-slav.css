@@ -1063,14 +1063,14 @@ img.bordered {
     padding: 4px;
     position: relative;
     z-index: 100;
-    width: 100px;
-    height: 210px;
+    width: 135px;
+    height: 135px;
     text-align: center;
     cursor: move;
 }
 .collectionItem img {
-    max-width: 100px;
-    max-height: 160px;
+    max-width: 135px;
+    max-height: 135px;
 }
 .collectionItem textarea {
     min-height: 50px;

@@ -24,7 +24,9 @@ class StoreController < ApplicationController
     
     stores = User
     .select("user_id, user_type, store_type, follow_count, product_count, rank
-           , profile_id, email, user_name, url, img_file_name")
+           , profile_id, email, user_name, url, img_file_name
+           , F_COUNT_PRODUCTS(user_id) AS cnt_product
+           , F_COUNT_FOLLOWS(user_id, 'follower') AS cnt_follower")
     .from( str_from )
     .where("1=1")
     .order("rank ASC")
@@ -35,15 +37,7 @@ class StoreController < ApplicationController
     
     rcnt = 0
     stores.each{ |store|
-      if @store_type=="I"
-        products = Product.paginate(page: 1, per_page: 8).where(user_id: store.user_id).order('hit DESC')
-      elsif @store_type=="F"
-        params[:search_key] = store.profile_id
-        params[:page] = 1
-        params[:per_page] = 8
-        params[:img_style] = "Large"
-        products = Product.getItemListApi(params)
-      end
+      products = Product.paginate(page: 1, per_page: 8).where(user_id: store.user_id).order('hit DESC')
       
       follow_count = 0
       if @session_user_id

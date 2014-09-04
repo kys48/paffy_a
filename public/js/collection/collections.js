@@ -156,9 +156,8 @@ function collection(platformType){
     }
     
     self.create = function(itemId,itemImg,itemAPI,itemURL,origin,caption){
-        
         var imageSrc;
-        
+
         if(origin === 'product'){
             //imageSrc = self.productURL+'/original/'+itemImg;
             imageSrc = self.productURL+self.productStyleDirectory+itemImg;
@@ -176,7 +175,8 @@ function collection(platformType){
                    '<input type="hidden" name="img_'+origin+'_'+itemId+'" value="'+itemImg+'" />'+
                    '<input type="hidden" name="api_'+origin+'_'+itemId+'" value="'+itemAPI+'" />'+
                    '<input type="hidden" name="url_'+origin+'_'+itemId+'" value="'+itemURL+'" />'+
-                   '<textarea class="login-input" name="caption_'+origin+'_'+itemId+'">'+((caption) ? caption : 'Caption:')+'</textarea>'+
+                   '<input type="hidden" name="caption_'+origin+'_'+itemId+'" value="">'+
+                   //'<textarea class="login-input" name="caption_'+origin+'_'+itemId+'">'+((caption) ? caption : '')+'</textarea>'+
                    '</div>';
         return html;
 
@@ -224,14 +224,14 @@ function collection(platformType){
             self.board.find('.message').hide();
             self.addItems(oCollection.items);
             
-            self.board.data('ID', oCollection.id);
+            self.board.data('id', oCollection.id);
             
             if(type && type == 'collection'){
                 self.Publish.find('#name').val(oCollection.name);
                 self.Publish.find('#description').val(oCollection.description);
             }
         }else{
-            self.board.removeData('ID');
+            self.board.removeData('id');
             self.Publish.find('#name').val('');
             self.Publish.find('#description').val('');
         }
@@ -242,15 +242,16 @@ function collection(platformType){
         $.each(items, function(index, value){
             var itemId      = value.item_id;
             var itemImg     = value.item_img;
+            var itemAPI     = value.item_api;
             var itemOrigin  = value.origin;
             var caption     = value.caption;
 
             var imgPointer = new Image();
             
             self.items++;
-            
-            var itemHtml = self.create(itemId, itemImg, itemOrigin, caption);
-            
+
+            var itemHtml = self.create(itemId, itemImg, itemAPI, "", itemOrigin, caption);
+
             self.board.append(itemHtml);
             
         });
@@ -298,20 +299,17 @@ function collection(platformType){
         
         self.publishSubmit.children('span').html(self.publishSubmit.find('input[name="inactive"]').val());
         
-        var url = self.publishURL;
+        var url = self.publishURL+"?type=collect";
 
         /*
         var url, action = '?action=publish';
-        
-        
-        
         if(self.platformType == 'collection' && !saveDraft)
             url = self.publishURL+'/';
         else if(self.platformType == 'collection_draft' || saveDraft)
             url = self.publishURL+'/collection_draft/';
         */
-        if(self.board.data('ID'))
-            url += self.board.data('ID'); 
+        if(self.board.data('id'))
+            url += "&id="+self.board.data('id'); 
         
         //if(saveDraft) action = '?action=draft';
             
@@ -322,9 +320,8 @@ function collection(platformType){
 		  }
 		});
 
-
         //$.ajax(url+action, {
-        $.ajax(url+'?type=collect', { 
+        $.ajax(url, { 
             type: 'post',
             data: sorted+'&'+imgs+'&'+captions+'&'+postData,
             cache: false,
@@ -359,9 +356,15 @@ function collection(platformType){
         });
     }
     
-    self.showPublish = function(){        
-        $('#mask').show().on('click', self.hidePublish);
-        showPopup(self.Publish);
+    self.showPublish = function(){
+    	if ($("#session_chk").val()=="Y"){
+    		layer_close();
+    		$('#mask').show().on('click', self.hidePublish);
+        	showPopup(self.Publish);
+    	} else {
+    		login_pop_stay();
+    	}        
+        
     }
     
     self.hidePublish = function(){

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140812092055) do
+ActiveRecord::Schema.define(:version => 20140902120734) do
 
   create_table "board_comments", :force => true do |t|
     t.string   "comment_type"
@@ -72,6 +72,8 @@ ActiveRecord::Schema.define(:version => 20140812092055) do
     t.string   "img_content_type"
     t.integer  "img_file_size"
     t.datetime "img_updated_at"
+    t.string   "view_main"
+    t.string   "use_yn"
   end
 
   create_table "follows", :force => true do |t|
@@ -103,7 +105,8 @@ ActiveRecord::Schema.define(:version => 20140812092055) do
     t.string   "url",              :limit => 4000
     t.integer  "hit"
     t.string   "user_id"
-    t.string   "use_yn"
+    t.string   "use_yn",           :limit => 10
+    t.string   "style_type",       :limit => 10
     t.string   "merchant"
     t.string   "img_file_name"
     t.string   "img_content_type"
@@ -113,6 +116,8 @@ ActiveRecord::Schema.define(:version => 20140812092055) do
     t.datetime "updated_at"
     t.string   "category1",        :limit => 500
     t.string   "category2",        :limit => 500
+    t.string   "tmp_update",       :limit => 10
+    t.string   "view_main"
   end
 
   create_table "user_items", :force => true do |t|

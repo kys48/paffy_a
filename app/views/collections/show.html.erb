@@ -282,7 +282,7 @@ $(function() {
 
 // scroll event
 $(window).scroll(function(){
-	if($(window).scrollTop() == $(document).height() - $(window).height()){
+	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
 		getItemList();
 	}
 });
@@ -852,7 +852,7 @@ function shareKakao(){
 </button>
 </div>
 
-<div style="float:left; padding:3px 0px 0px 10px;">
+<!--div style="float:left; padding:3px 0px 0px 10px;">
 	<div
 	  class="fb-like"
 	  data-layout="button_count"
@@ -860,8 +860,19 @@ function shareKakao(){
 	  data-width="450"
 	  data-show-faces="true">
 	</div>
-</div>            	
-
+</div-->
+<%
+	if @session_user_id && @session_user_id!="" && @session_user_id.to_s==@collection.user_id.to_s 
+%>
+<div style="float:right;">
+<button type="button" class="btn btn-small btn-default" onClick="document.location.href='/collections/<%=@collection.collection_type%>?id=<%=@collection.id%>';">
+	<i class="icon-edit"></i>
+	수정
+</button>
+</div>
+<%
+	end 
+%>
 <div style="clear:both"></div>
             	
 			</div>

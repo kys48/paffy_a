@@ -5,6 +5,7 @@
  *= require_self
  *= require_tree .
 */
+body { padding-top: 20px; }
 i {
 	font-size:14px;
 }
@@ -55,4 +56,11 @@ i {
 	color:#aaaaaa;
 	font-size:12px;
 	line-height:14px;
+}
+
+.view_remove {
+	display:inline-block;
+	text-align:left;
+	cursor:pointer;
+	padding-left:5px;
 }

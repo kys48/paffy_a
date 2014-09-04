@@ -264,7 +264,7 @@ $(function() {
 
 // scroll event
 $(window).scroll(function(){
-	if($(window).scrollTop() == $(document).height() - $(window).height()){
+	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
 		getItemList();
 	}
 });
@@ -331,7 +331,21 @@ function getItemList(){
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 									+ '</div>';
 								}else if(collection.item_type=='P'){
-									var priceStr = getMoneyType(collection.price,collection.price_type);
+									var change_price = collection.price;
+									var change_price_type = "KRW";
+									if (collection.price_type=="USD") {
+										change_price = $('#currency_usd').val()*change_price;
+									} else if (collection.price_type=="JPY") {
+										change_price = $('#currency_jpy').val()*change_price;
+									} else if (collection.price_type=="EUR") {
+										change_price = $('#currency_eur').val()*change_price;
+									} else if (collection.price_type=="GBP") {
+										change_price = $('#currency_gbp').val()*change_price;
+									} else if (collection.price_type=="CNY") {
+										change_price = $('#currency_cny').val()*change_price;
+									}
+									
+									var priceStr = getMoneyType(change_price,change_price_type);
 
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
@@ -681,29 +695,29 @@ function shareKakaoLink(){
 <meta property="og:image"     		content="<%= request_host%><%= @product.img.url(:original)%>"/>
 <%= render :partial => '/common/header_bottom' %>
 
+<input type="hidden" id="currency_usd" value="<%=@currency_usd%>">
+<input type="hidden" id="currency_jpy" value="<%=@currency_jpy%>">
+<input type="hidden" id="currency_eur" value="<%=@currency_eur%>">
+<input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
+<input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
+
 <%
 	price_type_str = "￦"
-	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
-    case @product.price_type
-      when "KRW"
-        price_type_str = "￦"
-        price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
-      when "USD"
-      	price_type_str = "$"
-      	price_str = number_to_currency(@product.price, :unit => price_type_str)
-      when "JPY"
-      	price_type_str = "￥"
-      	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
-      when "EUR"
-      	price_type_str = "€"
-      	price_str = number_to_currency(@product.price, :unit => price_type_str)
-      when "GBP"
-      	price_type_str = "￡"
-      	price_str = number_to_currency(@product.price, :unit => price_type_str)
-      when "CNY"
-      	price_type_str = "元"
-      	price_str = number_to_currency(@product.price, :unit => price_type_str, :precision => 0)
-    end
+	change_price = @product.price.to_f
+
+	if @product.price_type=="USD"
+		change_price = @currency_usd*change_price;
+	elsif @product.price_type=="JPY"
+		change_price = @currency_jpy*change_price;
+	elsif @product.price_type=="EUR"
+		change_price = @currency_eur*change_price;
+	elsif @product.price_type=="GBP"
+		change_price = @currency_gbp*change_price;
+	elsif @product.price_type=="CNY"
+		change_price = @currency_cny*change_price;
+	end
+
+	price_str = number_to_currency(change_price, :unit => price_type_str, :precision => 0)
 %>
 
 <!-- 스크랩 -->
@@ -805,10 +819,10 @@ function shareKakaoLink(){
 	<span id="cnt_like"><%= @cnt_like%></span>
 </button>
             	
-<button type="button" class="btn btn-small btn-default" onClick="showStream();">
+<!--button type="button" class="btn btn-small btn-default" onClick="showStream();">
 	<i class="icon-comment"></i>
 	이건어때?
-</button>
+</button-->
 
 <button type="button" class="btn btn-small btn-default" onClick="share();">
 	<i class="icon-user"></i>
@@ -821,7 +835,7 @@ function shareKakaoLink(){
 </button>
 </div>
 
-<div style="float:left; padding:3px 0px 0px 10px;">
+<!--div style="float:left; padding:3px 0px 0px 10px;">
 	<div
 	  class="fb-like"
 	  data-layout="button_count"
@@ -829,7 +843,7 @@ function shareKakaoLink(){
 	  data-width="450"
 	  data-show-faces="true">
 	</div>
-</div>            	
+</div-->            	
 <div style="clear:both"></div>
             	
 			</div>

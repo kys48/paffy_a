@@ -60,6 +60,7 @@ class CollectionsController < ApplicationController
         AND collection_id = "+collection_id)
 
     # 시간 오래 걸림... 해결방법 찾아라
+=begin    
     @collection_products.each_with_index do |collection,i|
       price = 0.0
       
@@ -80,7 +81,7 @@ class CollectionsController < ApplicationController
         collection.price_type = 'KRW'
       end
     end
-    
+=end    
     # 좋아요 수 가져오기
     @cnt_like = Get.where(get_type: 'L', item_type: 'C', ref_id: collection_id).count
 
@@ -115,63 +116,6 @@ class CollectionsController < ApplicationController
     if @session_user_id && @session_user_id!=""
       @session_user = User.find(@session_user_id)
     end
-=begin    
-    # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
-    if @product.img_file_name
-      dataFilePath = "/public/data/product/"
-      %x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{@product.img_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
-    end
-=end
-    
-=begin
-    # 이미지 대표색상코드 추출
-    if @product.img_file_name
-      colors = Product.get_product_color(@product.img_file_name)
-      puts colors[0]
-      puts colors[1]
-      @product.color_code_o = colors[0] 
-      @product.color_code_s = colors[1]
-    end
-=end
-
-=begin
-    file_name = @product.img_file_name 
-
-    # 썸네일
-    if file_name
-      dataFilePath = "/public/data/product/"
-      
-      tmpimg = Magick::Image.read(RAILS_ROOT+dataFilePath+'original/'+file_name).first
-      
-      thumbSize = 600
-      # 원본 이미지가 썸네일 이미지 사이즈보다 작을경우 원본이미지 사이즈 기준
-      if tmpimg.columns>tmpimg.rows
-        if thumbSize>tmpimg.columns
-          thumbSize = tmpimg.columns
-        end
-      elsif tmpimg.columns<tmpimg.rows
-        if thumbSize>tmpimg.rows
-          thumbSize = tmpimg.rows
-        end
-      else
-        if thumbSize>tmpimg.columns
-          thumbSize = tmpimg.columns
-        end
-      end
-      
-      # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-      ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
-      
-      thumb = tmpimg.resize!(ipos[0],ipos[1])
-      
-      bg = Magick::Image.new(thumbSize, thumbSize){
-        self.background_color = 'white'
-        self.format = 'PNG'
-      }
-      bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
-      bg.write(RAILS_ROOT+dataFilePath+file_name)
-    end
-=end
 
     if @product.user_id 
       @user = User.find(@product.user_id)
@@ -179,27 +123,19 @@ class CollectionsController < ApplicationController
       @user.profile_id = 'guest'
       @user.user_name = 'guest'
     end
+
+    @currency_usd = 0
+    @currency_jpy = 0
+    @currency_eur = 0
+    @currency_gbp = 0
+    @currency_cny = 0
+
+    @currency_usd = GoogCurrency.usd_to_krw(1).to_i
+    @currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
+    @currency_eur = GoogCurrency.eur_to_krw(1).to_i
+    @currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
+    @currency_cny = GoogCurrency.cny_to_krw(1).to_i
   
-    price = 0.0
-    
-    if @product.price_type!='KRW'
-      case @product.price_type
-        when 'USD'
-          price = GoogCurrency.usd_to_krw(@product.price).to_i
-        when 'JPY'
-          price = GoogCurrency.jpy_to_krw(@product.price).to_i
-        when 'EUR'
-          price = GoogCurrency.eur_to_krw(@product.price).to_i
-        when 'GBP'
-          price = GoogCurrency.gbp_to_krw(@product.price).to_i
-        when 'CNY'
-          price = GoogCurrency.eur_to_krw(@product.price).to_i
-      end
-      @product.price = price
-      @product.price_type = 'KRW'
-    end
-    
-    
     # 좋아요 수 가져오기
     @cnt_like = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id).count
 
@@ -229,32 +165,65 @@ class CollectionsController < ApplicationController
   # GET /collections/set.json
   def set
     params[:cmenu] = "5"
-    params[:cmenu_sub] = "2"
+    params[:cmenu_sub] = "1"
     
-    if session[:user_id]
-      @collection = Collection.new
-      
-      @products = Product.paginate(page: params[:page], per_page: 40).order('created_at DESC')
-      
-      respond_to do |format|
-        format.html # new.html.erb
-        format.json { render json: @collection }
-      end      
+    @collection_id	= params[:id]||""
+    
+    if @collection_id && @collection_id!=""
+    	#@collection	= Collection.find(@collection_id)
+    	@collection	= Collection.where(id: @collection_id, collection_type: "set").first
+    	
+    	@collection_products	= CollectionProduct
+    	.select("A.collection_id, A.product_id, A.white_bck, A.flip, A.flop
+					, A.height, A.top, A.left, A.cssleft, A.csstop
+					, A.zindex, A.rotate, A.caption
+					, B.cate_code, B.subject, B.price, B.url, B.style_type
+					, B.merchant, B.img_file_name")
+		.from("collection_products A, products B")
+		.where(" A.product_id = B.id
+					AND A.collection_id=#{@collection_id}")
     else
-      redirect_to '/log_in'
+    	@collection = Collection.new
     end
+    
+    @session_user_id = session[:user_id]||""
+    @cateList = Cate.all()
+    
+    respond_to do |format|
+      format.html # new.html.erb
+      format.json { render json: @collection }
+    end      
+
   end
   
   # GET /collections/collect
   # GET /collections/collect.json
   def collect
     params[:cmenu] = "5"
-    params[:cmenu_sub] = "3"
+    params[:cmenu_sub] = "2"
     
-    @collection = Collection.new
+    @collection_id	= params[:id]||""
     
-    @products = Product.paginate(page: params[:page], per_page: 40).order('created_at DESC')
-
+    if @collection_id && @collection_id!=""
+    	#@collection	= Collection.find(@collection_id)
+    	@collection	= Collection.where(id: @collection_id, collection_type: "collect").first
+    	
+    	@collection_products	= CollectionProduct
+    	.select("A.collection_id, A.product_id, A.white_bck, A.flip, A.flop
+					, A.height, A.top, A.left, A.cssleft, A.csstop
+					, A.zindex, A.rotate, A.caption
+					, B.cate_code, B.subject, B.price, B.url, B.style_type
+					, B.merchant, B.img_file_name")
+		.from("collection_products A, products B")
+		.where(" A.product_id = B.id
+					AND A.collection_id=#{@collection_id}")
+    else
+    	@collection = Collection.new
+    end
+    
+    @session_user_id = session[:user_id]||""
+    @cateList = Cate.all()
+    
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @collection }
@@ -314,7 +283,8 @@ class CollectionsController < ApplicationController
   # POST /collections.json
   def publish
     type = params[:type]
-    
+    collection_id = params[:id]
+
     if type=="collect"
       drowCollect(params)
     else
@@ -335,8 +305,15 @@ class CollectionsController < ApplicationController
   
   # collect 등록
   def drowCollect(params)
+  	collection_id = params[:id]||""
+  	
     #info (name, description, category_id, tages, share, contestId, oauth_providers)
     @collection = Collection.new
+    
+    if collection_id && collection_id!=""
+    	@collection = Collection.find(collection_id)
+    	CollectionProduct.where(collection_id: collection_id).destroy_all
+    end
     
     items = params[:product]
 
@@ -471,9 +448,14 @@ class CollectionsController < ApplicationController
   def drowSet(params)
     items = params[:items] 
     info  = params[:info]
+    collection_id = params[:id]||""
     
     #info (name, description, category_d, tages, share, contestId, oauth_providers)
     @collection = Collection.new
+    if collection_id && collection_id!=""
+    	@collection = Collection.find(collection_id)
+    	CollectionProduct.where(collection_id: collection_id).destroy_all
+    end
     
     imgStyle = "original"
     collectionFilePath = "/public/data/collection/"

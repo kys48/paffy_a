@@ -1,0 +1,387 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<%= render :partial => '/common/landing' %>
+
+<input type="hidden" id="currency_usd" value="<%=@currency_usd%>">
+<input type="hidden" id="currency_jpy" value="<%=@currency_jpy%>">
+<input type="hidden" id="currency_eur" value="<%=@currency_eur%>">
+<input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
+<input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
+<input type="hidden" id="price_stat" value="">
+<input type="hidden" id="store_type" value="">
+<input type="hidden" id="color_code" value="">
+<input type="hidden" id="order_by" value="1">
+
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+
+        <div style="padding:10px 75px 0px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	            	
+	              <ul class="nav">
+	                <li id="smenu0" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span id="smenu0_title">Category (All)</span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu row-fluid">
+	                		<li id="smenu0_sub_All" class="smenu0_sub"><a href="/item/getProductList?cate_code=All&cmenu=2&cmenu_sub=0">All</a></li>
+	                		<li class="divider"></li>
+<%
+catelist2 = ["Tops", "Outwear", "Dresses", "Jackets", "Sweaters", "Jeans", "Pants",   
+			 "Skirts", "Shorts", "Shoes", "Bags", "Easywear", "Swimwear", "Accessories",
+			 "Jewelry", "Beauty", "Kids", "Home", "Men"]
+catelist2.each_with_index do |cate,i|
+%>
+	                		<li id="smenu0_sub_<%=catelist2[i]%>" class="smenu0_sub"><a href="/item/getProductList?cate_code=<%=catelist2[i]%>&cmenu=2&cmenu_sub=<%=i%>"><%=catelist2[i]%></a></li>
+<%	
+end
+%>
+	                	</ul>
+	                </li>
+	                <li id="smenu1" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span id="smenu1_title">Price (All)</span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu1_sub_0" class="smenu1_sub active"><a href="javascript:searchPrice(0);">All</a></li>
+	                		<li class="divider"></li>
+	                		<li id="smenu1_sub_1" class="smenu1_sub"><a href="javascript:searchPrice(1);">￦ 20,000 미만</a></li>
+	                		<li id="smenu1_sub_2" class="smenu1_sub"><a href="javascript:searchPrice(2);">￦ 20,000 ~ ￦ 50,000</a></li>
+	                		<li id="smenu1_sub_3" class="smenu1_sub"><a href="javascript:searchPrice(3);">￦ 50,000 ~ ￦100,000</a></li>
+	                		<li id="smenu1_sub_4" class="smenu1_sub"><a href="javascript:searchPrice(4);">￦100,000 ~ ￦200,000</a></li>
+	                		<li id="smenu1_sub_5" class="smenu1_sub"><a href="javascript:searchPrice(5);">￦200,000 ~ ￦500,000</a></li>
+	                		<li id="smenu1_sub_6" class="smenu1_sub"><a href="javascript:searchPrice(6);">￦500,000 이상</a></li>
+	                	</ul>
+	                </li>
+
+	                <li id="smenu2" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span>Color </span>
+	                		<span id="smenu2_title"></span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li style="padding:10px;">
+<%
+colorlist = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
+			 "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
+			 "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
+
+colorlist.each_with_index do |color,i|
+%>
+<div id="color_<%=color%>" class="color_palette" style="float:left;cursor:pointer;width:20px;height:20px;margin:1px;font-weight:bold;border:2px solid #ffffff;color:#ffffff;background-color:#<%=color%>;" onClick="searchColor('<%=color%>');"></div>
+<%
+	if (i+1)%5==0
+%><div style="clear:both"></div><%
+	end
+end	
+%>
+<div style="width:130px;color:#0088cc;text-align:right;cursor:pointer;" onClick="searchColor('');">clear</div>
+	                			
+	                		</li>
+	                	</ul>
+	                </li>
+	                
+	                <li id="smenu3" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span id="smenu3_title">Sort (All)</span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu3_sub_1" class="smenu3_sub active"><a href="javascript:searchSort(1);">Hit</a></li>
+	                		<li id="smenu3_sub_2" class="smenu3_sub"><a href="javascript:searchSort(2);">Just in</a></li>
+	                	</ul>
+	                </li>
+	                <li id="smenu4" class="dropdown">
+	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                		<span id="smenu4_title">Site (All)</span>
+	                		<b class="caret"></b>
+	                	</a>
+	                	<ul class="dropdown-menu">
+	                		<li id="smenu4_sub_All" class="smenu4_sub active"><a href="javascript:searchStoreType('All');">All</a></li>
+	                		<li id="smenu4_sub_I" class="smenu4_sub"><a href="javascript:searchStoreType('I');">국내</a></li>
+	                		<li id="smenu4_sub_F" class="smenu4_sub"><a href="javascript:searchStoreType('F');">해외</a></li>
+	                	</ul>
+	                </li>
+	                
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
+
+			
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+				    <ul id="itemList" class="portfolio_list">
+				    </ul>
+			    </div>
+			</div>
+		</div>
+		
+	</div>
+	
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+
+<script type="text/javascript">
+// scroll event
+$(window).scroll(function(){
+	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
+		itemList();
+	}
+});
+
+var nextPage = 1;
+var searchYn = true;
+
+function init(){
+	nextPage = 1;
+	searchYn = true;
+	$("#itemList").empty();
+}
+
+// 정렬
+function searchSort(stat){
+	init();
+	var tit = "";
+	if (stat==1) tit = "Hit";
+	else if (stat==2) tit = "Just in";
+	$("#smenu3_title").html("Sort ("+tit+")");
+	$("#order_by").val(stat);
+	$(".smenu3_sub").removeClass("active");
+	$("#smenu3_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 가격 검색
+function searchPrice(stat){
+	init();
+	$("#smenu1_title").html("Price ("+$("#smenu1_sub_"+stat+" a").html()+")");
+	$("#price_stat").val(stat);
+	$(".smenu1_sub").removeClass("active");
+	$("#smenu1_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 색상 검색
+function searchColor(code){
+	init();
+	if (code==""){
+		$("#smenu2_title").html("");
+		$("#smenu2_title").css("background-color","#"+code);
+		$("#smenu2_title").css("border","0px");
+	}else{
+		$("#smenu2_title").html("&nbsp;&nbsp;&nbsp;");
+		$("#smenu2_title").css("background-color","#"+code);
+		if (code=="ffffff"){
+			$("#smenu2_title").css("border","1px solid #cccccc");
+		}else{
+			$("#smenu2_title").css("border","0px");	
+		}
+	}
+	
+	$(".color_palette").css("border","2px solid #ffffff");
+	$("#color_code").val(code);
+	if(code!="") $("#color_"+code).css("border","2px solid #777777");
+	itemList();
+}
+
+// 국내,해외 검색
+function searchStoreType(stat){
+	init();
+	$("#smenu4_title").html("Site ("+$("#smenu4_sub_"+stat+" a").html()+")");
+	$("#store_type").val(stat);
+	$(".smenu4_sub").removeClass("active");
+	$("#smenu4_sub_"+stat).addClass("active");
+	itemList();
+}
+
+function itemList(){
+	var order = "hit desc";
+	if($("#order_by").val()=="1") order = "hit desc"; 
+	else if($("#order_by").val()=="2") order = "created_at desc";
+	
+	var postData = new Object();
+    postData.page = nextPage;
+    postData.currency_usd = $("#currency_usd").val();
+	postData.currency_jpy = $("#currency_jpy").val();
+	postData.currency_eur = $("#currency_eur").val();
+	postData.currency_gbp = $("#currency_gbp").val();
+	postData.currency_cny = $("#currency_cny").val();
+	
+    postData.type = "P";
+    postData.cate_code = "<%=@cate_code%>";
+	postData.price_stat = $("#price_stat").val();
+	postData.color_code = $("#color_code").val();
+	postData.store_type = $("#store_type").val();
+    postData.order = order;
+
+	if (searchYn){
+		layer_open_loading("loading_pop_layer",5,"N");
+			
+		setTimeout( function() {
+			// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+			
+			$.ajax({
+			    url     : '/main/itemListCallback',
+			    type    : 'post',
+			    dataType: 'json',
+			    data	: $.param(postData),
+			    async   : false,  
+			    success : function(json){
+			    	collections = json.collections;
+			    	
+			    	layer_close_loading("loading_pop_layer");
+		
+			    	if(json.status){
+		
+						if(collections.length>0) {
+							nextPage++;
+							
+							$.each(collections, function (index, collection) {
+								var cnt_like_user = collection.cnt_like_user
+								var class_like = "like_icon"
+								if(cnt_like_user>0){
+									class_like = "like_icon_on"
+								}
+								
+								var li = '<li>'
+								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+								if(collection.item_type=='P'){
+									var change_price = collection.price;
+									var change_price_type = "KRW";
+									if (collection.price_type=="USD") {
+										change_price = $('#currency_usd').val()*change_price;
+									} else if (collection.price_type=="JPY") {
+										change_price = $('#currency_jpy').val()*change_price;
+									} else if (collection.price_type=="EUR") {
+										change_price = $('#currency_eur').val()*change_price;
+									} else if (collection.price_type=="GBP") {
+										change_price = $('#currency_gbp').val()*change_price;
+									} else if (collection.price_type=="CNY") {
+										change_price = $('#currency_cny').val()*change_price;
+									}
+									
+									var priceStr = getMoneyType(change_price,change_price_type);
+									
+									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+									+ '</div>'
+									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
+									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
+									+ priceStr + "&nbsp;"
+									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+									+ '</div>'
+									+ '<div style="text-align:right;padding-right:10px;">'
+									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span class="view_icon"></span>'
+									+ '	<span class="view_count">'+collection.hit+'</span>'
+									+ '</div>';
+								}
+								li += '</div>'
+								+ '</li>';
+								
+								$('#itemList').append(li);
+							});
+							
+						} else {	// 결과값이 없을경우
+							searchYn = false;
+							if(nextPage==1){
+								$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+							} else {
+								$('#itemList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">No results found</li>');
+							}
+						}
+						
+			    	} else {
+			    		searchYn = false;
+			    		notify('error', json.msg);
+			    	}
+			    },
+			    error   : function(e){
+			        searchYn = false;
+			        semafors['ajax'] = false;
+			        //notify('error', TranslationLabels['could_not_complete_request']);
+			    }
+			});
+		}, 10 );
+	}
+}
+
+
+// 좋아요
+function like(obj){
+<%	if @session_user_id && @session_user_id!="" %>
+		var item_type = "";
+		var id = obj.id;
+		var arrId = id.split("_");
+		if(arrId[0]=="pid") item_type = "P";
+		else if(arrId[0]=="cid") item_type = "C";
+		likeItem(item_type,arrId[1]);
+<%	else %>
+		login_pop('/');
+<%	end %>
+}
+
+
+$(function() {
+	$("#smenu0_title").html("Category (<%=@cate_code%>)");
+	$(".smenu0_sub").removeClass("active");
+	$("#smenu0_sub_<%=@cate_code%>").addClass("active");
+	
+	itemList();
+	
+	// 추천 store list
+	var rs_cpage = 0;
+	var rs_tot = 3;
+	
+	function getRecommendStore(pType){
+		//var options = {};
+		//$("#rsDv"+rs_cpage).slideUp(1000);
+		$("#rsDv"+rs_cpage).animate({left:'-=200px'}, 500);
+		
+		//$("#rsDv"+rs_cpage).toggle( "slide", 500 );
+		
+		if(pType=="P"){	// 이전페이지
+			rs_cpage -= 1;
+		} else if(pType=="N"){	// 이전페이지
+			rs_cpage += 1;
+		}
+		if(rs_cpage<0) rs_cpage=0;
+		if(rs_cpage>rs_tot) rs_cpage=rs_tot;
+		$("#rsDv"+rs_cpage).animate({left:'-=200px'}, 500);
+		//$("#rsDv"+rs_cpage).show();
+		//$("#rsDv"+rs_cpage).slide(500);
+		//$("#rsDv"+rs_cpage).toggle( "slide", 500 );
+	};
+	
+	$( ".recommendBtnP" ).click(function() {
+		getRecommendStore("P");
+	});
+	
+	$( ".recommendBtnN" ).click(function() {
+		getRecommendStore("N");
+	});
+	
+
+	// 좋아요
+	$( ".like_icon" ).click(function() {
+		like(this);
+	});
+	// 좋아요 취소
+	$( ".like_icon_on" ).click(function() {
+		like(this);
+	});
+
+});
+</script>

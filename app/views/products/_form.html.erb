@@ -41,6 +41,18 @@
     	<%= f.text_field :url, :class => 'text_field' %>
     </div>
   </div>
+  <div class="control-group">
+    <%= f.label :use_yn, "사용여부", :class => 'control-label' %>
+    <div class="controls">
+    	<%= f.text_field :use_yn, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :style_type, "스타일구분", :class => 'control-label' %>
+    <div class="controls">
+    	<%= f.text_field :style_type, :class => 'text_field' %>
+    </div>
+  </div>
 
   <div class="form-actions">
     <%= f.submit "상품등록", :class => 'btn btn-primary' %>

@@ -4,9 +4,13 @@ PaffyA::Application.routes.draw do
   match 'comments/commentListCallback', to: 'board_comments#commentListCallback'
   match 'comments/writeCallback', to: 'board_comments#writeCallback'
   match 'admin/setColorCallback', to: 'admin#setColorCallback'
+  match 'admin/removeBgColorCallback', to: 'admin#removeBgColorCallback'
   match 'admin/removeBgCallback', to: 'admin#removeBgCallback'
   match 'admin/productList', to: 'admin#productList'
   match 'admin/productListCallback', to: 'admin#productListCallback'
+  match 'admin/updateProductCallback', to: 'admin#updateProductCallback'
+  match 'admin/insertImglistCallback', to: 'admin#insertImglistCallback'
+  
 
   #get 'store/topstore'
   match 'store/topstore', to: 'store#topstore'
@@ -41,11 +45,14 @@ PaffyA::Application.routes.draw do
   get 'admin/getLinkpriceUrl'
   match 'getLinkpriceUrl', to: 'admin#getLinkpriceUrl'
 
-  get 'item/getProductApi'
-  match 'getProductApi', to: 'item#getProductApi'
+  get 'item/getProductList'
+  match 'item/getProductList', to: 'item#getProductList'
   
   get 'item/getShopStyleCallback'
   match 'getShopStyleCallback', to: 'item#getShopStyleCallback'
+  
+  get 'item/removeItemCallback'
+  match 'item/removeItemCallback', to: 'item#removeItemCallback'
   
   get 'products/post'
   match 'products/post', to: 'products#post'

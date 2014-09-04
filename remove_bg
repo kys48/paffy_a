@@ -1,0 +1,29 @@
+#!/bin/bash
+
+IMG_PATH=$1
+IMG_NAME=$2
+TARGET_IMG_PATH=$3
+THRESHOLD=$4
+TARGET_IMG_PATH_NAME=$3$2
+TARGET_IMG_TMP_PATH_NAME=$3tmp/$2
+cp -f $1$2 $3tmp/$2
+
+convert $3tmp/$2 \( +clone -fx 'p{0,0}' \)  -compose Difference  -composite   -modulate 100,0  +matte  $3tmp/$2_difference.png
+
+convert $3tmp/$2_difference.png -bordercolor white -border 1x1 -matte -fill none -fuzz 7% -draw 'matte 1,1 floodfill' -shave 1x1 $3tmp/$2_removed_black.png
+
+composite  -compose Dst_Over -tile pattern:checkerboard $3tmp/$2_removed_black.png $3tmp/$2_removed_black_check.png
+
+convert $3tmp/$2_removed_black.png -channel matte -separate  +matte $3tmp/$2_matte.png
+
+convert $3tmp/$2_matte.png -negate -blur 0x1 $3tmp/$2_matte-negated.png
+
+convert $3tmp/$2_matte.png -morphology Erode Diamond $3tmp/$2_erode_matte.png
+
+composite -compose CopyOpacity $3tmp/$2_erode_matte.png $3tmp/$2 $3tmp/$2_finished.png
+
+convert $3tmp/$2_finished.png -bordercolor white -border 1x1 -matte -fill none -fuzz  ${THRESHOLD}% -draw 'matte 1,1 floodfill' -shave 1x1 $3$2
+
+convert $3$2 -fuzz 2% -transparent white $3$2
+
+rm -rf $3tmp/*

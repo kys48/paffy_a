@@ -67,7 +67,7 @@ class User < ActiveRecord::Base
       # 이미지 저장
       img_original = auth.info.image
       
-      if img_original
+      if (user.img_file_name==nil||user.img_file_name=="") && img_original
         
         dataFilePath = "/public/data/user/"
         product_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"

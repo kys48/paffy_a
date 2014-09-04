@@ -33,9 +33,10 @@ PaffyA::Application.configure do
   config.assets.compress = false
 
   # Expands the lines which load the assets
-  config.assets.debug = true
+  config.assets.debug = false
   config.assets.logger = false
   config.log_level = :error 
+  #debug, info, warn, error, and fatal
   
   Paperclip.options[:command_path] = "C:/ImageMagick"
   
