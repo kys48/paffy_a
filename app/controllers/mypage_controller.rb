@@ -113,12 +113,56 @@ class MypageController < ApplicationController
 #    else
 #      redirect_to '/log_in'
 #    end
-    
-
   end
   
+	def setting
+		@session_user_id = session[:user_id]||""
+		@user = User.new
+		if @session_user_id && @session_user_id!=""
+			@user = User.find(@session_user_id)
+			
+			respond_to do |format|
+				format.html
+			end
+			
+		else
+			redirect_to '/log_in'
+		end
+		
+	end
+	
+	def editProfile
+		@user = User.find(params[:id])
+
+		respond_to do |format|
+			if @user.update_attributes(params[:user])
+				format.html { redirect_to '/mypage/setting', notice: '회원정보를 수정하였습니다.' }
+				format.json { render json: @user, status: :created, location: @user }
+			else
+				format.html { render action: "setting" }
+				format.json { render json: @user.errors, status: :unprocessable_entity }
+			end
+		end
+	end
   
   
+  # 프로필 ajax
+  def checkValidCallback
+    session_user_id	= session[:user_id]
+    stat	= params[:stat]
+    val	= params[:val]
+    status = true
+    
+    count_user = User.where("#{stat}='#{val}' AND id!=#{session_user_id}").count
+    
+    if count_user>0
+    	status = false
+    end
+    
+    respond_to do |format|
+      format.json { render :json => { status: status }.to_json }
+    end
+  end
   
   
   private

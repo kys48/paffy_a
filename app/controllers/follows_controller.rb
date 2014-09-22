@@ -7,6 +7,8 @@ class FollowsController < ApplicationController
     follow_type = params[:follow_type]
 
     count = Follow.where(user_id: user_id, follow_id: follow_id).count
+    
+    follow_user = User.find(follow_id)
 
     status = true
     
@@ -15,7 +17,7 @@ class FollowsController < ApplicationController
     follow = Follow.new
     follow.user_id = user_id
     follow.follow_id = follow_id
-    follow.follow_type = follow_type
+    follow.follow_type = follow_user.user_type
     
     if count>0
       Follow.where(user_id: user_id, follow_id: follow_id).destroy_all

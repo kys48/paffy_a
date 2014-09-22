@@ -14,12 +14,16 @@ PaffyA::Application.routes.draw do
 
   #get 'store/topstore'
   match 'store/topstore', to: 'store#topstore'
+  match 'store/storeListCallback', to: 'store#storeListCallback'
   
   #get 'follows/put'
   match 'follows/put', to: 'follows#put'
 
   #get 'mypage/myfeed'
   match 'mypage/myfeed', to: 'mypage#myfeed'
+  match 'mypage/setting', to: 'mypage#setting'
+  match 'mypage/checkValidCallback', to: 'mypage#checkValidCallback'
+  match 'mypage/editProfile', to: 'mypage#editProfile'
   
   #get 'admin/getNaverShopApi'
   match 'getNaverShopApi', to: 'admin#getNaverShopApi'

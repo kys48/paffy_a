@@ -113,6 +113,16 @@ $(function(){
 <script type="text/javascript">
 // 스크랩, 좋아요
 function getItem(get_type,item_type,ref_id){
+    if (get_type == 'S'){
+	    var doc = document.body.createTextRange();
+	    doc.moveToElementText(document.getElementById("itemCaption"));
+	    doc.select();
+	    doc.execCommand('copy');
+	    $('#popupContainerScrap').hide();
+	    alert("내용이 클립보드에 복사되었습니다. Ctrl+v를 눌러 사용하세요.");
+    }
+
+<%	if @session_user_id && @session_user_id!="" %>
     if(semafors['ajax'] == true)
         return;
         
@@ -144,14 +154,13 @@ function getItem(get_type,item_type,ref_id){
             //notify('error', TranslationLabels['could_not_complete_request']);
         }
     });
-    
-    if (get_type == 'S'){
-	    var doc = document.body.createTextRange();
-	    doc.moveToElementText(document.getElementById("itemCaption"));
-	    doc.select();
-	    doc.execCommand('copy');
-	    alert("내용이 클립보드에 복사되었습니다. Ctrl+v를 눌러 사용하세요.");
-    }
+<%	else %>
+	if (get_type == 'L'){
+		login_pop(document.location.href);
+	}
+<%	end %>
+
+
 }
 
 // 찜하기
@@ -355,7 +364,7 @@ function getItemList(){
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
 									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
-									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
+									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
 									+ priceStr + "&nbsp;"
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
 									+ '</div>'
@@ -399,10 +408,7 @@ function getItemList(){
 
 // 댓글 등록
 function writeComment(){
-<%
-	if @session_user_id && @session_user_id!="" 
-%>
-	
+<%	if @session_user_id && @session_user_id!=""  %>
 	var comment_contents = $("#comment_contents").val();
 	if(comment_contents==""){
 		alert("댓글 내용을 입력하세요");
@@ -442,13 +448,9 @@ function writeComment(){
 		});
 		
 	}
-<%
-	else
-%>
+<%	else %>
 	login_pop(document.location.href);
-<%
-	end
-%>
+<%	end %>
 }
 
 
@@ -526,11 +528,15 @@ function getCommentList(){
 					$.each(comments, function (index, comment) {
 						var li = ''
 						+ '<div style="border-bottom:1px solid #cccccc; padding-top:5px;">'
-						+ '	<div style="float:left;width:60px;height:60px;">'
-						+ '<a href="/mypage/'+comment.profile_id+'"><img src="/data/user/thumb/'+comment.img_file_name+'" class="img-circle" style="width:45px;height:45px;"/></a>'
-						+ '	</div>'
+						+ '	<div style="float:left;width:60px;height:60px;">';
+						if(comment.img_file_name!=""){
+							li += '<a href="/mypage/'+comment.profile_id+'"><img src="/data/user/thumb/'+comment.img_file_name+'" class="img-circle" style="width:45px;height:45px;"/></a>';
+						} else {
+							li += '<a href="/mypage/'+comment.profile_id+'"><img src="/images/common/profile_u_sm.png" class="img-circle" style="width:45px;height:45px;"/></a>';
+						}
+						li += '	</div>'
 						+ '	<div style="float:left;width:300px;">'
-						+ '<a href="/mypage/'+comment.profile_id+'" class="blue">'+comment.user_name+'</a>님이 3일 전에 작성하였습니다.<br/>'
+						+ '<a href="/mypage/'+comment.profile_id+'" class="blue">'+comment.user_name+'</a>님이 '+comment.created_at_str+' 전에 작성하였습니다.<br/>'
 						+ comment.contents
 						+ '	</div>'
 						+ '	<div style="float:right;width:30px;">';
@@ -563,10 +569,9 @@ function getCommentList(){
 	});
 }
 
+</script>
 
-
-
-/*
+<script language="javascript">
 window.fbAsyncInit = function() {
 	FB.init({
 		appId      : '<%=FACEBOOK_APP_ID%>',
@@ -615,17 +620,17 @@ function streamPublish(){
 		}
     });
 }
-*/
+
 
 // 이건어때?
 function showStream(){
-    share();
-/*    
+//    share();
+    
     FB.api('/me/objects/paffy_share:fashion', function(response) {
         //console.log(response.id);
         streamPublish();
     });
-*/    
+   
 }
 
 // facebook 공유
@@ -836,10 +841,10 @@ function shareKakao(){
 	<span id="cnt_like"><%= @cnt_like%></span>
 </button>
             	
-<button type="button" class="btn btn-small btn-default" onClick="showStream();">
+<!--button type="button" class="btn btn-small btn-default" onClick="showStream();">
 	<i class="icon-comment"></i>
 	이건어때?
-</button>
+</button-->
 
 <button type="button" class="btn btn-small btn-default" onClick="share();">
 	<i class="icon-user"></i>
@@ -1076,7 +1081,7 @@ function shareKakao(){
 							 		<img src="/data/product/medium/<%= product.img_file_name%>" onClick="document.location.href='/products/<%= product.id%>'" style="cursor:pointer; width:170px; height:170px;">
 							 	</div>
 							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:170px; height:70px;">
-							 		<a href="javascript:goProductUrl('<%=product.url%>','<%=product.merchant%>')"><span style="color:#000000"><%= product.subject%></span></a>
+							 		<a href="javascript:goProductUrl('<%=product.url%>','<%=product.merchant%>','product')"><span style="color:#000000"><%= product.subject%></span></a>
 							 		<br/>
 							 		<%= price_str%>&nbsp;
 							 		<a href="/mypage/<%=product.profile_id%>" style="color:#0088CC"><%=product.profile_id%></a>

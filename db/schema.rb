@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140902120734) do
+ActiveRecord::Schema.define(:version => 20140919064814) do
 
   create_table "board_comments", :force => true do |t|
     t.string   "comment_type"
@@ -66,14 +66,14 @@ ActiveRecord::Schema.define(:version => 20140902120734) do
     t.string   "subject"
     t.text     "contents"
     t.integer  "hit"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.string   "use_yn",           :limit => 10
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.string   "img_file_name"
     t.string   "img_content_type"
     t.integer  "img_file_size"
     t.datetime "img_updated_at"
     t.string   "view_main"
-    t.string   "use_yn"
   end
 
   create_table "follows", :force => true do |t|
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(:version => 20140902120734) do
     t.string   "cate_code"
     t.string   "color_code_o",     :limit => 10
     t.string   "color_code_s",     :limit => 10
-    t.string   "store_type"
+    t.string   "store_type",       :limit => 10
     t.string   "subject",          :limit => 1000
     t.string   "price",            :limit => 20
     t.string   "sale_price",       :limit => 20
@@ -145,21 +145,28 @@ ActiveRecord::Schema.define(:version => 20140902120734) do
     t.string   "passwd"
     t.string   "email"
     t.string   "user_name"
-    t.string   "user_type",        :limit => 10
+    t.string   "user_type",         :limit => 10
+    t.string   "store_type",        :limit => 10
     t.string   "provider"
     t.string   "uid"
     t.string   "fb_name"
     t.string   "oauth_token"
     t.string   "oauth_expires_at"
     t.string   "passwd_salt"
-    t.string   "url",              :limit => 500
-    t.string   "use_yn",           :limit => 2
+    t.string   "url",               :limit => 500
+    t.string   "use_yn",            :limit => 2
+    t.string   "unique_key"
     t.string   "img_file_name"
     t.string   "img_content_type"
     t.integer  "img_file_size"
     t.datetime "img_updated_at"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.string   "introduce"
+    t.text     "contents"
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+    t.string   "facebook_open"
+    t.string   "facebook_share"
+    t.string   "kakao_store_share"
   end
 
   create_table "wishes", :force => true do |t|

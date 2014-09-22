@@ -2,8 +2,12 @@
 
 require 'rubygems'
 require 'RMagick'
+require 'nokogiri'
+require 'uri'
+require 'erb'
 include Magick
 include Colorscore
+include ERB::Util
 
 class CollectionsController < ApplicationController
   layout 'collection'
@@ -106,60 +110,71 @@ class CollectionsController < ApplicationController
     end
   end
   
-  # 상품 상세정보
-  def pshow
-    @session_user_id = session[:user_id]||""
-    product_id = params[:id]
-    @product = Product.find(product_id)
-    @user = User.new
+	# 상품 상세정보
+	def pshow
+		@session_user_id = session[:user_id]||""
+		product_id = params[:id]
+		@product = Product.find(product_id)
+		@user = User.new
     
-    if @session_user_id && @session_user_id!=""
-      @session_user = User.find(@session_user_id)
-    end
+		if @session_user_id && @session_user_id!=""
+			@session_user = User.find(@session_user_id)
+		end
 
-    if @product.user_id 
-      @user = User.find(@product.user_id)
-    else
-      @user.profile_id = 'guest'
-      @user.user_name = 'guest'
-    end
+		if @product.user_id 
+			@user = User.find(@product.user_id)
+		else
+			@user.profile_id = 'guest'
+			@user.user_name = 'guest'
+		end
 
-    @currency_usd = 0
-    @currency_jpy = 0
-    @currency_eur = 0
-    @currency_gbp = 0
-    @currency_cny = 0
+		@currency_usd = 0
+		@currency_jpy = 0
+		@currency_eur = 0
+		@currency_gbp = 0
+		@currency_cny = 0
+		@currency_usd = GoogCurrency.usd_to_krw(1).to_i
+		@currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
+		@currency_eur = GoogCurrency.eur_to_krw(1).to_i
+		@currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
+		@currency_cny = GoogCurrency.cny_to_krw(1).to_i
+		  
+		# 좋아요 수 가져오기
+		@cnt_like = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id).count
+		
+		# 팔로우 여부 가져오기
+		@follow_count = Follow.where(user_id: @session_user_id, follow_id: @user.id).count
+		 
+		# 스크랩 수 가져오기
+		@cnt_scrap = Get.where(get_type: 'S', item_type: 'P', ref_id: product_id).count
+		 
+		# 찜 수 가져오기
+		#@cnt_wish = Wish.where(item_type: 'P', ref_id: product_id).count
+		 
+		# 조회수 증가
+		@product.hit += 1
+		@product.save! 
+		 
+		# 로그인 사용자의 좋아요 가져오기
+		@cnt_like_user = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id, user_id: session[:user_id]).count
 
-    @currency_usd = GoogCurrency.usd_to_krw(1).to_i
-    @currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
-    @currency_eur = GoogCurrency.eur_to_krw(1).to_i
-    @currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
-    @currency_cny = GoogCurrency.cny_to_krw(1).to_i
-  
-    # 좋아요 수 가져오기
-    @cnt_like = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id).count
+		# linkprice 변환 url 가져오기
+		xmlurl = "http://ac.linkprice.com/service/custom_link_xml/a_id/"+LINKPRICE_KEY+"/url/"+url_encode(@product.url)
+		xml = Nokogiri::XML(open(URI.parse(xmlurl)))
+		result = xml.search("result").inner_html.to_s
+		link_url = xml.search("url").inner_html.to_s
+	
+		@product_url = @product.url 
+		
+		if result=='S'
+			@product_url = link_url
+		end
 
-    # 팔로우 여부 가져오기
-    @follow_count = Follow.where(user_id: @session_user_id, follow_id: @user.id).count
-    
-    # 스크랩 수 가져오기
-    @cnt_scrap = Get.where(get_type: 'S', item_type: 'P', ref_id: product_id).count
-    
-    # 찜 수 가져오기
-    #@cnt_wish = Wish.where(item_type: 'P', ref_id: product_id).count
-    
-    # 조회수 증가
-    @product.hit += 1
-    @product.save! 
-    
-    # 로그인 사용자의 좋아요 가져오기
-    @cnt_like_user = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id, user_id: session[:user_id]).count
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @product }
-    end
-  end
+		respond_to do |format|
+			format.html # show.html.erb
+			format.json { render json: @product }
+		end
+	end
 
   # GET /collections/set
   # GET /collections/set.json
@@ -384,6 +399,7 @@ class CollectionsController < ApplicationController
     @collection.img_content_type = 'image/png'
     @collection.img_file_size = bg.filesize
     @collection.hit = 1
+    @collection.use_yn = 'R'
     @collection.save!
     
     # collections_products 저장
@@ -561,6 +577,7 @@ class CollectionsController < ApplicationController
     @collection.img_content_type = 'image/png'
     @collection.img_file_size = bg.filesize
     @collection.hit = 1
+    @collection.use_yn = 'R'
     @collection.save!
     
     # collections_products 저장

@@ -14,10 +14,17 @@
 <input type="hidden" id="currency_eur" value="<%=@currency_eur%>">
 <input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
 <input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
+<input type="hidden" id="price_stat" value="">
+<input type="hidden" id="store_type" value="<%=@store_type%>">
+<input type="hidden" id="color_code" value="">
+<input type="hidden" id="cate_code" value="">
+<input type="hidden" id="limit_hit" value="<%=@limit_hit%>">
+<input type="hidden" id="order_by" value="1">
+
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
 
         <div style="padding:10px 75px 0px 65px;">
-	        <div class="navbar">
+	        <div class="navbar"<% if params[:cmenu_sub]=="2" || params[:cmenu_sub]=="3" %> style="margin-bottom:0px;"<% end %> >
 	          <div class="navbar-inner">
 	            <div class="container">
 	              <ul class="nav">
@@ -29,6 +36,96 @@
 	            </div>
 	          </div>
 	        </div>
+	          
+<% if params[:cmenu_sub]=="2" || params[:cmenu_sub]=="3" %>
+	          <div id="searchNavi">
+
+<div id="smenu0" class="btn-group" style="margin-top:0px;">
+  <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+    <span id="smenu0_title">Category (All)</span>
+    <span class="caret"></span>
+  </a>
+  <ul class="btn-small dropdown-menu">
+	<li id="smenu0_sub_All" class="smenu0_sub active"><a href="javascript:searchCate('All');">All</a></li>
+	<li class="divider"></li>
+<%	@cateList.each_with_index do |cate,i| %>
+	<li id="smenu0_sub_<%=cate.c_cd%>" class="smenu0_sub"><a href="javascript:searchCate('<%=cate.c_cd%>');"><%=cate.c_name%></a></li>
+<%	end %>
+  </ul>
+</div>
+
+<div id="smenu1" class="btn-group" style="margin-top:0px;">
+	<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+		<span id="smenu1_title">Price (All)</span>
+		<b class="caret"></b>
+	</a>
+	<ul class="btn-small dropdown-menu">
+		<li id="smenu1_sub_0" class="smenu1_sub active"><a href="javascript:searchPrice(0);">All</a></li>
+		<li class="divider"></li>
+		<li id="smenu1_sub_1" class="smenu1_sub"><a href="javascript:searchPrice(1);">￦ 20,000 미만</a></li>
+		<li id="smenu1_sub_2" class="smenu1_sub"><a href="javascript:searchPrice(2);">￦ 20,000 ~ ￦ 50,000</a></li>
+		<li id="smenu1_sub_3" class="smenu1_sub"><a href="javascript:searchPrice(3);">￦ 50,000 ~ ￦100,000</a></li>
+		<li id="smenu1_sub_4" class="smenu1_sub"><a href="javascript:searchPrice(4);">￦100,000 ~ ￦200,000</a></li>
+		<li id="smenu1_sub_5" class="smenu1_sub"><a href="javascript:searchPrice(5);">￦200,000 ~ ￦500,000</a></li>
+		<li id="smenu1_sub_6" class="smenu1_sub"><a href="javascript:searchPrice(6);">￦500,000 이상</a></li>
+	</ul>
+</div>
+
+<div id="smenu2" class="btn-group" style="margin-top:0px">
+	<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+		<span>Color </span>
+		<span id="smenu2_title"></span>
+		<b class="caret"></b>
+	</a>
+	<ul class="btn-small dropdown-menu">
+		<li style="padding:10px;">
+<%
+colorlist = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
+ "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
+ "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
+
+colorlist.each_with_index do |color,i|
+%>
+<div id="color_<%=color%>" class="color_palette" style="float:left;cursor:pointer;width:20px;height:20px;margin:1px;font-weight:bold;border:2px solid #ffffff;color:#ffffff;background-color:#<%=color%>;" onClick="searchColor('<%=color%>');"></div>
+<%
+if (i+1)%5==0
+%><div style="clear:both"></div><%
+	end
+end	
+%>
+<div style="width:130px;color:#0088cc;text-align:right;cursor:pointer;" onClick="searchColor('');">clear</div>
+			
+		</li>
+	</ul>
+</div>
+
+<div id="smenu3" class="btn-group" style="margin-top:0px">
+	<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+		<span id="smenu3_title">Sort (Hit)</span>
+		<b class="caret"></b>
+	</a>
+	<ul class="btn-small dropdown-menu">
+		<li id="smenu3_sub_1" class="smenu3_sub active"><a href="javascript:searchSort(1);">Hit</a></li>
+		<li id="smenu3_sub_2" class="smenu3_sub"><a href="javascript:searchSort(2);">Just in</a></li>
+	</ul>
+</div>
+
+<% 	if params[:cmenu_sub]=="3" %>
+<div id="smenu4" class="btn-group" style="margin-top:0px">
+	<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+		<span id="smenu4_title">Site (All)</span>
+		<b class="caret"></b>
+	</a>
+	<ul class="btn-small dropdown-menu">
+		<li id="smenu4_sub_All" class="smenu4_sub active"><a href="javascript:searchStoreType('All');">All</a></li>
+		<li id="smenu4_sub_I" class="smenu4_sub"><a href="javascript:searchStoreType('I');">국내</a></li>
+		<li id="smenu4_sub_F" class="smenu4_sub"><a href="javascript:searchStoreType('F');">해외</a></li>
+	</ul>
+</div>
+<% 	end %>
+	          </div>
+<% end %>
+	        
         </div>
 			
 		<div id="products" class="products">
@@ -64,7 +161,7 @@
 									 		</div>
 									 		<div style="font-size:12px;color:#0088cc;padding:10px 0px 0px 10px;">
 										 		<% @store_list1.each_with_index do |store,i| %>
-										 		<div onClick="document.location.href='/mypage/<%=store.profile_id%>'" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
+										 		<div onClick="javascript:goProductUrl('<%=store.url%>','<%=store.profile_id%>','store');" style="cursor:pointer;padding-top:5px;"><%=(i+1)%>. <%=store.user_name%></div>
 										 		<% end %>
 									 		</div>
 								 		</div>
@@ -159,7 +256,7 @@
 							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/products/<%= collection.id%>'" style="cursor:pointer">
 							 	</div>
 							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">
-							 		<a href="javascript:goProductUrl('<%=collection.url%>','<%=collection.merchant%>')"><span style="color:#000000"><%= collection.subject%></span></a>
+							 		<a href="javascript:goProductUrl('<%=collection.url%>','<%=collection.merchant%>','product')"><span style="color:#000000"><%= collection.subject%></span></a>
 							 		<br/>
 							 		<%= price_str%>&nbsp;
 							 		<a href="/mypage/<%=collection.profile_id%>" style="color:#0088CC"><%=collection.profile_id%></a>
@@ -208,14 +305,99 @@ $(window).scroll(function(){
 var nextPage = 2;
 var searchYn = true;
 
+function init(){
+	nextPage = 1;
+	searchYn = true;
+	$("#itemList").empty();
+}
+
+// 정렬
+function searchSort(stat){
+	init();
+	var tit = "";
+	if (stat==1) tit = "Hit";
+	else if (stat==2) tit = "Just in";
+	$("#smenu3_title").html("Sort ("+tit+")");
+	$("#order_by").val(stat);
+	$(".smenu3_sub").removeClass("active");
+	$("#smenu3_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 카테고리 검색
+function searchCate(stat){
+	init();
+	$("#smenu0_title").html("Category ("+$("#smenu0_sub_"+stat+" a").html()+")");
+	$("#cate_code").val(stat);
+	$(".smenu0_sub").removeClass("active");
+	$("#smenu0_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 가격 검색
+function searchPrice(stat){
+	init();
+	$("#smenu1_title").html("Price ("+$("#smenu1_sub_"+stat+" a").html()+")");
+	$("#price_stat").val(stat);
+	$(".smenu1_sub").removeClass("active");
+	$("#smenu1_sub_"+stat).addClass("active");
+	itemList();
+}
+
+// 색상 검색
+function searchColor(code){
+	init();
+	if (code==""){
+		$("#smenu2_title").html("");
+		$("#smenu2_title").css("background-color","#"+code);
+		$("#smenu2_title").css("border","0px");
+	}else{
+		$("#smenu2_title").html("&nbsp;&nbsp;&nbsp;");
+		$("#smenu2_title").css("background-color","#"+code);
+		if (code=="ffffff"){
+			$("#smenu2_title").css("border","1px solid #cccccc");
+		}else{
+			$("#smenu2_title").css("border","0px");	
+		}
+	}
+	
+	$(".color_palette").css("border","2px solid #ffffff");
+	$("#color_code").val(code);
+	if(code!="") $("#color_"+code).css("border","2px solid #777777");
+	itemList();
+}
+
+// 국내,해외 검색
+function searchStoreType(stat){
+	init();
+	$("#smenu4_title").html("Site ("+$("#smenu4_sub_"+stat+" a").html()+")");
+	$("#store_type").val(stat);
+	$(".smenu4_sub").removeClass("active");
+	$("#smenu4_sub_"+stat).addClass("active");
+	itemList();
+}
+
 function itemList(){
+	var order = "hit desc";
+	if($("#order_by").val()=="1") order = "hit desc"; 
+	else if($("#order_by").val()=="2") order = "created_at desc";
+	
 	var postData = new Object();
     postData.page = nextPage;
+    postData.currency_usd = $("#currency_usd").val();
+	postData.currency_jpy = $("#currency_jpy").val();
+	postData.currency_eur = $("#currency_eur").val();
+	postData.currency_gbp = $("#currency_gbp").val();
+	postData.currency_cny = $("#currency_cny").val();
+	
     postData.type = '<%=@item_type%>';
-    postData.store_type = '<%=@store_type%>';
     postData.style_type = '<%=@style_type%>';
-    postData.limit_hit = 2;
-    postData.order = 'hit DESC';
+    postData.cate_code = $("#cate_code").val();
+	postData.price_stat = $("#price_stat").val();
+	postData.color_code = $("#color_code").val();
+	postData.store_type = $("#store_type").val();
+    postData.limit_hit = $("#limit_hit").val();
+    postData.order = order;
 	
 	if (searchYn){
 		layer_open_loading("loading_pop_layer",5,"N");
@@ -389,6 +571,13 @@ $(function() {
 		like(this);
 	});
 
+<% if params[:cmenu_sub]=="1" %>
+	slideshow.show( 2 );
+<% elsif params[:cmenu_sub]=="2" %>
+	slideshow.show( 0 );
+<% elsif params[:cmenu_sub]=="3" %>
+	slideshow.show( 3 );
+<% end %>
 });
 
 

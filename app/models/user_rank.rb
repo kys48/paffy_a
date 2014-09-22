@@ -1,3 +1,8 @@
+require 'will_paginate/per_page'
+require 'will_paginate/page_number'
+require 'will_paginate/collection'
+require 'active_record'
+
 class UserRank < ActiveRecord::Base
   attr_accessible :follow_count, :product_count, :rank, :store_type, :user_id, :user_type
   

@@ -132,9 +132,8 @@ function follow(){
         success : function(json){
         	$('#followDv').removeClass();
     		if(json.follow_status=='Y'){
-    			$('#followDv').html('<i class="icon-user"></i> <span style="font-size:12px; padding-left:10px;">스토어 Following</span>');
-    			$('#followDv').addClass('btn btn-default btn-inverse disabled');
-    			$('#followDv').attr('style','cursor:pointer;width:100%;text-align:left;');
+    			$('#followDv').html('<i class="icon-user"></i> <span style="font-size:12px; padding-left:10px;">스토어 Unfollow</span>');
+    			$('#followDv').addClass('btn btn-info');
     		}else{
     			$('#followDv').html('<i class="icon-user"></i> <span style="font-size:12px; padding-left:10px;">스토어 Follow</span>');
     			$('#followDv').addClass('btn btn-default btn-inverse');
@@ -148,6 +147,17 @@ function follow(){
 
 // 스크랩, 좋아요
 function getItem(get_type,item_type,ref_id){
+    if (get_type == 'S'){
+	    var doc = document.body.createTextRange();
+	    doc.moveToElementText(document.getElementById("itemCaption"));
+	    doc.select();
+	    doc.execCommand('copy');
+	    $('#popupContainerScrap').hide();
+	    alert("내용이 클립보드에 복사되었습니다. Ctrl+v를 눌러 사용하세요.");
+	    
+    }
+    
+<%	if @session_user_id && @session_user_id!="" %>	
     if(semafors['ajax'] == true)
         return;
         
@@ -179,14 +189,14 @@ function getItem(get_type,item_type,ref_id){
             //notify('error', TranslationLabels['could_not_complete_request']);
         }
     });
-    
-    if (get_type == 'S'){
-	    var doc = document.body.createTextRange();
-	    doc.moveToElementText(document.getElementById("itemCaption"));
-	    doc.select();
-	    doc.execCommand('copy');
-	    alert("내용이 클립보드에 복사되었습니다. Ctrl+v를 눌러 사용하세요.");
-    }
+
+<%	else %>
+	if (get_type == 'L'){
+		login_pop(document.location.href);
+	}
+<%	end %>
+
+
 }
 
 // 찜하기
@@ -351,7 +361,7 @@ function getItemList(){
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
 									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
-									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
+									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
 									+ priceStr + "&nbsp;"
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
 									+ '</div>'
@@ -514,7 +524,7 @@ function getCommentList(){
 	    	comments = json.comments;
 	    	cnt_comment = json.cnt_comment;
 	    	
-	    	$('#comment_count').html(cnt_comment+'개의 댓글이 있습니다');
+	    	$('#comment_count').html(cnt_comment);
 	    	$('#commentList').empty();
 
 	    	if(json.status){
@@ -522,11 +532,15 @@ function getCommentList(){
 					$.each(comments, function (index, comment) {
 						var li = ''
 						+ '<div style="border-bottom:1px solid #cccccc; padding-top:5px;">'
-						+ '	<div style="float:left;width:60px;height:60px;">'
-						+ '<a href="/mypage/'+comment.profile_id+'"><img src="/data/user/thumb/'+comment.img_file_name+'" class="img-circle" style="width:45px;height:45px;"/></a>'
-						+ '	</div>'
+						+ '	<div style="float:left;width:60px;height:60px;">';
+						if(comment.img_file_name!=""){
+							li += '<a href="/mypage/'+comment.profile_id+'"><img src="/data/user/thumb/'+comment.img_file_name+'" class="img-circle" style="width:45px;height:45px;"/></a>';
+						} else {
+							li += '<a href="/mypage/'+comment.profile_id+'"><img src="/images/common/profile_u_sm.png" class="img-circle" style="width:45px;height:45px;"/></a>';
+						}
+						li += '	</div>'
 						+ '	<div style="float:left;width:300px;">'
-						+ '<a href="/mypage/'+comment.profile_id+'" class="blue">'+comment.user_name+'</a>님이 3일 전에 작성하였습니다.<br/>'
+						+ '<a href="/mypage/'+comment.profile_id+'" class="blue">'+comment.user_name+'</a>님이 '+comment.created_at_str+' 전에 작성하였습니다.<br/>'
 						+ comment.contents
 						+ '	</div>'
 						+ '	<div style="float:right;width:30px;">';
@@ -560,6 +574,7 @@ function getCommentList(){
 }
 
 </script>
+
 <script language="javascript">
 
 window.fbAsyncInit = function() {
@@ -692,7 +707,7 @@ function shareKakaoLink(){
 <meta property="og:site_name"       content="paffy.com"/>
 <meta property="og:description"     content="<%= strip_tags(@product.subject)%>"/>
 <meta property="og:type"			content="paffy_share:fashion" />
-<meta property="og:image"     		content="<%= request_host%><%= @product.img.url(:original)%>"/>
+<meta property="og:image"     		content="<%= request_host%><%= @product.img.url(:medium)%>"/>
 <%= render :partial => '/common/header_bottom' %>
 
 <input type="hidden" id="currency_usd" value="<%=@currency_usd%>">
@@ -826,12 +841,12 @@ function shareKakaoLink(){
 
 <button type="button" class="btn btn-small btn-default" onClick="share();">
 	<i class="icon-user"></i>
-	facebook공유
+	facebook 공유
 </button>
 
 <button type="button" class="btn btn-small btn-default" onClick="shareKakao();">
 	<i class="icon-user"></i>
-	카카오스토리공유
+	카카오스토리 공유
 </button>
 </div>
 
@@ -857,7 +872,7 @@ function shareKakaoLink(){
             	
 				<div class="whiteBox" style="padding:0px;">
                 	<div class="items" style="text-align:center;">
-						<a href="javascript:goProductUrl('<%= @product.url%>','<%= @product.merchant%>');"><%= image_tag @product.img.url(:original), id: "set#{@product.id}", class: "setImage" %></a>
+						<a class="productLink" href="<%= @product_url%>" target="_blank"><%= image_tag @product.img.url(:original), id: "set#{@product.id}", class: "setImage" %></a>
 					</div>
 				</div>
 				
@@ -868,25 +883,12 @@ function shareKakaoLink(){
 			
 			<!-- 오른쪽 내용 시작-->
 			<div style="float:right; text-align:left; width:400px; font-size:12px;">
-				<div style="font-weight:bold;font-size:18px;color:#000000;"><%= strip_tags(@product.subject) %></div>
+				<div style="font-weight:bold;font-size:20px;color:#000000;" class="title_font"><%= strip_tags(@product.subject) %></div>
 
             	<div style="padding-top:10px;">
-            		<div style="float:left;">
-<%
-	if @user.img_file_name && @user.img_file_name!=""
-%>
-<a href="/mypage/<%= @user.profile_id%>"><img src="/data/user/thumb/<%= @user.img_file_name%>" class="img-polaroid" style="width:50px;height:50px;"/></a>
-<%
-	else
-%>
-<a href="/mypage/<%= @user.profile_id%>"><img src="/images/common/profile_u_sm.png" class="img-polaroid" style="width:50px;height:50px;"></a>
-<%
-	end
-%>
-					</div>
 					
-					<div style="float:left;padding-left:10px;">
-            		<%= link_to @user.profile_id, '/mypage/'+@user.profile_id, class: "blue" %>에서
+					<div style="text-align:left;">
+            		<strong><%= link_to @user.profile_id, '/mypage/'+@user.profile_id, class: "blue" %></strong> 에서
 <%
 	createTime = (Time.zone.now - @product.created_at).to_i
 	createTimeStr =  (Time.zone.now - @product.created_at).to_i / 1.second
@@ -904,50 +906,63 @@ function shareKakaoLink(){
 		createTimeStr =  ((Time.zone.now - @product.created_at).to_i / 1.year).to_s + "년"
 	end
 %>
-<%=createTimeStr%> 전에 등록되었습니다.
-<br/>
-조회 <%= @product.hit%>, 좋아요 <%= @cnt_like%>
-
+<strong style="color:black"><%=createTimeStr%></strong> 전에 등록되었습니다.
 					</div>
-					<div style="clear:both"></div>
-					<div style="padding-top:10px;font-weight:bold;color:black;font-size:18px;">
+					<div style="text-align:left;">
+						조회 <strong style="color:black"><%= @product.hit%></strong>, 좋아요 <strong style="color:black"><%= @cnt_like%></strong>
+					</div>
+					<div style="text-align:left;padding-top:10px;font-weight:bold;color:black;font-size:18px;">
 						<%= price_str%>
 					</div>
+
 					
 					<div style="padding-top:5px;">
-						<button type="button" class="btn btn-default btn-inverse" onClick="goProductUrl('<%= @product.url%>','<%= @product.merchant%>');" style="width:100%;text-align:left;">
+						<a type="button" class="btn btn-default btn-inverse" href="<%= @product_url%>" target="_blank" style="width:370px;text-align:left;">
 							<i class="icon-shopping-cart"></i>
-							<span style="font-size:12px; padding-left:10px;">스토어 홈페이지로 사러가기</span>
-						</button>
+							<span style="font-size:12px; padding-left:10px;">상품 상세정보 확인 (Buy)</span>
+						</a>
 					</div>
 					<div style="padding-top:5px;">
-						<button type="button" class="btn btn-default btn-inverse" onClick="document.location.href='/mypage/<%=@user.profile_id%>';" style="width:100%;text-align:left;">
+						<a type="button" class="btn btn-default btn-inverse" onClick="document.location.href='/mypage/<%=@user.profile_id%>';" style="width:370px;text-align:left;">
 							<i class="icon-list"></i>
 							<span style="font-size:12px; padding-left:10px;">스토어의 다른 상품 보기</span>
-						</button>
+						</a>
 					</div>
 					
 					<div style="padding-top:5px;">
-<% if @session_user_id != @user.id %>
-	<% if @follow_count>0 %>
-						<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="follow();" style="cursor:pointer;width:100%;text-align:left;">
+<%	if @session_user_id && @session_user_id!="" %>
+<%		if @session_user_id != @user.id %>
+<%			if @follow_count>0 %>
+						<a id="followDv" type="button" class="btn btn-info" onClick="follow();" style="width:370px;text-align:left;">
 							<i class="icon-user"></i>
-							<span style="font-size:12px; padding-left:10px;">스토어 Following</span>
-						</button>
-	<% else %>
-						<button id="followDv" type="button" class="btn btn-default btn-inverse" onClick="follow();" style="width:100%;text-align:left;">
+							<span style="font-size:12px; padding-left:10px;">스토어 Unfollow</span>
+						</a>
+<%			else %>
+						<a id="followDv" type="button" class="btn btn-default btn-inverse" onClick="follow();" style="width:370px;text-align:left;">
 							<i class="icon-user"></i>
 							<span style="font-size:12px; padding-left:10px;">스토어 Follow</span>
-						</button>
-	<% end %>
-<% end %>						
+						</a>
+<%			end %>
+<%		end %>
+<%	else %>
+						<a id="followDv" type="button" class="btn btn-default btn-inverse" onClick="login_pop(document.location.href);" style="width:370px;text-align:left;">
+							<i class="icon-user"></i>
+							<span style="font-size:12px; padding-left:10px;">스토어 Follow</span>
+						</a>						
+<%	end %>
 
+					</div>
+					<div style="padding-top:10px;color:black;font-size:12px;">
+						<strong class="title_font" style="font-size:16px">Shopping Tip</strong>
+						<br>
+						등록시 작성된 제목과 가격은 현재와 다를 수 있습니다.<br>
+						상품 상세정보 및 품절여부를 확인해 주세요.
 					</div>
 
             	</div>
             	
             	<div style="padding-top:10px;">
-					<strong id="comment_count" style="color:black"></strong>
+					<strong id="comment_count" style="color:black"></strong>개의 댓글이 있습니다
 					<br/>
 					<textarea id="comment_contents" name="comment_contents" maxlength="500" style="width:380px;height:30px;"></textarea>
 					<br/>

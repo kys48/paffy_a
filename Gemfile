@@ -7,10 +7,9 @@ gem 'rails', '3.2.18'
 
 gem 'mysql2'
 
-
 # Gems used only for assets and not required
 # in production environments by default.
-group :assets do
+#group :assets do
   gem 'sass-rails',   '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'
 
@@ -31,17 +30,13 @@ group :assets do
   
   #gem 'bootstrap_form'
   
-end
-
-
+#end
 
 
 gem 'jquery-rails'
 
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', '~> 3.0.0', :require => "bcrypt"
-#gem "bcrypt-ruby", :require => "bcrypt"
-#gem 'bcrypt-ruby', '~> 2.1.2', :require => "bcrypt"
 
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'
@@ -56,15 +51,12 @@ gem 'bcrypt-ruby', '~> 3.0.0', :require => "bcrypt"
 # gem 'debugger'
 
 gem 'paperclip'
-#gem 'paperclip', :git => "git://github.com/thoughtbot/paperclip.git"
-#gem 'paperclip', :git => 'git://github.com/thoughtbot/paperclip.git', :branch => 'rails3'
-
 gem 'thin'
-
 gem 'devise', '2.2.8'
 gem 'omniauth-facebook'
 
-gem 'rmagick', :require => false
+#gem 'rmagick', :require => false
+gem 'rmagick', '2.13.2', :require => false
 
 #gem 'skimlinks'
 gem 'roo'

@@ -25,6 +25,7 @@ class SessionsController < ApplicationController
   # facebook 로그인
   def fcreate
     user = User.from_omniauth(env["omniauth.auth"])
+
     session[:user_id] = user.id
     session[:provider] = user.provider
     session[:profile_id] = user.profile_id
@@ -101,6 +102,7 @@ class SessionsController < ApplicationController
     @user = User.new(params[:user])
     @user.user_type = "U"
     @user.use_yn = "R"  # 대기
+    @user.unique_key = @user.email
     
     @backurl = params[:backurl]
     @target = params[:target]

@@ -264,7 +264,8 @@ class ProductsController < ApplicationController
 		if prev_page<1
 			prev_page = 1
 		end
-		
+
+=begin		
 		page_str  = '<div class="btn-toolbar" style="text-align:center">'
 		page_str += '	<div class="btn-group">'
 		page_str += '		<a class="btn" href="javascript:'+func_name+'('+prev_page.to_s+');">&nbsp;<i class="icon-chevron-left"></i>&nbsp;</a>'
@@ -279,6 +280,25 @@ class ProductsController < ApplicationController
 		
 		page_str += '		<a class="btn" href="javascript:'+func_name+'('+next_page.to_s+');">&nbsp;<i class="icon-chevron-right"></i>&nbsp;</a>'
 		page_str += '	</div>'
+		page_str += '</div>'
+=end
+		
+		page_str  = '<div class="pagination pagination-small pagination-centered">'
+		page_str += '	<ul>'
+		page_str += '		<li><a href="javascript:'+func_name+'(1);">&nbsp;<i class="icon-backward"></i>&nbsp;</a></li>'
+		page_str += '		<li><a href="javascript:'+func_name+'('+prev_page.to_s+');">&nbsp;<i class="icon-chevron-left"></i>&nbsp;</a></li>'
+		
+		(spage..epage).each do |i|
+			if cpage.to_i==i
+				page_str += '		<li><a class="btn-warning" href="javascript:'+func_name+'('+i.to_s+');">'+i.to_s+'</a></li>'
+			else
+				page_str += '		<li><a href="javascript:'+func_name+'('+i.to_s+');">'+i.to_s+'</a></li>'
+			end
+		end
+		
+		page_str += '		<li><a href="javascript:'+func_name+'('+next_page.to_s+');">&nbsp;<i class="icon-chevron-right"></i>&nbsp;</a></li>'
+		page_str += '		<li><a href="javascript:'+func_name+'('+total_page_count.to_s+');">&nbsp;<i class="icon-forward"></i>&nbsp;</a></li>'
+		page_str += '	</ul>'
 		page_str += '</div>'
 		
 		return page_str

@@ -19,56 +19,7 @@
 			<a name="top"></a>
 			<div class="freshdesignweb">
 			    <div class="image_grid portfolio_2col" style="padding-left:40px;">
-				    <ul id="itemList" class="portfolio_list">
-<%
-	rcnt = 0
-	@store_list.each do | store_list |
-		store = store_list[0]
-		products = store_list[1]
-		follow_count = store_list[2].to_i
-%>
-<li>
-	<div style="width:480px;height:300px;border:1px solid #cccccc;padding:10px;">
-	 	<table style="height:45px;">
-	 		<tr>
-	 			<td style="width:60px;text-align:left">
-	 				<% if store.img_file_name %>
-		 			<a href="javascript:goUrl('<%= store.url%>');"><img src="/data/user/thumb/<%= store.img_file_name%>" style="width:45px;height:45px;"></a>
-		 			<% else %>
-		 			<a href="javascript:goUrl('<%= store.url%>');"><img src="/images/common/top_store.png" style="width:45px;height:45px;"></a>
-		 			<% end %>
-	 			</td>
-	 			<td style="width:320px;text-align:left">
-	 				<a href="/mypage/<%=store.profile_id%>"><strong style="font-size:17px"><%= store.user_name%></strong></a>
-		 			<br/>
-		 			<%= store.cnt_product%> products,
-		 			<%= store.cnt_follower%> followers
-	 			</td>
-	 			<td style="width:100px;text-align:right;padding-right:7px;">
-	 				<% if follow_count>0 %>
-	 				<div id="cnt_scrap_<%=store.user_id%>" onclick="follow('<%=store.user_id%>');" class="bGray small" style="cursor:pointer; width:100px;">팔로잉</div>
-	 				<% else %>
-	 				<div id="cnt_scrap_<%=store.user_id%>" onclick="follow('<%=store.user_id%>');" class="bBlue small" style="cursor:pointer; width:100px;">팔로우하기</div>
-	 				<% end %>
-	 			</td>
-	 		</tr>
-	 	</table>
-	 	<div style="padding-top:10px;">
-			<% products.each do |product| %>
-	 		<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">
- 				<a href="/collections/pshow/<%=product.id%>"><img src="/data/product/medium/<%= product.img_file_name%>" style="width:110px; height:110px;"></a>
-	 		</div>
-	 		<% end %>
-	 		<div style="clear:both"></div>
-	 	</div>
-	 	
-	</div>
-</li>
-<%
-		rcnt += 1
-	end
-%>
-
+				    <ul id="storeList" class="portfolio_list">
 				    </ul>
 			    </div>
 				<div id="loadingDiv" style="display:none; text-align:center;padding:10px;font-size:15px;">
@@ -83,6 +34,142 @@
 	<a href="#top" id="top-link" class="floatingLink">top</a>
 
 <script language="JavaScript">
+$(function() {
+	storeList();
+});
+
+$(window).scroll(function(){
+	if($(window).scrollTop() == $(document).height() - $(window).height()){
+		storeList();
+	}
+});
+
+var nextPage = 1;
+var searchYn = true;
+
+function init(){
+	nextPage = 1;
+	searchYn = true;
+	$("#storeList").empty();
+}
+
+
+function storeList(){
+	var order = "rank ASC, user_id DESC";
+	//if($("#order_by").val()=="1") order = "rank ASC, user_id DESC"; 
+	//else if($("#order_by").val()=="2") order = "created_at desc";
+
+	var postData = new Object();
+    postData.page = nextPage;
+	postData.per_page = 8;
+	postData.store_type = '<%=@store_type%>';
+    postData.order = order;
+
+	if (searchYn){
+		layer_open_loading("loading_pop_layer",5,"N");
+		searchYn = false;	
+		setTimeout( function() {
+			// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+			
+			$.ajax({
+			    url     : '/store/storeListCallback',
+			    type    : 'post',
+			    dataType: 'json',
+			    data	: $.param(postData),
+			    async   : false,  
+			    success : function(json){
+			    	if(json.status){
+				    	stores = json.store_list;
+	
+				    	layer_close_loading("loading_pop_layer");
+		
+						if(stores.length>0) {
+							nextPage++;
+							
+							$.each(stores, function (index, store_list) {
+								store = store_list[0];
+								products = store_list[1];
+								follow_count = store_list[2];
+
+var li = '<li>'
++ '	<div style="width:480px;height:300px;border:1px solid #cccccc;padding:10px;">'
++ '	 	<table style="height:45px;">'
++ '	 		<tr>'
++ '	 			<td style="width:60px;text-align:left">';
+
+if(store.img_file_name!="" && store.img_file_name != null){
+	li += '<a href="javascript:goUrl(\''+store.url+'\');"><img src="/data/user/thumb/'+store.img_file_name+'" style="width:45px;height:45px;"></a>';
+} else {
+	li += '<a href="javascript:goUrl(\''+store.url+'\');"><img src="/images/common/top_store.png" style="width:45px;height:45px;"></a>';
+}
+
+li += '	 			</td>'
++ '	 			<td style="width:320px;text-align:left">'
++ '	 				<a href="/mypage/'+store.profile_id+'"><strong style="font-size:17px">'+store.user_name+'</strong></a>'
++ '		 			<br/>'
++ store.cnt_product + ' products,'
++ store.cnt_follower + ' followers'
++ '	 			</td>'
++ '	 			<td style="width:100px;text-align:right;padding-right:7px;">';
+
+if(follow_count>0){
+	li += '<div id="cnt_scrap_'+store.user_id+'" onclick="follow(\''+store.user_id+'\');" class="bGray small" style="cursor:pointer; width:100px;">팔로잉</div>';
+} else {
+	li += '<div id="cnt_scrap_'+store.user_id+'" onclick="follow(\''+store.user_id+'\');" class="bBlue small" style="cursor:pointer; width:100px;">팔로우하기</div>';
+}
+
+li += '	 			</td>'
++ '	 		</tr>'
++ '	 	</table>'
++ '	 	<div style="padding-top:10px;">';
+
+$.each(products, function (index, product) {
+	li += ''
+	+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">'
+	+ '<a href="/collections/pshow/'+product.id+'"><img src="/data/product/medium/'+product.img_file_name+'" style="width:110px; height:110px;"></a>'
+	+ '</div>';
+});
+
+li += '	 		<div style="clear:both"></div>'
++ '	 	</div>'
++ '	</div>'
++ '</li>';
+								
+								$('#storeList').append(li);
+								searchYn = true;
+							});
+						} else {	// 결과값이 없을경우
+							searchYn = false;
+							if(nextPage==1){
+								$('#storeList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+							} else {
+								$('#storeList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">The End</li>');
+							}
+						}
+						
+			    	} else {
+			    		searchYn = false;
+			    		notify('error', json.msg);
+			    	}
+			    },
+			    error   : function(e){
+			        searchYn = false;
+			        semafors['ajax'] = false;
+			        //notify('error', TranslationLabels['could_not_complete_request']);
+			    }
+			});
+		}, 10 );
+	}
+}
+
+
+
+
 // 팔로우하기
 function follow(follow_id){
 <%
@@ -90,7 +177,6 @@ function follow(follow_id){
 %>	
     var postData = new Object();
     postData.follow_id = follow_id;
-    postData.follow_type = "U";
 
 	// ajax post 에서 세션 유지 시키기 위함
 	$.ajaxSetup({
@@ -153,4 +239,5 @@ function goUrl(url){
 	    }
 	});	
 }
+
 </script>

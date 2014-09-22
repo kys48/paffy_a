@@ -33,13 +33,19 @@ class ClipController < ApplicationController
     # 스토어 확인
     cnt_store1 = User.where(url: 'http://'+@item_domain, user_type: 'S').count
     cnt_store2 = User.where(email: @item_domain, user_type: 'S').count
+    cnt_store3 = User.where(unique_key: @item_domain).count
+    cnt_store4 = User.where(profile_id: @item_merchant).count
     
     if cnt_store1>0
       store = User.where(url: 'http://'+@item_domain, user_type: 'S').first
     elsif cnt_store2>0
       store = User.where(email: @item_domain, user_type: 'S').first
+    elsif cnt_store3>0
+      store = User.where(unique_key: @item_domain).first
+    elsif cnt_store4>0
+      store = User.where(profile_id: @item_merchant).first
     else
-      store = User.addStore(@item_domain,"")
+      store = User.addStore(@item_domain,"","","R")
     end
     
     
@@ -85,6 +91,8 @@ class ClipController < ApplicationController
       }
       bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
       bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+      
+      bg.write(RAILS_ROOT+dataFilePath+'removebg/'+product_file_name)
   
       bg.resize!(220,220)
       bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
@@ -113,7 +121,7 @@ class ClipController < ApplicationController
       @product.hit        = 1
       #@product.user_id    = session[:user_id]
       @product.user_id    = store.id
-      @product.use_yn     = 'Y'
+      @product.use_yn     = 'R'
       @product.merchant   = @item_merchant
 
       # 상품정보 저장

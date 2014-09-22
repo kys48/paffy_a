@@ -1,0 +1,390 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+
+<center>
+<div style="width:90%;text-align:left;padding-top:30px; ">
+	<!-- <form method="post" name="frm" action="/mypage/editProfile" onsubmit="return false;"> -->
+<%#= form_for(@user, :url => {:controller => :mypage, :method => :editProfile, :id => @user.id }, :html => {multipart: true, class: 'form-horizontal', name: 'frm' }) do |f| %>
+<%= form_for(@user, :url => '/mypage/editProfile?id='+@user.id.to_s, :html => {multipart: true, class: 'form-horizontal', name: 'frm', onsubmit: 'return false' }) do |f| %>
+
+	<input type="hidden" id="chk_email" name="chk_email" value="Y">
+	<input type="hidden" id="chk_profile_id" name="chk_profile_id" value="Y">
+	<input type="hidden" id="chk_password_id" name="chk_password_id" value="Y">
+	<%= f.hidden_field :facebook_open %>
+	<%= f.hidden_field :facebook_share %>
+	<%= f.hidden_field :kakao_story_share %>
+
+	<table border="0" width="100%">
+		<tr>
+			<td colspan="2" style="height:40px; font-size:16px; font-weight:bold;">Log in 정보</td>
+		</tr>
+		<tr>
+			<td>e-mail</td>
+			<td style="padding-top:5px;">
+				<%= f.text_field :email, class: 'check_valid', placeholder: "이메일을 입력하세요", maxlength: "200" %>
+				<span id="check_email_dv">
+					<i class="icon-ok" style="color:blue;font-size:20px;"></i>
+				</span>
+			</td>
+		</tr>
+		<tr>
+			<td>비밀번호</td>
+			<td style="padding-top:5px;padding-bottom:5px;">
+				<%= f.password_field :password, placeholder: "비밀번호를 입력하세요", maxlength: "20" %>
+<%#= f.password_field :password_confirmation, label: "비밀번호 확인", hide_label: true, class: "input-block-level", placeholder: "비밀번호 확인을 위해 한번 더 입력하세요" %>
+				
+				<span id="check_password_dv">
+					<!-- <i class="icon-ok" style="color:blue;font-size:20px;"></i> -->
+				</span>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="border-top:1px solid #CCCCCC; height:10px;"></td>
+		</tr>
+		<tr>
+			<td colspan="2" style="height:40px; font-size:16px; font-weight:bold;">Profile 정보</td>
+		</tr>
+		<tr>
+			<td>Profile ID</td>
+			<td style="padding-top:5px;">
+				<%= f.text_field :profile_id, class: 'check_valid', placeholder: "프로필 ID를 입력하세요", maxlength: "50" %>
+				<span id="check_profile_id_dv">
+					<i class="icon-ok" style="color:blue;font-size:20px;"></i>
+				</span>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top">Profile Image</td>
+			<td style="padding-top:5px;">
+				
+				<div id="profile_img_dv">
+			<% if @user.img_file_name %>
+				<img src="/data/user/medium/<%=@user.img_file_name%>" class="thumbnail">
+			<% else %>
+				<img src="/images/common/profile_u.png" class="thumbnail">
+			<% end %>
+				</div>
+				<div style="padding-top:5px;padding-bottom:10px;">
+					<%= f.file_field :img %>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Nick Name</td>
+			<td style="padding-top:5px;">
+				<%= f.text_field :user_name, placeholder: "닉네임을 입력하세요", maxlength: "100" %>
+			</td>
+		</tr>
+		<tr>
+			<td>한 줄 소개</td>
+			<td style="padding-top:5px;">
+				<%= f.text_field :introduce, placeholder: "30자 이내로 입력하세요", maxlength: "60", style: "width:400px;" %>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top">자기소개</td>
+			<td style="padding-top:5px;">
+				<%= f.text_area :contents, placeholder: "300자 이내로 입력하세요", maxlength: "600", style: "width:400px;height:70px;" %>
+			</td>
+		</tr>
+		<tr>
+			<td>웹사이트</td>
+			<td style="padding-top:5px;padding-bottom:5px;">
+				<%= f.text_field :url, placeholder: "웹사이트(홈페이지,블로그,SNS) 주소를 입력하세요", style: "width:400px;" %>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="border-top:1px solid #CCCCCC; height:10px;"></td>
+		</tr>
+		<tr>
+			<td colspan="2" style="height:40px; font-size:16px; font-weight:bold;">SNS 설정</td>
+		</tr>
+		<tr>
+			<td valign="top">Facebook</td>
+			<td style="padding-top:5px;">
+			<div>
+				<div style="float:left; width:250px;">
+					Facebook Timeline에 활동내용 게시하기
+				</div>
+				<div style="float:left;padding-left:10px;">
+<%	if @user.facebook_share=="Y" %> 
+					<button id="chk_facebook_share" type="button" class="btn btn-info" style="cursor:pointer;text-align:left;width:50px;">
+						<span style="font-size:12px;">ON</span>
+					</button>
+<%	else %>
+					<button id="chk_facebook_share" type="button" class="btn" style="cursor:pointer;text-align:left;width:50px;">
+						<span style="font-size:12px;">OFF</span>
+					</button>
+<%	end %>
+
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<div style="padding-top:5px;">
+				<div style="float:left; width:250px;">
+					프로필 페이지에 Facebook 주소 공개하기
+				</div>
+				<div style="float:left;padding-left:10px;">
+<%	if @user.facebook_open=="Y" %> 
+					<button id="chk_facebook_open" type="button" class="btn btn-info" style="cursor:pointer;text-align:left;width:50px;">
+						<span style="font-size:12px;">ON</span>
+					</button>
+<%	else %>
+					<button id="chk_facebook_open" type="button" class="btn" style="cursor:pointer;text-align:left;width:50px;">
+						<span style="font-size:12px;">OFF</span>
+					</button>
+<%	end %>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top">Kakao</td>
+			<td>
+			<div style="padding-top:5px;">
+				<div style="float:left; width:250px;">
+					Kakao 스토리에 활동내용 게시하기
+				</div>
+				<div style="float:left;padding-left:10px;">
+<%	if @user.kakao_story_share=="Y" %>
+					<button id="chk_kakao_story_share" type="button" class="btn btn-info" style="cursor:pointer;text-align:left;width:50px;">
+						<span style="font-size:12px;">ON</span>
+					</button>
+<%	else %>
+					<button id="chk_kakao_story_share" type="button" class="btn" style="cursor:pointer;text-align:left;width:50px;">
+						<span style="font-size:12px;">OFF</span>
+					</button>
+<%	end %>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="border-bottom:1px solid #CCCCCC; height:10px;"></td>
+		</tr>
+	</table>
+	
+	<div style="padding-top:10px;">
+		<button id="btn_submit" type="button" class="btn btn-default" style="cursor:pointer;text-align:left;">
+			<span style="font-size:12px;">수정하기</span>
+		</button>
+		<button id="btn_cancel" type="button" class="btn btn-default" style="cursor:pointer;text-align:left;">
+			<span style="font-size:12px;">취소하기</span>
+		</button>
+		<button id="btn_destroy" type="button" class="btn btn-default" style="cursor:pointer;text-align:left;">
+			<span style="font-size:12px;">탈퇴하기</span>
+		</button>	
+	</div>
+<% end %>
+	
+
+	
+</div>
+</center>
+
+		
+		
+		
+	</div>
+	
+<script type="text/javascript">
+
+
+$(function(){
+	
+	// profile 이미지 수정
+	$("#user_img").change(function(){
+	    var _URL = window.URL || window.webkitURL;
+	    var file, img;
+	    if ((file = this.files[0])) {
+	        img = new Image();
+	        img.onload = function () {
+	            if (this.width>300){
+	            	$('#profile_img_dv').html('<img src="'+_URL.createObjectURL(file)+'" class="thumbnail" style="width:300px;">');
+	            } else {
+	            	$('#profile_img_dv').html('<img src="'+_URL.createObjectURL(file)+'" class="thumbnail">');
+	            }
+	        };
+	        img.src = _URL.createObjectURL(file);
+	
+	    }
+	});
+	
+	// email, profile_id 등 중복검사
+	$(".check_valid").blur(function(){
+		var data_check = true;
+		var stat = "";
+		var stat_str = "";
+		
+		$(this).val(trimStr($(this).val()));
+		
+		var val = $(this).val();
+		
+		if($(this).attr("id")=="user_email"){
+			stat = "email";
+			stat_str = "email";
+			if(val==""){
+				data_check = false;
+				$('#check_'+stat+'_dv').html('<i class="icon-remove" style="color:red;font-size:20px;"></i> <span style="color:red">email을 입력하세요</span>');
+				$('#chk_'+stat).val("N");
+				$('#user_'+stat).focus();
+				$('#user_'+stat).select();
+			}
+		} else if($(this).attr("id")=="user_profile_id"){
+			stat = "profile_id";
+			stat_str = "프로필 ID";
+			data_check = dataCheck(val);
+			
+			if(!data_check || val==""){
+				$('#check_'+stat+'_dv').html('<i class="icon-remove" style="color:red;font-size:20px;"></i> <span style="color:red">영문+숫자만 사용 가능합니다</span>');
+				$('#chk_'+stat).val("N");
+				$('#user_'+stat).focus();
+				$('#user_'+stat).select();
+	
+			}
+		}
+		
+		if (data_check){
+	
+			var postData = new Object();
+			postData.stat = stat;
+			postData.val = val;
+		
+			// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+		
+			$.ajax({
+			    url     : '/mypage/checkValidCallback',
+			    type    : 'post',
+			    dataType: 'json',
+			    data	: $.param(postData),
+			    async   : false,  
+			    success : function(json){
+					if(json.status){
+						$('#check_'+stat+'_dv').html('<i class="icon-ok" style="color:blue;font-size:20px;"></i>');
+						$('#chk_'+stat).val("Y");
+					}else{
+						$('#check_'+stat+'_dv').html('<i class="icon-remove" style="color:red;font-size:20px;"></i> <span style="color:red">사용중인 '+stat_str+' 입니다</span>');
+						$('#chk_'+stat).val("N");
+						$('#user_'+stat).focus();
+						$('#user_'+stat).select();
+					}
+						
+			    },
+			    error   : function(e){
+			    }
+			});
+		}
+		
+	});
+	
+	// SNS설정
+	$('#chk_facebook_open').click(function(){
+		if($('#user_facebook_open').val()=='Y'){
+			$('#user_facebook_open').val('N');
+			$(this).attr('class','btn');
+			$(this).html('<span style="font-size:12px;">OFF</span>');
+		} else {
+			$('#user_facebook_open').val('Y');
+			$(this).attr('class','btn btn-info');
+			$(this).html('<span style="font-size:12px;">ON</span>');
+		}
+	});
+	$('#chk_facebook_share').click(function(){
+		if($('#user_facebook_share').val()=='Y'){
+			$('#user_facebook_share').val('N');
+			$(this).attr('class','btn');
+			$(this).html('<span style="font-size:12px;">OFF</span>');
+		} else {
+			$('#user_facebook_share').val('Y');
+			$(this).attr('class','btn btn-info');
+			$(this).html('<span style="font-size:12px;">ON</span>');
+		}
+	});
+	$('#chk_kakao_story_share').click(function(){
+		if($('#user_kakao_story_share').val()=='Y'){
+			$('#user_kakao_story_share').val('N');
+			$(this).attr('class','btn');
+			$(this).html('<span style="font-size:12px;">OFF</span>');
+		} else {
+			$('#user_kakao_story_share').val('Y');
+			$(this).attr('class','btn btn-info');
+			$(this).html('<span style="font-size:12px;">ON</span>');
+		}
+	});
+	
+	// 수정
+	$("#btn_submit").click(function(){
+		var email		= $("#user_email").val();
+		var password	= $("#user_password").val();
+		var profile_id	= $("#user_profile_id").val();
+		var user_name	= $("#user_user_name").val();
+		var introduce	= $("#user_introduce").val();
+		var contents	= $("#user_contents").val();
+		var url			= $("#user_url").val();
+		var chk_email		= $("#chk_email").val();
+		var chk_profile_id	= $("#chk_profile_id").val();
+		var chk_pass = true;
+
+		if (email==""){
+			chk_pass = false;
+			alert("email을 입력하세요");
+			$("#user_email").focus();
+		}
+		else if (chk_email!="Y"){
+			chk_pass = false;
+			alert("email이 유효하지 않습니다");
+			$("#user_email").select();
+			$("#user_email").focus();
+		}
+/*
+		if (password==""){
+			chk_pass = false;
+			alert("비밀번호를 입력하세요");
+			$("#user_password").focus();
+		}
+*/
+		else if (profile_id==""){
+			chk_pass = false;
+			alert("프로필 ID를 입력하세요");
+			$("#user_profile_id").focus();
+		}
+		else if (chk_profile_id!="Y"){
+			chk_pass = false;
+			alert("프로필 ID가 유효하지 않습니다");
+			$("#user_profile_id").select();
+			$("#user_profile_id").focus();
+		}
+		else if (user_name==""){
+			chk_pass = false;
+			alert("닉네임을 입력하세요");
+			$("#user_user_name").focus();
+		}
+		
+		if (chk_pass && chk_email && chk_profile_id){
+			document.frm.submit();
+		}
+	});
+	
+	// 취소
+	$("#btn_cancel").click(function(){
+		document.location.href="/mypage";
+	});
+	
+	// 탈퇴
+	$("#btn_destroy").click(function(){
+		alert("탈퇴처리중입니다.");
+	});
+		
+	
+	
+});
+
+</script>

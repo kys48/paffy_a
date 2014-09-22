@@ -32,7 +32,8 @@ class BoardComment < ActiveRecord::Base
 
     comments = BoardComment.paginate(page: page, per_page: per_page)
                     .select("A.id, A.comment_type, A.ref_id, A.contents, A.reg_id, A.created_at
-                           , B.user_name, B.profile_id, B.img_file_name")
+                           , B.user_name, B.profile_id, IFNULL(B.img_file_name,'') AS img_file_name
+                           , '' AS created_at_str")
                       .from("board_comments A, users B")
                      .where(" A.reg_id = B.id " + where_str)
                      .order(order)

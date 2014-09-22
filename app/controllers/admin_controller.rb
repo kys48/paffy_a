@@ -69,13 +69,19 @@ puts("start~")
           # 스토어 확인
           cnt_store1 = User.where(url: 'http://'+shop_url, user_type: 'S').count
           cnt_store2 = User.where(email: shop_url, user_type: 'S').count
+          cnt_store3 = User.where(unique_key: shop_url).count
+          cnt_store4 = User.where(profile_id: domain).count
           
           if cnt_store1>0
             store = User.where(url: 'http://'+shop_url, user_type: 'S').first
           elsif cnt_store2>0
             store = User.where(email: shop_url, user_type: 'S').first
-          else
-            store = User.addStore(shop_url,shop_name)
+          elsif cnt_store3>0
+          	store = User.where(unique_key: shop_url).first
+          elsif cnt_store4>0
+		      store = User.where(profile_id: domain).first
+		    else
+            store = User.addStore(shop_url,shop_name,'I','Y')
           end
           
           
@@ -373,13 +379,19 @@ puts("start!")
           # 스토어 확인
           cnt_store1 = User.where(url: 'http://'+merchant_domain, user_type: 'S').count
           cnt_store2 = User.where(email: merchant_domain, user_type: 'S').count
-
+          cnt_store3 = User.where(unique_key: merchant_domain).count
+          cnt_store4 = User.where(profile_id: merchant).count
+          
           if cnt_store1>0
             store = User.where(url: 'http://'+merchant_domain, user_type: 'S').first
           elsif cnt_store2>0
             store = User.where(email: merchant_domain, user_type: 'S').first
+		    elsif cnt_store3>0
+		      store = User.where(unique_key: merchant_domain).first
+		    elsif cnt_store4>0
+		      store = User.where(profile_id: merchant).first
           else
-            store = User.addStore(merchant_domain,mallName)
+            store = User.addStore(merchant_domain,mallName,'I','Y')
           end
           
           # 이미지 저장
@@ -585,7 +597,7 @@ puts(Time.zone.now)
   def removeBgColorCallback
     page = params[:page]||'1'
     per_page = params[:per_page]||'10'
-    records = Product.where("color_code_o IS NULL OR color_code_o=''").order("id asc").limit(per_page.to_i)
+    records = Product.where("(color_code_o IS NULL OR color_code_o='') AND use_yn='Y' AND style_type='P'").order("id asc").limit(per_page.to_i)
     
     products = []
     rcnt = 0

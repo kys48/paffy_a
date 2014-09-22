@@ -1,3 +1,4 @@
+#encoding: utf-8
 class BoardCommentsController < ApplicationController
   
   # 댓글 리스트
@@ -8,6 +9,32 @@ class BoardCommentsController < ApplicationController
     contents = params[:contents]||""
 
     commentList = BoardComment.commentList(params)
+    
+    commentList.each do |comment|
+    	
+    	
+    	
+		createTime = (Time.zone.now - comment.created_at).to_i
+		createTimeStr =  (Time.zone.now - comment.created_at).to_i / 1.second
+		createTimeTail = ""
+		
+		if createTime<60
+			createTimeStr =  ((Time.zone.now - comment.created_at).to_i / 1.second).to_s + "초"
+		elsif createTime<60*60
+			createTimeStr =  ((Time.zone.now - comment.created_at).to_i / 1.minute).to_s + "분"
+		elsif createTime<60*60*24
+			createTimeStr =  ((Time.zone.now - comment.created_at).to_i / 1.hour).to_s + "시간"
+		elsif createTime<60*60*24*30
+			createTimeStr =  ((Time.zone.now - comment.created_at).to_i / 1.day).to_s + "일"
+		elsif createTime<60*60*24*365
+			createTimeStr =  ((Time.zone.now - comment.created_at).to_i / 1.month).to_s + "개월"
+		elsif createTime>=60*60*24*365
+			createTimeStr =  ((Time.zone.now - comment.created_at).to_i / 1.year).to_s + "년"
+		end
+		
+		comment.created_at_str = createTimeStr
+    	
+    end
     
     # 댓글 총갯수 가져오기
     cnt_comment = BoardComment.where(comment_type: comment_type, ref_id: ref_id).count

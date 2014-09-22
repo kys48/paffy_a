@@ -9,7 +9,7 @@
 		Sign in to Paffy
 	</h4>
 	
-	<%= form_tag "/sessions/createpop" do %>
+	<%= form_tag "/sessions/createpop", style: "margin:0px;" do %>
 <input type="hidden" name="backurl" value="<%= @backurl%>" />
 <input type="hidden" name="target" value="<%= @target%>" />
 
@@ -19,7 +19,7 @@
 		  <div style="clear:both;"></div>
 	  </div>
 	  <hr>
-	  
+	  <div style="text-align:center;padding-bottom:5px;">또는 이메일 계정으로 로그인</div>
 	  <%= text_field_tag :email, params[:email], label: "이메일", class: "input-block-level", placeholder: "이메일을 입력하세요", help: "사용하시는 이메일 주소를 입력하세요", required: true, autofocus: true, pattern: '[^@]+@[^@]+\.[a-zA-Z]{2,6}' %>
 	  <%= password_field_tag :password, params[:password], label: "비밀번호", class: "input-block-level", placeholder: "비밀번호를 입력하세요", required: true %>
 	  <label class="checkbox">
@@ -31,14 +31,14 @@
 	  
 	<% end %>
 	
-<div id="kakao"></div>	
+	<div id="kakao"></div>	
 
-	<div>
+	<div style="padding-top:5px;">
 	<%= link_to "회원가입", sign_up_path %>
 	</div>
 	
 	<% flash.each do |name, msg| %>
-	  <div style="border:1px solid black; background-color:#f4f4f4; padding:10px; font-weight: bold;">
+	  <div style="border:1px dotted black; background-color:#f4f4f4; padding:10px; font-weight: bold;">
 	  	<%= content_tag :div, msg, :id => "flash_#{name}" %>
 	  </div>
 	<% end %>

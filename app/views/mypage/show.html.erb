@@ -10,30 +10,60 @@
 			</div>
 			<div class="span6">
 		<% else %>
+<%
+	if @user.user_type=="S"
+%>
 			<div class="span8">
-			<%#= image_tag("/images/common/profile_u.png") %>
-			<%#= image_tag("/images/common/profile_s.png") %>
+<%
+	else
+%>
+			<div class="span2">
+			<%= image_tag("/images/common/profile_u.png", class: "img-polaroid") %>
+			</div>
+			<div class="span6">
+<%
+	end
+%>
+
 		<% end %>
 				<span class="title_font" style="font-size:32px;"><%= @user.profile_id%></span>
 				
 <% if @user.url && @user.url!="" %>
 				<div>
+<%
+	if @user.user_type=="S"
+%>
+					<a href="javascript:goProductUrl('<%=@user.url%>','<%=@user.profile_id%>','store');"><%= @user.url%></a>
+<%
+	else
+%>
 					<a href="<%= @user.url%>" target="_blank"><%= @user.url%></a>
+<%
+	end
+%>
+				</div>
+<% end %>
+<% if @session_user_id && @session_user_id!="" && @session_user_id == @user.id %>
+				<div style="padding-top:10px;">
+					<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="editProfile();" style="cursor:pointer;text-align:left;">
+						<i class="icon-cog"></i>
+						<span style="font-size:12px; padding-left:10px;">Setting</span>
+					</button>	
 				</div>
 <% end %>
 
 				<div style="padding-top:10px;">
 <% if @session_user_id != @user.id %>
 	<% if @follow_count>0 %>
-				<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="follow();" style="cursor:pointer;width:150px;text-align:left;">
-					<i class="icon-user"></i>
-					<span style="font-size:12px; padding-left:10px;">Following</span>
-				</button>
+					<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="follow();" style="cursor:pointer;width:150px;text-align:left;">
+						<i class="icon-user"></i>
+						<span style="font-size:12px; padding-left:10px;">Following</span>
+					</button>
 	<% else %>
-				<button id="followDv" type="button" class="btn btn-default btn-inverse" onClick="follow();" style="width:150px;text-align:left;">
-					<i class="icon-user"></i>
-					<span style="font-size:12px; padding-left:10px;">Follow</span>
-				</button>
+					<button id="followDv" type="button" class="btn btn-default btn-inverse" onClick="follow();" style="width:150px;text-align:left;">
+						<i class="icon-user"></i>
+						<span style="font-size:12px; padding-left:10px;">Follow</span>
+					</button>
 	<% end %>
 <% end %>
 				</div>
@@ -175,12 +205,12 @@ end
 	                </li>
 	                <li id="smenu3" class="dropdown">
 	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	                		<span id="smenu3_title">Sort (All)</span>
+	                		<span id="smenu3_title">Sort (Just in)</span>
 	                		<b class="caret"></b>
 	                	</a>
 	                	<ul class="dropdown-menu">
-	                		<li id="smenu3_sub_1" class="smenu3_sub active"><a href="javascript:searchSort(1);">Hit</a></li>
-	                		<li id="smenu3_sub_2" class="smenu3_sub"><a href="javascript:searchSort(2);">Just in</a></li>
+	                		<li id="smenu3_sub_1" class="smenu3_sub"><a href="javascript:searchSort(1);">Hit</a></li>
+	                		<li id="smenu3_sub_2" class="smenu3_sub active"><a href="javascript:searchSort(2);">Just in</a></li>
 	                	</ul>
 	                </li>
 <%
@@ -315,6 +345,9 @@ function itemList(){
 	postData.cate_code = $("#cate_code").val();
 	postData.price_stat = $("#price_stat").val();
 	postData.color_code = $("#color_code").val();
+<% if @session_user_id!="" && @session_user_id == @user.id %>
+	postData.use_yn = "Y,R";
+<% end %>
 	postData.per_page = 16;
 	postData.order = order;
     
@@ -367,8 +400,10 @@ function itemList(){
 									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
+<% if @session_user_id!="" && @session_user_id == @user.id %>									
 									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\',\''+collection.item_type+'\','+collection.id+')"><i class="icon-trash"></i></span>'
-									+ '</div>';
+<% end %>
+									+ '</div>'
 								}else if(collection.item_type=='P'){
 									var change_price = collection.price;
 									var change_price_type = "KRW";
@@ -390,7 +425,7 @@ function itemList(){
 									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
 									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
-									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
+									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
 									+ priceStr + "&nbsp;"
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
 									+ '</div>'
@@ -399,7 +434,9 @@ function itemList(){
 									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
+<% if @session_user_id!="" && @session_user_id == @user.id %>
 									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\',\''+collection.item_type+'\','+collection.id+')"><i class="icon-trash"></i></span>'
+<% end %>
 									+ '</div>';
 								}
 								li += '</div>'
@@ -511,6 +548,11 @@ function removeItem(get_yn,stat,id){
 		});
 	}
 
+}
+
+// 개인정보 설정
+function editProfile(){
+	document.location.href = "/mypage/setting";
 }
 
 </script>
