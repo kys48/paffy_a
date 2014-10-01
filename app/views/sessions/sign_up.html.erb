@@ -23,7 +23,7 @@ function frmcheck(){
 		return false;
 	}
 	if ($("#user_user_name").val()==""){
-		alert("이름을 입력하세요");
+		alert("닉네임을 입력하세요");
 		$("#user_user_name").focus();
 		return false;
 	}
@@ -58,7 +58,7 @@ function frmcheck(){
   <%= f.password_field :password, label: "비밀번호", class: "input-block-level", placeholder: "비밀번호를 입력하세요" %>
   <%= f.password_field :password_confirmation, label: "비밀번호 확인", hide_label: true, class: "input-block-level", placeholder: "비밀번호 확인을 위해 한번 더 입력하세요" %>
   <%= f.text_field :profile_id, label: "프로필ID", class: "input-block-level", placeholder: "프로필ID를 입력하세요" %>
-  <%= f.text_field :user_name, label: "이름", class: "input-block-level", placeholder: "이름을 입력하세요" %>
+  <%= f.text_field :user_name, label: "닉네임", class: "input-block-level", placeholder: "닉네임을 입력하세요" %>
   
   
   

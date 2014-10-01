@@ -211,20 +211,24 @@ class User < ActiveRecord::Base
   def self.addStore(url,name,store_type,use_yn)
     name = name.gsub(/ /,'')
 
-    store_name = domain_name(url)
-
+    store_name = ""
+    domain_name = Product.domain_name(url)
+    
     if name && name!=""
       store_name = name
+    else
+    	store_name = domain_name
     end
     
+
     user = User.new
-    user.profile_id = domain_name(url)
+    user.profile_id = domain_name
     user.unique_key = url
-    user.password = '111'
+    user.password = '#o#l123'
     user.email = url
     user.user_name = store_name
     user.user_type = 'S'
-    user.url = 'http://'+url
+    user.url = 'http://'+url	
     user.use_yn = use_yn
     user.store_type = store_type
     user.save!
@@ -264,7 +268,7 @@ class User < ActiveRecord::Base
 							 WHERE A.user_type='S' AND A.use_yn='Y' AND A.store_type='#{store_type}'
 							   AND A.id IN (
 							   			SELECT user_id
-							   			  FROM (SELECT COUNT(id) AS cnt_product,user_id FROM products WHERE store_type='#{store_type}' GROUP BY user_id) C
+							   			  FROM (SELECT COUNT(id) AS cnt_product,user_id FROM products WHERE store_type='#{store_type}' AND use_yn='Y' GROUP BY user_id) C
 							   			 WHERE C.cnt_product>=8
 							   			 )
 						) X "
@@ -282,7 +286,46 @@ class User < ActiveRecord::Base
 
   end
 
-  
+	# 사용자 리스트
+	def self.followList(params)
+		user_id		= params[:user_id]||""
+		if !user_id || user_id==""
+			user_id = "-1"
+		end
+
+		user_type	= params[:user_type]||""
+		page			= params[:page]||1
+		per_page		= params[:per_page]||8
+		order			= params[:order]||"A.created_at DESC"
+
+		page			= page.to_i
+		per_page		= per_page.to_i
+		
+		where_str	= "1=1"
+		
+		if user_type=="F"
+			where_str	+= " AND A.user_id = B.id AND B.use_yn='Y' AND A.follow_id=#{user_id}"
+		else
+			where_str	+= " AND A.follow_id = B.id AND B.use_yn='Y' AND A.user_id=#{user_id}"
+			where_str	+= " AND B.user_type='#{user_type}'"
+		end
+
+		user_list = User.paginate(page: page, per_page: per_page)
+							.select("B.id AS user_id, B.user_type, B.store_type, B.profile_id
+									, B.email, B.user_name, B.url, B.img_file_name
+									, A.created_at AS created_at_follow
+									, '' AS created_at_follow_str
+									, B.created_at AS created_at_join
+									, '' AS created_at_join_str
+									, F_COUNT_PRODUCTS(B.id) AS cnt_product
+									, F_COUNT_FOLLOWS(B.id, 'follower') AS cnt_follower")
+							.from("follows A, users B")
+							.where(where_str)
+							.order(order)
+		
+		return user_list
+
+  end  
   
   
   private
@@ -298,20 +341,6 @@ class User < ActiveRecord::Base
     avatar_url = URI.parse(uri)
     avatar_url.scheme = 'https'
     avatar_url.to_s
-  end
-  
-  def self.domain_name(url)
-    domain = url.split(".")
-    if domain.count > 2
-      domain[1]
-    else 
-      domain_names = domain[0].split("/")
-      if domain_names.count>2
-        domain[0].split("/")[2]
-      else
-        domain[0]
-      end    
-    end
   end
   
 end

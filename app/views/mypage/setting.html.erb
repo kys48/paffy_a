@@ -4,8 +4,6 @@
 
 <center>
 <div style="width:90%;text-align:left;padding-top:30px; ">
-	<!-- <form method="post" name="frm" action="/mypage/editProfile" onsubmit="return false;"> -->
-<%#= form_for(@user, :url => {:controller => :mypage, :method => :editProfile, :id => @user.id }, :html => {multipart: true, class: 'form-horizontal', name: 'frm' }) do |f| %>
 <%= form_for(@user, :url => '/mypage/editProfile?id='+@user.id.to_s, :html => {multipart: true, class: 'form-horizontal', name: 'frm', onsubmit: 'return false' }) do |f| %>
 
 	<input type="hidden" id="chk_email" name="chk_email" value="Y">
@@ -332,6 +330,19 @@ $(function(){
 		var chk_email		= $("#chk_email").val();
 		var chk_profile_id	= $("#chk_profile_id").val();
 		var chk_pass = true;
+
+		email	= email.replace( /\'/g, "’");
+		email	= email.replace( /&/g, "＆");
+		
+		profile_id	= profile_id.replace( /\'/g, "’");
+		profile_id	= profile_id.replace( /&/g, "＆");
+		profile_id	= profile_id.replace( /\./g, "·");
+
+		user_name	= user_name.replace( /\'/g, "’");
+		user_name	= user_name.replace( /&/g, "＆");
+		user_name	= user_name.replace( /\./g, "·");
+
+		$("#user_user_name").val(user_name);
 
 		if (email==""){
 			chk_pass = false;

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user_id: 1
+  msg_type: MyString
+  ref_user_id: MyString
+  ref_id: MyString
+  ref_url: MyString
+  read_yn: MyString
+  contents: MyText
+
+two:
+  user_id: 1
+  msg_type: MyString
+  ref_user_id: MyString
+  ref_id: MyString
+  ref_url: MyString
+  read_yn: MyString
+  contents: MyText

@@ -73,10 +73,28 @@ function likeItem(item_type,ref_id){
     	likeCntId	= "ccnt_"+ref_id;
     }
     
+	var postData = new Object();
+	postData.ref_id		= ref_id;
+	postData.get_type	= 'L';
+	postData.item_type	= item_type;
+	
+	postData.msg_type		= $('#msg_type').val();
+	postData.msg_user_id	= $('#msg_user_id').val();
+	postData.msg_ref_url	= $('#msg_ref_url').val();
+	postData.msg_contents	= $('#msg_contents').val();
+
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		}
+	});
+    
     $.ajax({
-        url     : '/gets/put?ref_id='+ref_id+'&get_type=L&item_type='+item_type,
-        type    : 'get',
-        dataType: 'json',
+		url     : '/gets/put',
+		type    : 'post',
+		dataType: 'json',
+		data	: $.param(postData),
         async   : false,  
         success : function(json){
     		$('#'+likeCntId).html(json.cnt_item);

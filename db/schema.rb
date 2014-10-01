@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140919064814) do
+ActiveRecord::Schema.define(:version => 20140925052433) do
 
   create_table "board_comments", :force => true do |t|
     t.string   "comment_type"
@@ -93,6 +93,18 @@ ActiveRecord::Schema.define(:version => 20140919064814) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "messages", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "msg_type"
+    t.string   "ref_user_id"
+    t.string   "ref_id"
+    t.string   "ref_url"
+    t.string   "read_yn"
+    t.text     "contents"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
   create_table "products", :force => true do |t|
     t.string   "cate_code"
     t.string   "color_code_o",     :limit => 10
@@ -162,11 +174,11 @@ ActiveRecord::Schema.define(:version => 20140919064814) do
     t.datetime "img_updated_at"
     t.string   "introduce"
     t.text     "contents"
+    t.string   "facebook_open",     :limit => 2
+    t.string   "facebook_share",    :limit => 2
+    t.string   "kakao_story_share", :limit => 2
     t.datetime "created_at",                       :null => false
     t.datetime "updated_at",                       :null => false
-    t.string   "facebook_open"
-    t.string   "facebook_share"
-    t.string   "kakao_store_share"
   end
 
   create_table "wishes", :force => true do |t|

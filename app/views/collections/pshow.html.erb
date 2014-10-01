@@ -147,34 +147,51 @@ function follow(){
 
 // 스크랩, 좋아요
 function getItem(get_type,item_type,ref_id){
-    if (get_type == 'S'){
-	    var doc = document.body.createTextRange();
-	    doc.moveToElementText(document.getElementById("itemCaption"));
-	    doc.select();
-	    doc.execCommand('copy');
-	    $('#popupContainerScrap').hide();
-	    alert("내용이 클립보드에 복사되었습니다. Ctrl+v를 눌러 사용하세요.");
-	    
-    }
-    
-<%	if @session_user_id && @session_user_id!="" %>	
-    if(semafors['ajax'] == true)
-        return;
-        
-    semafors['ajax'] = true;
+	if (get_type == 'S'){
+		var doc = document.body.createTextRange();
+		doc.moveToElementText(document.getElementById("itemCaption"));
+		doc.select();
+		doc.execCommand('copy');
+		$('#popupContainerScrap').hide();
+		alert("내용이 클립보드에 복사되었습니다. Ctrl+v를 눌러 사용하세요.");
+	}
 
-    $.ajax({
-        url     : '/gets/put?ref_id='+ref_id+'&get_type='+get_type+'&item_type='+item_type,
-        type    : 'get',
-        dataType: 'json',
-        async   : false,  
-        success : function(json){
-        	semafors['ajax'] = false;
-        	//notify('success', json.msg);
-        	
-        	if (get_type == 'S'){
-        		$('#cnt_scrap').html(json.cnt_item);
-        	} else if (get_type == 'L'){
+<%	if @session_user_id && @session_user_id!="" %>	
+	var postData = new Object();
+	postData.ref_id		= ref_id;
+	postData.get_type	= get_type;
+	postData.item_type	= item_type;
+	if (get_type == 'L'){
+		postData.msg_type		= 'L';
+		//postData.msg_user_id	= '<%= @product.user_id%>';
+		postData.msg_ref_url	= '/collections/pshow/<%= @product.id%>';
+		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.';
+	} else if (get_type == 'S'){
+		postData.msg_type		= 'S';
+		//postData.msg_user_id	= '<%= @product.user_id%>';
+		postData.msg_ref_url	= '/collections/pshow/<%= @product.id%>';
+		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 스크랩하였습니다.';
+	}
+
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		}
+	});
+
+	$.ajax({
+		url     : '/gets/put',
+		type    : 'post',
+		dataType: 'json',
+		data	: $.param(postData),
+		async   : false,  
+		success : function(json){
+			//notify('success', json.msg);
+			
+			if (get_type == 'S'){
+				$('#cnt_scrap').html(json.cnt_item);
+			} else if (get_type == 'L'){
         		$('#cnt_like').html(json.cnt_item);
 
         		if(json.like_status=='Y'){
@@ -183,12 +200,12 @@ function getItem(get_type,item_type,ref_id){
         			$('#likeDv').attr("style","color:black");
         		}
         	}
-        },
-        error   : function(e){
-            semafors['ajax'] = false;
-            //notify('error', TranslationLabels['could_not_complete_request']);
-        }
-    });
+		},
+		error   : function(e){
+			//semafors['ajax'] = false;
+			//notify('error', TranslationLabels['could_not_complete_request']);
+		}
+	});
 
 <%	else %>
 	if (get_type == 'L'){
@@ -245,11 +262,24 @@ function getItemWish(item_type,ref_id){
 
 function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = "";
+		var item_type = '';
 		var id = obj.id;
-		var arrId = id.split("_");
-		if(arrId[0]=="pid") item_type = "P";
-		else if(arrId[0]=="cid") item_type = "C";
+		var arrId = id.split('_');
+		if(arrId[0]=='pid') item_type = 'P';
+		else if(arrId[0]=='cid') item_type = 'C';
+		
+		$('#msg_type').val('L');
+		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
+		$('#msg_ref_user_name').val('<%=session[:user_name]||""%>');
+		$('#msg_ref_profile_id').val('<%=session[:profile_id]||""%>');
+
+		if(item_type=='P'){
+			$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
+		} else if(item_type=='C'){
+			$('#msg_ref_url').val('/collections/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
+		} 
 		
 		likeItem(item_type,arrId[1]);
 <%	else %>
@@ -283,12 +313,14 @@ var nextPage = 1;
 var searchYn = true;
 
 function getItemList(){
-	var order = "hit desc";
+	var order = "store_type DESC, hit DESC";
 	var postData = new Object();
 	postData.page = nextPage;
+	postData.per_page = 16;
 	postData.type = "P";
 	postData.search_key = '<%= strip_tags(@product.subject)%>';
-	postData.per_page = 16;
+	postData.cate_code = '<%=@product.cate_code%>';
+	postData.color_code = '<%=@product.color_code_s%>';
 	postData.order = order;
 
 	if (searchYn){
@@ -405,19 +437,20 @@ function getItemList(){
 
 // 댓글 등록
 function writeComment(){
-<%
-	if @session_user_id && @session_user_id!="" 
-%>
-	
+<%	if @session_user_id && @session_user_id!="" %>
 	var comment_contents = $("#comment_contents").val();
 	if(comment_contents==""){
 		alert("댓글 내용을 입력하세요");
 	} else {
 
 		var postData = new Object();
-		postData.comment_type = "P";
-		postData.ref_id = '<%= @product.id%>';
-		postData.contents = comment_contents;
+		postData.comment_type	= 'P';
+		postData.ref_id			= '<%= @product.id%>';
+		postData.msg_type		= 'P';
+		postData.msg_user_id	= '<%= @product.user_id%>';
+		postData.msg_ref_url	= '/collections/pshow/<%= @product.id%>';
+		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품에 댓글을 남겼습니다.';
+		postData.contents		= comment_contents;
 	
 		// ajax post 에서 세션 유지 시키기 위함
 		$.ajaxSetup({
@@ -448,13 +481,9 @@ function writeComment(){
 		});
 		
 	}
-<%
-	else
-%>
+<%	else %>
 	login_pop(document.location.href);
-<%
-	end
-%>
+<%	end %>
 }
 
 
@@ -813,7 +842,6 @@ function shareKakaoLink(){
 		<div style="background-color:#fff;padding:20px;">
 			
 			<div style="border-bottom:1px solid #cccccc; height:35px;">
-				
 				
 <div style="float:left">
 <button type="button" class="btn btn-small btn-default" onClick="$('#popupContainerScrap').fadeIn(300);">

@@ -60,7 +60,7 @@ puts("start~")
           shop_name = shops["shop_name"]
           shop_url  = shops["shop_url"]
           
-          domain = domain_name(shop_url)
+          domain = Product.domain_name(shop_url)
           
           shop_url = shop_url.gsub(/http:\/\//,'')
           shop_url = shop_url.gsub(/https:\/\//,'')
@@ -371,7 +371,7 @@ puts("start!")
           product["productId"] = productId
           product["productType"] = productType
           
-          #merchant = domain_name(ori_link)
+          #merchant = Product.domain_name(ori_link)
           merchant = searchDomain
           merchant_uri = URI(ori_link)
           merchant_domain = merchant_uri.host
@@ -478,6 +478,7 @@ puts("start!")
             add_product.use_yn = "Y"
             add_product.merchant = merchant
             add_product.store_type = "I"
+            add_product.style_type = 'P'
             add_product.save!
             
             # 스토어 상품 연결 정보 저장
@@ -597,7 +598,7 @@ puts(Time.zone.now)
   def removeBgColorCallback
     page = params[:page]||'1'
     per_page = params[:per_page]||'10'
-    records = Product.where("(color_code_o IS NULL OR color_code_o='') AND use_yn='Y' AND style_type='P'").order("id asc").limit(per_page.to_i)
+    records = Product.where("(color_code_o IS NULL OR color_code_o='') AND style_type='P' AND use_yn='Y'").order("id asc").limit(per_page.to_i)
     
     products = []
     rcnt = 0
@@ -826,20 +827,24 @@ puts(Time.zone.now)
   def cors_set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'
   end
-  
-  def domain_name(url)
-    domain = url.split(".")
-    if domain.count > 2
-      domain[1]
-    else 
-      domain_names = domain[0].split("/")
-      if domain_names.count>2
-        domain[0].split("/")[2]
-      else
-        domain[0]
-      end    
-    end
-  end
-  
+=begin  
+	def domain_name(url)
+		domain = url.split(".")
+		retVal = ""
+		if domain.count > 2
+			retVal = domain[1]
+		else
+			domain_names = domain[0].split("/")
+			if domain_names.count>2
+				retVal = domain[0].split("/")[2]
+			else
+				retVal = domain[0]
+			end
+		end
+		retVal = retVal.gsub(/\'/,'’') 
+		retVal = retVal.gsub(/&/,'＆')
+		return retVal
+	end
+=end  
   
 end

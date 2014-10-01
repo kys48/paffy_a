@@ -516,14 +516,28 @@ function itemList(){
 // 좋아요
 function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = "";
+		var item_type = '';
 		var id = obj.id;
-		var arrId = id.split("_");
-		if(arrId[0]=="pid") item_type = "P";
-		else if(arrId[0]=="cid") item_type = "C";
+		var arrId = id.split('_');
+		if(arrId[0]=='pid') item_type = 'P';
+		else if(arrId[0]=='cid') item_type = 'C';
+		
+		$('#msg_type').val('L');
+		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
+		$('#msg_ref_user_name').val('<%=session[:user_name]||""%>');
+		$('#msg_ref_profile_id').val('<%=session[:profile_id]||""%>');
+
+		if(item_type=='P'){
+			$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
+		} else if(item_type=='C'){
+			$('#msg_ref_url').val('/collections/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
+		} 
+		
 		likeItem(item_type,arrId[1]);
 <%	else %>
-		login_pop('/');
+		login_pop(document.location.href);
 <%	end %>
 }
 

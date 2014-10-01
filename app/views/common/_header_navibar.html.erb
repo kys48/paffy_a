@@ -122,12 +122,12 @@ end
 				<% end %>
 	        </li>
 <% if current_user %>
-			<li><a href="#">Messages</a></li>
-			<li><a href="/mypage">Profile</a></li>
+			<li id="cmenu6"><a href="/mypage/messages" id="msgDv">Messages [4]</a></li>
+			<li id="cmenu7"><a href="/mypage">Profile</a></li>
 			<li><%= link_to "Log out", log_out_path %></li>
 <% else %>
 			<!--li><a href="#">Messages</a></li-->
-			<li><a href="javascript:login_pop('/mypage');">Profile</a></li>
+			<li id="cmenu7"><a href="javascript:login_pop('/mypage');">Profile</a></li>
 			<li><a href="javascript:login_pop('');">Log in</a></li>
 <% end %>
 			</li>
@@ -137,3 +137,50 @@ end
     </div>
   </div>
 </div>
+<%	if @session_user_id && @session_user_id!="" %>
+<script language="javascript">
+$(document).ready(function(){
+	$(function() {
+		unreadMsgCount();
+	});
+});
+
+// 읽지않은 메시지
+function unreadMsgCount(){
+	var postData = new Object();
+	postData.user_id	= "<%=@session_user_id%>";
+    postData.read_yn	= "N"
+    
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		}
+	});
+	
+	$.ajax({
+	    url     : '/mypage/msgCountCallback',
+	    type    : 'post',
+	    dataType: 'json',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+	    	if(json.status){
+	    		count_message = json.count_message;
+	    		var dv_str = "Message";
+				if (count_message>0){
+					dv_str += ' [<strong>'+count_message+'</strong>]';
+				}
+				
+				$('#msgDv').html(dv_str);
+	    	}
+	    	
+	    },
+	    error   : function(e){
+	        //notify('error', TranslationLabels['could_not_complete_request']);
+	    }
+	});
+
+}
+</script>
+<%	end %>

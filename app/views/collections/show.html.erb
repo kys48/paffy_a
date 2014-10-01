@@ -123,15 +123,34 @@ function getItem(get_type,item_type,ref_id){
     }
 
 <%	if @session_user_id && @session_user_id!="" %>
-    if(semafors['ajax'] == true)
-        return;
-        
-    semafors['ajax'] = true;
+	var postData = new Object();
+	postData.ref_id		= ref_id;
+	postData.get_type	= get_type;
+	postData.item_type	= item_type;
+	if (get_type == 'L'){
+		postData.msg_type		= 'L';
+		//postData.msg_user_id	= '<%= @collection.user_id%>';
+		postData.msg_ref_url	= '/collections/<%= @collection.id%>';
+		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.';
+	} else if (get_type == 'S'){
+		postData.msg_type		= 'S';
+		//postData.msg_user_id	= '<%= @collection.user_id%>';
+		postData.msg_ref_url	= '/collections/<%= @collection.id%>';
+		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 스크랩하였습니다.';
+	}
 
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		}
+	});
+	
     $.ajax({
-        url     : '/gets/put?ref_id='+ref_id+'&get_type='+get_type+'&item_type='+item_type,
-        type    : 'get',
-        dataType: 'json',
+		url     : '/gets/put',
+		type    : 'post',
+		dataType: 'json',
+		data	: $.param(postData),
         async   : false,  
         success : function(json){
         	semafors['ajax'] = false;
@@ -262,17 +281,31 @@ function like_pop(dv_id){
 
 function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = "";
+		var item_type = '';
 		var id = obj.id;
-		var arrId = id.split("_");
-		if(arrId[0]=="pid") item_type = "P";
-		else if(arrId[0]=="cid") item_type = "C";
+		var arrId = id.split('_');
+		if(arrId[0]=='pid') item_type = 'P';
+		else if(arrId[0]=='cid') item_type = 'C';
+		
+		$('#msg_type').val('L');
+		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
+		$('#msg_ref_user_name').val('<%=session[:user_name]||""%>');
+		$('#msg_ref_profile_id').val('<%=session[:profile_id]||""%>');
+
+		if(item_type=='P'){
+			$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
+		} else if(item_type=='C'){
+			$('#msg_ref_url').val('/collections/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
+		} 
 		
 		likeItem(item_type,arrId[1]);
 <%	else %>
 		login_pop(document.location.href);
 <%	end %>
 }
+
 
 $(function() {
 	// 좋아요
@@ -415,9 +448,13 @@ function writeComment(){
 	} else {
 
 		var postData = new Object();
-		postData.comment_type = "C";
-		postData.ref_id = '<%= @collection.id%>';
-		postData.contents = comment_contents;
+		postData.comment_type	= 'C';
+		postData.ref_id			= '<%= @collection.id%>';
+		postData.msg_type		= 'C';
+		postData.msg_user_id	= '<%= @collection.user_id%>';
+		postData.msg_ref_url	= '/collections/<%= @collection.id%>';
+		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션에 댓글을 남겼습니다.';
+		postData.contents		= comment_contents;
 	
 		// ajax post 에서 세션 유지 시키기 위함
 		$.ajaxSetup({

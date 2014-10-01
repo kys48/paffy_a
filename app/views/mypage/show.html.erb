@@ -26,31 +26,34 @@
 %>
 
 		<% end %>
-				<span class="title_font" style="font-size:32px;"><%= @user.profile_id%></span>
-				
-<% if @user.url && @user.url!="" %>
+				<span class="title_font" style="font-size:32px;"><%= @user.user_name%></span>
+<%	if @user.introduce && @user.introduce!="" %>
+				<div><%=@user.introduce%></div>
+<%	end %>
+
+<%	if @user.url && @user.url!="" %>
 				<div>
-<%
-	if @user.user_type=="S"
-%>
+<%		if @user.user_type=="S" %>
 					<a href="javascript:goProductUrl('<%=@user.url%>','<%=@user.profile_id%>','store');"><%= @user.url%></a>
-<%
-	else
-%>
+<%		else %>
 					<a href="<%= @user.url%>" target="_blank"><%= @user.url%></a>
-<%
-	end
-%>
+<%		end %>
 				</div>
-<% end %>
-<% if @session_user_id && @session_user_id!="" && @session_user_id == @user.id %>
+<%	end %>
+
+<%	if @user.contents && @user.contents!="" %>
+				<div><%=@user.contents%></div>
+<%	end %>
+
+
+<%	if @session_user_id && @session_user_id!="" && @session_user_id == @user.id %>
 				<div style="padding-top:10px;">
 					<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="editProfile();" style="cursor:pointer;text-align:left;">
 						<i class="icon-cog"></i>
-						<span style="font-size:12px; padding-left:10px;">Setting</span>
+						<span style="font-size:12px;">Edit Profile</span>
 					</button>	
 				</div>
-<% end %>
+<%	end %>
 
 				<div style="padding-top:10px;">
 <% if @session_user_id != @user.id %>
@@ -119,119 +122,139 @@
 <input type="hidden" id="color_code" value="">
 <input type="hidden" id="cate_code" value="">
 <input type="hidden" id="order_by" value="2">
+<% if @item_type=="U" %>
+<input type="hidden" id="list_type" value="L">
+<% else %>
+<input type="hidden" id="list_type" value="4">
+<% end %>
 
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
 		
         <div style="padding:10px 75px 0px 65px;">
-	        <div class="navbar">
+        	
+	        <div class="navbar"<% if @item_type=="P" %> style="margin-bottom:0px;"<% end %> >
 	          <div class="navbar-inner">
 	            <div class="container">
 	              <ul class="nav">
-<%
-	if @user.user_type=="S"
-%>
-	                <li id="smenu0" class="dropdown">
-	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	                		<span id="smenu0_title">Category (All)</span>
-	                		<b class="caret"></b>
-	                	</a>
-	                	<ul class="dropdown-menu">
-	                		<li id="smenu0_sub_All" class="smenu0_sub active"><a href="javascript:searchCate('All');">All</a></li>
-	                		<li class="divider"></li>
-	                		<li id="smenu0_sub_Tops" class="smenu0_sub"><a href="javascript:searchCate('Tops');">Tops</a></li>
-	                		<li id="smenu0_sub_Outwear" class="smenu0_sub"><a href="javascript:searchCate('Outwear');">Outwear</a></li>
-	                		<li id="smenu0_sub_Dresses" class="smenu0_sub"><a href="javascript:searchCate('Dresses');">Dresses</a></li>
-	                		<li id="smenu0_sub_Jackets" class="smenu0_sub"><a href="javascript:searchCate('Jackets');">Jackets</a></li>
-	                		<li id="smenu0_sub_Sweaters" class="smenu0_sub"><a href="javascript:searchCate('Sweaters');">Sweaters</a></li>
-	                		<li id="smenu0_sub_Jeans" class="smenu0_sub"><a href="javascript:searchCate('Jeans');">Jeans</a></li>
-	                		<li id="smenu0_sub_Pants" class="smenu0_sub"><a href="javascript:searchCate('Pants');">Pants</a></li>
-	                		<li id="smenu0_sub_Skirts" class="smenu0_sub"><a href="javascript:searchCate('Skirts');">Skirts</a></li>
-	                		<li id="smenu0_sub_Shorts" class="smenu0_sub"><a href="javascript:searchCate('Shorts');">Shorts</a></li>
-	                		<li id="smenu0_sub_Shoes" class="smenu0_sub"><a href="javascript:searchCate('Shoes');">Shoes</a></li>
-	                		<li id="smenu0_sub_Bags" class="smenu0_sub"><a href="javascript:searchCate('Bags');">Bags</a></li>
-	                		<li id="smenu0_sub_Easywear" class="smenu0_sub"><a href="javascript:searchCate('Easywear');">Easywear</a></li>
-	                		<li id="smenu0_sub_Swimwear" class="smenu0_sub"><a href="javascript:searchCate('Swimwear');">Swimwear</a></li>
-	                		<li id="smenu0_sub_Accessories" class="smenu0_sub"><a href="javascript:searchCate('Accessories');">Accessories</a></li>
-	                		<li id="smenu0_sub_Jewelry" class="smenu0_sub"><a href="javascript:searchCate('Jewelry');">Jewelry</a></li>
-	                		<li id="smenu0_sub_Beauty" class="smenu0_sub"><a href="javascript:searchCate('Beauty');">Beauty</a></li>
-	                		<li id="smenu0_sub_Kids" class="smenu0_sub"><a href="javascript:searchCate('Kids');">Kids</a></li>
-	                		<li id="smenu0_sub_Home" class="smenu0_sub"><a href="javascript:searchCate('Home');">Home</a></li>
-	                		<li id="smenu0_sub_Men" class="smenu0_sub"><a href="javascript:searchCate('Men');">Men</a></li>
-	                	</ul>
-	                </li>
-	                <li id="smenu1" class="dropdown">
-	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	                		<span id="smenu1_title">Price (All)</span>
-	                		<b class="caret"></b>
-	                	</a>
-	                	<ul class="dropdown-menu">
-	                		<li id="smenu1_sub_0" class="smenu1_sub active"><a href="javascript:searchPrice(0);">All</a></li>
-	                		<li class="divider"></li>
-	                		<li id="smenu1_sub_1" class="smenu1_sub"><a href="javascript:searchPrice(1);">￦ 20,000 미만</a></li>
-	                		<li id="smenu1_sub_2" class="smenu1_sub"><a href="javascript:searchPrice(2);">￦ 20,000 ~ ￦ 50,000</a></li>
-	                		<li id="smenu1_sub_3" class="smenu1_sub"><a href="javascript:searchPrice(3);">￦ 50,000 ~ ￦100,000</a></li>
-	                		<li id="smenu1_sub_4" class="smenu1_sub"><a href="javascript:searchPrice(4);">￦100,000 ~ ￦200,000</a></li>
-	                		<li id="smenu1_sub_5" class="smenu1_sub"><a href="javascript:searchPrice(5);">￦200,000 ~ ￦500,000</a></li>
-	                		<li id="smenu1_sub_6" class="smenu1_sub"><a href="javascript:searchPrice(6);">￦500,000 이상</a></li>
-	                	</ul>
-	                </li>
+	                <li <% if !@item_type || @item_type=="" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>">All</a></li>
+	                <li <% if @item_type=="P" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=P">Product</a></li>
+<%	if @user.user_type=="U" %>
+	                <li <% if @item_type=="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=C">Set&collection</a></li>
+<%	end %>
+	                <li <% if @item_type=="L" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=L">Like</a></li>
+	                <li <% if @item_type=="U" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=U">Following Members</a></li>
+	                <li <% if @item_type=="S" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=S">Following Stores</a></li>
+	                <li <% if @item_type=="F" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=F">Followers</a></li>
 
-	                <li id="smenu2" class="dropdown">
-	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	                		<span>Color </span>
-	                		<span id="smenu2_title"></span>
-	                		<b class="caret"></b>
-	                	</a>
-	                	<ul class="dropdown-menu">
-	                		<li style="padding:10px;">
+	              </ul>
+	              <ul class="nav pull-right">
+                      <li class="dropdown">
+                        <a id="list_type_nav" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        	<i class="icon-th"></i> 
+                        	<% if @item_type=="U" %>
+                        	List 보기
+                        	<% else %>
+                        	4단 보기
+                        	<% end %>
+                        	<b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                          <!-- <li><a href="javascript:changeListType('5')"><i class="icon-th"></i> 5단보기</a></li> -->
+                          <li class="list_type_nav<% if @item_type!="U" %> active<% end %>" id="list_type_nav_4"><a href="javascript:changeListType('4')"><i class="icon-th"></i> 4단보기</a></li>
+                          <!-- <li><a href="javascript:changeListType('3')"><i class="icon-th-large"></i> 3단보기</a></li> -->
+                          <li class="list_type_nav<% if @item_type=="U" %> active<% end %>" id="list_type_nav_L"><a href="javascript:changeListType('L')"><i class="icon-th-list"></i> List보기</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+	            </div>
+	          </div>
+	        </div>
+    
+<% if @item_type=="P" %>
+	        
+			<div id="searchNavi">
+<div id="smenu0" class="btn-group" style="margin-top:0px;">
+  <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+    <span id="smenu0_title">Category (All)</span>
+    <span class="caret"></span>
+  </a>
+  <ul class="btn-small dropdown-menu">
+	<li id="smenu0_sub_All" class="smenu0_sub active"><a href="javascript:searchCate('All');">All</a></li>
+	<li class="divider"></li>
+<%	@cateList.each_with_index do |cate,i| %>
+	<li id="smenu0_sub_<%=cate.c_cd%>" class="smenu0_sub"><a href="javascript:searchCate('<%=cate.c_cd%>');"><%=cate.c_name%></a></li>
+<%	end %>
+  </ul>
+</div>
+
+
+<div id="smenu1" class="btn-group" style="margin-top:0px;">
+	<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+		<span id="smenu1_title">Price (All)</span>
+		<b class="caret"></b>
+	</a>
+	<ul class="btn-small dropdown-menu">
+		<li id="smenu1_sub_0" class="smenu1_sub active"><a href="javascript:searchPrice(0);">All</a></li>
+		<li class="divider"></li>
+		<li id="smenu1_sub_1" class="smenu1_sub"><a href="javascript:searchPrice(1);">￦ 20,000 미만</a></li>
+		<li id="smenu1_sub_2" class="smenu1_sub"><a href="javascript:searchPrice(2);">￦ 20,000 ~ ￦ 50,000</a></li>
+		<li id="smenu1_sub_3" class="smenu1_sub"><a href="javascript:searchPrice(3);">￦ 50,000 ~ ￦100,000</a></li>
+		<li id="smenu1_sub_4" class="smenu1_sub"><a href="javascript:searchPrice(4);">￦100,000 ~ ￦200,000</a></li>
+		<li id="smenu1_sub_5" class="smenu1_sub"><a href="javascript:searchPrice(5);">￦200,000 ~ ￦500,000</a></li>
+		<li id="smenu1_sub_6" class="smenu1_sub"><a href="javascript:searchPrice(6);">￦500,000 이상</a></li>
+	</ul>
+</div>
+
+
+<div id="smenu2" class="btn-group" style="margin-top:0px">
+	<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+		<span>Color </span>
+		<span id="smenu2_title"></span>
+		<b class="caret"></b>
+	</a>
+	<ul class="btn-small dropdown-menu">
+		<li style="padding:10px;">
 <%
 colorlist = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
-			 "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
-			 "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
+ "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
+ "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
 
 colorlist.each_with_index do |color,i|
 %>
 <div id="color_<%=color%>" class="color_palette" style="float:left;cursor:pointer;width:20px;height:20px;margin:1px;font-weight:bold;border:2px solid #ffffff;color:#ffffff;background-color:#<%=color%>;" onClick="searchColor('<%=color%>');"></div>
 <%
-	if (i+1)%5==0
+if (i+1)%5==0
 %><div style="clear:both"></div><%
 	end
 end	
 %>
 <div style="width:130px;color:#0088cc;text-align:right;cursor:pointer;" onClick="searchColor('');">clear</div>
-	                			
-	                		</li>
-	                	</ul>
-	                </li>
-	                <li id="smenu3" class="dropdown">
-	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	                		<span id="smenu3_title">Sort (Just in)</span>
-	                		<b class="caret"></b>
-	                	</a>
-	                	<ul class="dropdown-menu">
-	                		<li id="smenu3_sub_1" class="smenu3_sub"><a href="javascript:searchSort(1);">Hit</a></li>
-	                		<li id="smenu3_sub_2" class="smenu3_sub active"><a href="javascript:searchSort(2);">Just in</a></li>
-	                	</ul>
-	                </li>
-<%
-	else
-%>
-	                <li <% if @item_type!="P" && @item_type!="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>">All</a></li>
-	                <li <% if @item_type=="P" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=P">Product</a></li>
-	                <li <% if @item_type=="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=C">Set&collection</a></li>
-<%
-	end
-%>
-	              </ul>
-	            </div>
-	          </div>
-	        </div>
+			
+		</li>
+	</ul>
+</div>
+
+
+<div id="smenu3" class="btn-group" style="margin-top:0px">
+	<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+		<span id="smenu3_title">Sort (Just in)</span>
+		<b class="caret"></b>
+	</a>
+	<ul class="btn-small dropdown-menu">
+		<li id="smenu3_sub_1" class="smenu3_sub"><a href="javascript:searchSort(1);">Hit</a></li>
+		<li id="smenu3_sub_2" class="smenu3_sub active"><a href="javascript:searchSort(2);">Just in</a></li>
+	</ul>
+</div>
+
+			</div>
+	        
+<% end %>
         </div>
 		
 		<div id="products" class="products">
 			<a name="top"></a>
 			<div class="freshdesignweb">
-			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+			    <div id="itemListDv" class="image_grid portfolio_4col" style="padding-left:40px;padding-right:80px;">
 				    <ul id="itemList" class="portfolio_list">
 				    </ul>
 			    </div>
@@ -248,15 +271,23 @@ end
 <script type="text/javascript">
 $(document).ready(function(){
 	$(function() {
-		$("#mainMenu2").addClass("active");
+		$("#cmenu7").addClass("active");
+<% if @item_type=="U" || @item_type=="S" || @item_type=="F" %>
+		followList();
+<% else %>
 		itemList();
+<% end %>
 	});
 });
 
 // scroll event
 $(window).scroll(function(){
 	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
+<% if @item_type=="U" || @item_type=="S" || @item_type=="F" %>
+		followList();
+<% else %>
 		itemList();
+<% end %>
 	}
 });
 
@@ -267,6 +298,24 @@ function init(){
 	nextPage = 1;
 	searchYn = true;
 	$("#itemList").empty();
+}
+
+// 리스트 형식 전환
+function changeListType(val){
+	init();
+	$('#list_type').val(val);
+	if(val=='L'){
+		$('#list_type_nav').html('<i class="icon-th"></i> List 보기 <b class="caret"></b>');
+	} else {
+		$('#list_type_nav').html('<i class="icon-th"></i> '+val+'단 보기 <b class="caret"></b>');
+	}
+	$('.list_type_nav').removeClass("active");
+	$('#list_type_nav_'+val).addClass('active');
+<% if @item_type=="U" || @item_type=="S" || @item_type=="F" %>
+	followList();
+<% else %>
+	itemList();
+<% end %>
 }
 
 // 정렬
@@ -331,15 +380,15 @@ function itemList(){
 	else if($("#order_by").val()=="2") order = "created_at desc";
 	
 	var postData = new Object();
-    postData.page = nextPage;
-    postData.currency_usd = $("#currency_usd").val();
+	postData.page = nextPage;
+	postData.currency_usd = $("#currency_usd").val();
 	postData.currency_jpy = $("#currency_jpy").val();
 	postData.currency_eur = $("#currency_eur").val();
 	postData.currency_gbp = $("#currency_gbp").val();
 	postData.currency_cny = $("#currency_cny").val();
 	
-    postData.id = '<%= @profile_id%>';
-    postData.myfeed = 'Y'
+	postData.id = '<%= @profile_id%>';
+	postData.myfeed = 'Y'
 	postData.type = $("#item_type").val();
 	postData.search_key = "<%= @search_key%>";
 	postData.cate_code = $("#cate_code").val();
@@ -469,22 +518,250 @@ function itemList(){
 	}
 }
 
+// following
+function followList(){
+	//$("#itemListDv").attr("class","image_grid portfolio_4col");
+	$("#itemListDv").removeClass();
+	
+	var list_type = $("#list_type").val();
+	
+	var order = "A.created_at DESC";
+	//if($("#order_by").val()=="1") order = "rank ASC, user_id DESC"; 
+	//else if($("#order_by").val()=="2") order = "created_at desc";
+
+	var postData = new Object();
+    postData.page = nextPage;
+    postData.per_page = 8;
+    postData.list_type = list_type;
+<%	if @item_type=="F" %>
+	postData.user_id = '<%=@user.id%>';
+<%	else %>
+	postData.user_id = '<%=@session_user_id%>';
+<%	end %>
+	postData.user_type = '<%=@item_type%>';
+    postData.order = order;
+
+	if (searchYn){
+		layer_open_loading("loading_pop_layer",5,"N");
+		searchYn = false;	
+		setTimeout( function() {
+			// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+			
+			$.ajax({
+			    url     : '/follows/followListCallback',
+			    type    : 'post',
+			    dataType: 'json',
+			    data	: $.param(postData),
+			    async   : false,  
+			    success : function(json){
+			    	if(json.status){
+				    	users = json.user_list;
+	
+				    	layer_close_loading("loading_pop_layer");
+		
+						if(users.length>0) {
+							nextPage++;
+							
+							$.each(users, function (index, user_list) {
+								user = user_list[0];
+								collections = user_list[1];
+								follow_count = user_list[2];
+								var li = '';
+
+if (list_type=="L"){
+	li = '<li>'
+	+ '	<div style="width:100%;border-bottom:1px solid #cccccc;padding:10px;">'
+	+ '	 	<table style="width:100%;height:45px;">'
+	+ '	 		<tr>'
+	+ '	 			<td style="width:140px;text-align:left">';
+	if(user.img_file_name!="" && user.img_file_name != null){
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/data/user/medium/'+user.img_file_name+'" style="width:140px;height:140px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/data/user/medium/'+user.img_file_name+'" style="width:140px;height:140px;"></a>';
+<% end %>
+	} else {
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/images/common/profile_u.png" style="width:140px;height:140px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/images/common/profile_u.png" style="width:140px;height:140px;"></a>';
+<% end %>
+	}
+	
+	li += '	 			</td>'
+	+ '	 			<td valign="top" style="width:250px;text-align:left;padding:10px;">'
+	+ '	 				<a href="/mypage/'+user.profile_id+'"><strong style="font-size:17px">'+user.user_name+'</strong></a>'
+<% if @item_type=="U" || @item_type=="F" %>
+	+ '<br/><br/>' + user.created_at_join_str + ' 전에 가입하였습니다.';
+<% else %>
+	+ '<br/>'
+	+ user.cnt_product + ' products,'
+	+ user.cnt_follower + ' followers';
+<% end %>
+/*	
+	if(follow_count>0){
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bGray small" style="cursor:pointer; width:100px;">팔로잉</div>';
+	} else {
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bBlue small" style="cursor:pointer; width:100px;">팔로우하기</div>';
+	}
+*/
+	li += '	 			</td>'
+	+ '	 			<td style="text-align:left;padding-left:10px;">';
+	+ '	 	<div style="padding-top:10px;">';
+	
+	$.each(collections, function (index, collection) {
+<% if @item_type=="S" %>		
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:140px; height:140px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/pshow/'+collection.id+'"><img src="/data/product/medium/'+collection.img_file_name+'" style="width:140px; height:140px;"></a>'
+		+ '</div>';
+<% else %>
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:140px; height:140px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/'+collection.id+'"><img src="/data/collection/thumb/'+collection.img_file_name+'" style="width:140px; height:140px;"></a>'
+		+ '</div>';
+<% end %>
+	});
+	
+	li += '	 		<div style="clear:both"></div>'
+	+ '	 	</div>'
+	+ '	 			</td>'
+	+ '	 		</tr>'
+	+ '	 	</table>'
+	+ '	</div>'
+	+ '</li>';
+} else {
+	$("#itemListDv").attr("class","image_grid portfolio_4col");
+	
+	li = '<li>'
+	+ '	<div style="width:480px;height:300px;border:1px solid #cccccc;padding:10px;">'
+	+ '	 	<table style="height:45px;">'
+	+ '	 		<tr>'
+	+ '	 			<td style="width:60px;text-align:left">';
+	
+	if(user.img_file_name!="" && user.img_file_name != null){
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/data/user/thumb/'+user.img_file_name+'" style="width:45px;height:45px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/data/user/thumb/'+user.img_file_name+'" style="width:45px;height:45px;"></a>';
+<% end %>
+	} else {
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/images/common/profile_u_sm.png" style="width:45px;height:45px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/images/common/profile_u_sm.png" style="width:45px;height:45px;"></a>';
+<% end %>
+	}
+	
+	li += '	 			</td>'
+	+ '	 			<td style="width:320px;text-align:left">'
+	+ '	 				<a href="/mypage/'+user.profile_id+'"><strong style="font-size:17px">'+user.user_name+'</strong></a>'
+<% if @item_type=="U" || @item_type=="F" %>
+	+ '<br/>' + user.created_at_join_str + ' 전에 가입하였습니다.';
+<% else %>
+	+ '<br/>'
+	+ user.cnt_product + ' products,'
+	+ user.cnt_follower + ' followers';
+<% end %>
+	+ '	 			</td>'
+	+ '	 			<td style="width:100px;text-align:right;padding-right:7px;">';
+/*	
+	if(follow_count>0){
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bGray small" style="cursor:pointer; width:100px;">팔로잉</div>';
+	} else {
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bBlue small" style="cursor:pointer; width:100px;">팔로우하기</div>';
+	}
+*/	
+	li += '	 			</td>'
+	+ '	 		</tr>'
+	+ '	 	</table>'
+	+ '	 	<div style="padding-top:10px;">';
+	
+	$.each(collections, function (index, collection) {
+<% if @item_type=="S" %>
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/pshow/'+collection.id+'"><img src="/data/product/medium/'+collection.img_file_name+'" style="width:110px; height:110px;"></a>'
+		+ '</div>';
+<% else %>
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/'+collection.id+'"><img src="/data/collection/thumb/'+collection.img_file_name+'" style="width:110px; height:110px;"></a>'
+		+ '</div>';
+<% end %>
+	});
+	
+	li += '	 		<div style="clear:both"></div>'
+	+ '	 	</div>'
+	+ '	</div>'
+	+ '</li>';
+}
+								$('#itemList').append(li);
+								searchYn = true;
+							});
+						} else {	// 결과값이 없을경우
+							searchYn = false;
+							if(nextPage==1){
+								$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+							} else {
+								$('#itemeList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">The End</li>');
+							}
+						}
+						
+			    	} else {
+			    		searchYn = false;
+			    		notify('error', json.msg);
+			    	}
+			    },
+			    error   : function(e){
+			        searchYn = false;
+			        semafors['ajax'] = false;
+			        //notify('error', TranslationLabels['could_not_complete_request']);
+			    }
+			});
+		}, 10 );
+	}
+}
+
+
 // 좋아요
 function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = "";
+		var item_type = '';
 		var id = obj.id;
-		var arrId = id.split("_");
-		if(arrId[0]=="pid") item_type = "P";
-		else if(arrId[0]=="cid") item_type = "C";
+		var arrId = id.split('_');
+		if(arrId[0]=='pid') item_type = 'P';
+		else if(arrId[0]=='cid') item_type = 'C';
+		
+		$('#msg_type').val('L');
+		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
+		$('#msg_ref_user_name').val('<%=session[:user_name]||""%>');
+		$('#msg_ref_profile_id').val('<%=session[:profile_id]||""%>');
+
+		if(item_type=='P'){
+			$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
+		} else if(item_type=='C'){
+			$('#msg_ref_url').val('/collections/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
+		} 
+		
 		likeItem(item_type,arrId[1]);
 <%	else %>
 		login_pop(document.location.href);
 <%	end %>
 }
 
+
 // 팔로우하기
 function follow(){
+<% if @session_user_id && @session_user_id!="" %>
+
     var postData = new Object();
     postData.follow_id = "<%= @user.id%>";
     postData.follow_type = "<%= @user.user_type%>";
@@ -516,6 +793,9 @@ function follow(){
         error   : function(e){
         }
     });
+<% else %>
+	login_pop(document.location.href);
+<% end %>
 }
 
 function removeItem(get_yn,stat,id){

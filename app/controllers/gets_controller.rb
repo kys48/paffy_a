@@ -2,56 +2,89 @@
 
 class GetsController < ApplicationController
   
-  # 스크랩, 좋아요 처리
-  def put
-    user_id   = session[:user_id]
-    ref_id    = params[:ref_id]
-    get_type  = params[:get_type]
-    item_type = params[:item_type]
-    
-    count = Get.where(get_type: get_type, item_type: item_type, ref_id: ref_id, user_id: user_id).count
-    status = false
-    msg = ''
-    like_status = 'Y'
+	# 스크랩, 좋아요 처리
+	def put
+		session_user_id   = session[:user_id]
+		ref_id			= params[:ref_id]
+		get_type			= params[:get_type]
+		item_type		= params[:item_type]
+		msg_type			= params[:msg_type]
+		#msg_user_id		= params[:msg_user_id]
+		msg_ref_url		= params[:msg_ref_url]
+		msg_contents	= params[:msg_contents]
 
-    if get_type == 'S'
-      if count>0
-          status = false
-          msg = '이미 스크랩하였습니다'
-      else
-        status = true
-        @get = Get.new(params[:get])
-        @get.ref_id = ref_id
-        @get.get_type = get_type
-        @get.item_type = item_type
-        @get.user_id = user_id
-        @get.save!
-      end
-    
-    elsif get_type == 'L'
-      status = true
-      @get = Get.new(params[:get])
-      @get.ref_id = ref_id
-      @get.get_type = get_type
-      @get.item_type = item_type
-      @get.user_id = user_id
+		if(item_type=="P")
+			product = Product.find(ref_id)
+			msg_user_id	= product.user_id
+		elsif(item_type=="C")
+			collection = Collection.find(ref_id)
+			msg_user_id	= collection.user_id
+		end
+
+		count = Get.where(get_type: get_type, item_type: item_type, ref_id: ref_id, user_id: session_user_id).count
+		status = false
+		msg = ''
+		like_status = 'Y'
+		
+		if get_type == 'S'
+			status = true
+			get = Get.new(params[:get])
+			get.ref_id = ref_id
+			get.get_type = get_type
+			get.item_type = item_type
+			get.user_id = session_user_id
+			get.save!
+			
+			# 나의 상품 or 콜렉션에 대한 like가 아닐경우 등록자에게 like알림추가
+			if session_user_id.to_i!= msg_user_id.to_i
+				msg = Message.new
+				msg.user_id		= msg_user_id
+				msg.msg_type	= msg_type
+				msg.ref_user_id = session_user_id
+				msg.ref_id		= ref_id.to_i
+				msg.ref_url		= msg_ref_url
+				msg.read_yn		= "N"
+				msg.contents	= msg_contents
+				msg.save!
+			end
+		elsif get_type == 'L'
+			status = true
+			get = Get.new(params[:get])
+			get.ref_id = ref_id
+			get.get_type = get_type
+			get.item_type = item_type
+			get.user_id = session_user_id
       
-      if count>0
-        Get.where(ref_id: ref_id, get_type: get_type, item_type: item_type, user_id: user_id).destroy_all
-        like_status = 'N'
-      else
-        @get.save!
-        like_status = 'Y'
-      end
-    end
+			if count>0	# 좋아요취소
+				Get.where(ref_id: ref_id, get_type: get_type, item_type: item_type, user_id: session_user_id).destroy_all
+				like_status = 'N'
+			else	# 좋아요
+				get.save!
+				like_status = 'Y'
+
+				# 나의 상품 or 콜렉션에 대한 like가 아닐경우 등록자에게 like알림추가
+				if session_user_id.to_i!= msg_user_id.to_i
+					msg = Message.new
+					msg.user_id		= msg_user_id
+					msg.msg_type	= msg_type
+					msg.ref_user_id = session_user_id
+					msg.ref_id		= ref_id.to_i
+					msg.ref_url		= msg_ref_url
+					msg.read_yn		= "N"
+					msg.contents	= msg_contents
+					msg.save!
+				end
+
+			end
+		end
+
+		cnt_item = Get.where(get_type: get_type, item_type: item_type, ref_id: ref_id).count
     
-    cnt_item = Get.where(get_type: get_type, item_type: item_type, ref_id: ref_id).count
-    
-    respond_to do |format|
-      #format.json { render json: @collection.to_json }
-      format.json { render :json => { status: status, msg: msg, cnt_item: cnt_item, like_status: like_status }.to_json }
-    end
-  end
+		respond_to do |format|
+			#format.json { render json: @collection.to_json }
+			format.json { render :json => { status: status, msg: msg, cnt_item: cnt_item, like_status: like_status }.to_json }
+		end
+	end
   
   
   # GET /gets

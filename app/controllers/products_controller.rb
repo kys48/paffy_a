@@ -2,6 +2,7 @@
 
 require 'open-uri'
 require 'uri'
+include ApplicationHelper
 
 class ProductsController < ApplicationController
   before_filter :set_product, only: [:show, :edit, :update, :destroy]
@@ -201,7 +202,7 @@ class ProductsController < ApplicationController
 	# 상품 리스트 ajax
 	def productListCallback
 		page = params[:page]||1
-		per_page = params[:pre_page]||25
+		per_page = params[:per_page]||25
 		
 		products = Product.productList(params)
 		total_count = Product.productListCount(params)
@@ -242,68 +243,6 @@ class ProductsController < ApplicationController
 	def set_product
 		@product = Product.find(params[:id])
 	end
-  
-	def getPagging(func_name,total_count,cpage,per_page,page_cnt)
-		total_page_count = (total_count / per_page) + 1
-		
-		cpage_cnt = (cpage.to_f / page_cnt.to_f).ceil
-		
-		next_page = (cpage_cnt * page_cnt) + 1
-		
-		if next_page>total_page_count
-			next_page = total_page_count
-		end
-		
-		spage = (cpage_cnt-1)*page_cnt + 1
-		epage = (cpage_cnt*page_cnt)
-		if epage>total_page_count
-			epage = total_page_count
-		end
-		
-		prev_page = spage - 1
-		if prev_page<1
-			prev_page = 1
-		end
-
-=begin		
-		page_str  = '<div class="btn-toolbar" style="text-align:center">'
-		page_str += '	<div class="btn-group">'
-		page_str += '		<a class="btn" href="javascript:'+func_name+'('+prev_page.to_s+');">&nbsp;<i class="icon-chevron-left"></i>&nbsp;</a>'
-		
-		(spage..epage).each do |i|
-			if cpage.to_i==i
-				page_str += '		<a class="btn btn-warning" href="javascript:'+func_name+'('+i.to_s+');">'+i.to_s+'</a>'
-			else
-				page_str += '		<a class="btn" href="javascript:'+func_name+'('+i.to_s+');">'+i.to_s+'</a>'
-			end
-		end
-		
-		page_str += '		<a class="btn" href="javascript:'+func_name+'('+next_page.to_s+');">&nbsp;<i class="icon-chevron-right"></i>&nbsp;</a>'
-		page_str += '	</div>'
-		page_str += '</div>'
-=end
-		
-		page_str  = '<div class="pagination pagination-small pagination-centered">'
-		page_str += '	<ul>'
-		page_str += '		<li><a href="javascript:'+func_name+'(1);">&nbsp;<i class="icon-backward"></i>&nbsp;</a></li>'
-		page_str += '		<li><a href="javascript:'+func_name+'('+prev_page.to_s+');">&nbsp;<i class="icon-chevron-left"></i>&nbsp;</a></li>'
-		
-		(spage..epage).each do |i|
-			if cpage.to_i==i
-				page_str += '		<li><a class="btn-warning" href="javascript:'+func_name+'('+i.to_s+');">'+i.to_s+'</a></li>'
-			else
-				page_str += '		<li><a href="javascript:'+func_name+'('+i.to_s+');">'+i.to_s+'</a></li>'
-			end
-		end
-		
-		page_str += '		<li><a href="javascript:'+func_name+'('+next_page.to_s+');">&nbsp;<i class="icon-chevron-right"></i>&nbsp;</a></li>'
-		page_str += '		<li><a href="javascript:'+func_name+'('+total_page_count.to_s+');">&nbsp;<i class="icon-forward"></i>&nbsp;</a></li>'
-		page_str += '	</ul>'
-		page_str += '</div>'
-		
-		return page_str
-	end
-	
 
     
 end

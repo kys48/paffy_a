@@ -47,7 +47,7 @@ puts("#{params[:page]} page : #{Time.zone.now}")
   end
   
   
-	# 팔로우하기
+	# 나의 item(상품,콜렉션) 및 like한 item 삭제
 	def removeItemCallback
 		get_yn	= params[:get_yn]
 		stat		= params[:stat]
@@ -55,7 +55,7 @@ puts("#{params[:page]} page : #{Time.zone.now}")
 		session_user_id = session[:user_id]||""
 		
 		if session_user_id && session_user_id!=""
-			if get_yn=="Y"
+			if get_yn=="Y"	# like에서 삭제
 				count = Get.where(get_type: "L", item_type: stat, ref_id: ref_id, user_id: session_user_id).count
 				if count>0
 					Get.where(get_type: "L", item_type: stat, ref_id: ref_id, user_id: session_user_id).destroy_all
@@ -63,12 +63,20 @@ puts("#{params[:page]} page : #{Time.zone.now}")
 			else
 				if stat=="P"
 					product = Product.find(ref_id)
-					product.use_yn = "N"
-					product.save!
+					if session_user_id == product.user_id	# 나의 상품이면 사용여부 N
+						product.use_yn = "N"
+						product.save!
+					else	# 다른 스토어 상품이면 user_items에서 삭제
+						item_count	= UserItem.where(user_id: session_user_id, ref_id: ref_id).count
+						if item_count>0
+							UserItem.where(user_id: session_user_id, ref_id: ref_id, item_type: "P").destroy_all
+						end
+					end
+					
 				elsif stat=="C"
 					collection = Collection.find(ref_id)
 					collection.use_yn = "N"
-					collection.save! 
+					collection.save!
 				end
 			
 			end

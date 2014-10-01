@@ -11,9 +11,6 @@ class BoardCommentsController < ApplicationController
     commentList = BoardComment.commentList(params)
     
     commentList.each do |comment|
-    	
-    	
-    	
 		createTime = (Time.zone.now - comment.created_at).to_i
 		createTimeStr =  (Time.zone.now - comment.created_at).to_i / 1.second
 		createTimeTail = ""
@@ -33,7 +30,6 @@ class BoardCommentsController < ApplicationController
 		end
 		
 		comment.created_at_str = createTimeStr
-    	
     end
     
     # 댓글 총갯수 가져오기
@@ -47,6 +43,11 @@ class BoardCommentsController < ApplicationController
   
   # 댓글 등록
   def writeCallback
+    msg_type		= params[:msg_type]
+    msg_user_id	= params[:msg_user_id]
+    msg_ref_url	= params[:msg_ref_url]
+    msg_contents	= params[:msg_contents]
+    
     session_user_id = session[:user_id]||""
     comment_type = params[:comment_type]||""
     ref_id = params[:ref_id]||""
@@ -59,6 +60,20 @@ class BoardCommentsController < ApplicationController
       comment.contents = contents
       comment.reg_id = session_user_id
       comment.save!
+      
+      # 나의 상품 or 콜렉션에 대한 댓글이 아닐경우 등록자에게 댓글알림추가
+      if session_user_id.to_i!= msg_user_id.to_i
+	      msg = Message.new
+	      msg.user_id		= msg_user_id
+	      msg.msg_type	= msg_type
+	      msg.ref_user_id = session_user_id
+	      msg.ref_id		= ref_id.to_i
+	      msg.ref_url		= msg_ref_url
+	      msg.read_yn		= "N"
+	      msg.contents	= msg_contents
+	      msg.save!
+      end
+      
 
       status = true
     else

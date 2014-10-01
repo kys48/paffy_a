@@ -5,26 +5,61 @@
 <input type="hidden" id="currency_eur" value="<%=@currency_eur%>">
 <input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
 <input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
+<input type="hidden" id="item_type" value="<%=@item_type%>">
+<% if @item_type=="U" %>
+<input type="hidden" id="list_type" value="L">
+<% else %>
+<input type="hidden" id="list_type" value="4">
+<% end %>
+
 
 	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+		
         <div style="padding:10px 75px 0px 65px;">
+        	
 	        <div class="navbar">
 	          <div class="navbar-inner">
 	            <div class="container">
 	              <ul class="nav">
-	                <li <% if @item_type!="P" && @item_type!="C" %>class="active"<% end %>><a href="/mypage/myfeed">All</a></li>
+	                <li <% if !@item_type || @item_type=="" %>class="active"<% end %>><a href="/mypage/myfeed">All</a></li>
 	                <li <% if @item_type=="P" %>class="active"<% end %>><a href="/mypage/myfeed?type=P">Product</a></li>
 	                <li <% if @item_type=="C" %>class="active"<% end %>><a href="/mypage/myfeed?type=C">Set&collection</a></li>
+<%	if @session_user_id && @session_user_id!="" %>
+	                <li <% if @item_type=="L" %>class="active"<% end %>><a href="/mypage/myfeed?type=L">Like</a></li>
+	                <li <% if @item_type=="U" %>class="active"<% end %>><a href="/mypage/myfeed?type=U">Members</a></li>
+	                <li <% if @item_type=="S" %>class="active"<% end %>><a href="/mypage/myfeed?type=S">Stores</a></li>
+<%	end %>
 	              </ul>
+	              <ul class="nav pull-right">
+                      <li class="dropdown">
+                        <a id="list_type_nav" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        	<i class="icon-th"></i> 
+                        	<% if @item_type=="U" %>
+                        	List 보기
+                        	<% else %>
+                        	4단 보기
+                        	<% end %>
+                        	<b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                          <!-- <li><a href="javascript:changeListType('5')"><i class="icon-th"></i> 5단보기</a></li> -->
+                          <li class="list_type_nav<% if @item_type!="U" %> active<% end %>" id="list_type_nav_4"><a href="javascript:changeListType('4')"><i class="icon-th"></i> 4단보기</a></li>
+                          <!-- <li><a href="javascript:changeListType('3')"><i class="icon-th-large"></i> 3단보기</a></li> -->
+                          <li class="list_type_nav<% if @item_type=="U" %> active<% end %>" id="list_type_nav_L"><a href="javascript:changeListType('L')"><i class="icon-th-list"></i> List보기</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+
 	            </div>
 	          </div>
 	        </div>
+	        
         </div>
 			
 		<div id="products" class="products">
 			<a name="top"></a>
 			<div class="freshdesignweb">
-			    <div class="image_grid portfolio_4col" style="padding-left:40px;">
+			    <div id="itemListDv" class="image_grid portfolio_4col" style="padding-left:40px;padding-right:80px;">
 				    <ul id="itemList" class="portfolio_list">
 				    </ul>
 			    </div>
@@ -38,43 +73,106 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$(function() {
+<% if @item_type=="U" || @item_type=="S" %>
+		followList();
+<% else %>
 		itemList();
+<% end %>
 	});
 });
 
 // scroll event
 $(window).scroll(function(){
 	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
+<% if @item_type=="U" || @item_type=="S" %>
+		followList();
+<% else %>
 		itemList();
+<% end %>
 	}
 });
+
+// 좋아요
+function like(obj){
+<%	if @session_user_id && @session_user_id!="" %>
+		var item_type = '';
+		var id = obj.id;
+		var arrId = id.split('_');
+		if(arrId[0]=='pid') item_type = 'P';
+		else if(arrId[0]=='cid') item_type = 'C';
+		
+		$('#msg_type').val('L');
+		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
+		$('#msg_ref_user_name').val('<%=session[:user_name]||""%>');
+		$('#msg_ref_profile_id').val('<%=session[:profile_id]||""%>');
+
+		if(item_type=='P'){
+			$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
+		} else if(item_type=='C'){
+			$('#msg_ref_url').val('/collections/'+arrId[1]);
+			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
+		} 
+		
+		likeItem(item_type,arrId[1]);
+<%	else %>
+		login_pop(document.location.href);
+<%	end %>
+}
+
 
 var nextPage = 1;
 var searchYn = true;
 
+function init(){
+	nextPage = 1;
+	searchYn = true;
+	$("#itemList").empty();
+}
+
+// 리스트 형식 전환
+function changeListType(val){
+	init();
+	$('#list_type').val(val);
+	if(val=='L'){
+		$('#list_type_nav').html('<i class="icon-th"></i> List 보기 <b class="caret"></b>');
+	} else {
+		$('#list_type_nav').html('<i class="icon-th"></i> '+val+'단 보기 <b class="caret"></b>');
+	}
+	$('.list_type_nav').removeClass("active");
+	$('#list_type_nav_'+val).addClass('active');
+<% if @item_type=="U" || @item_type=="S" %>
+	followList();
+<% else %>
+	itemList();
+<% end %>
+}
+
 function itemList(){
-    var postData = new Object();
-    postData.page = nextPage;
-    postData.currency_usd = $("#currency_usd").val();
+	$("#itemListDv").attr("class","image_grid portfolio_4col");
+    
+	var postData = new Object();
+	postData.page = nextPage;
+	postData.currency_usd = $("#currency_usd").val();
 	postData.currency_jpy = $("#currency_jpy").val();
 	postData.currency_eur = $("#currency_eur").val();
 	postData.currency_gbp = $("#currency_gbp").val();
 	postData.currency_cny = $("#currency_cny").val();
 	
-    postData.type = '<%= @item_type%>';
-    postData.order = 'hit DESC';
+	postData.type = '<%= @item_type%>';
+	postData.order = 'hit DESC';
 <%	if @session_user_id && @session_user_id!="" %>
-    postData.id = '<%= @profile_id%>';
-    postData.myfeed = 'Y';
-    postData.follow = 'Y';
+	postData.id = '<%= @profile_id%>';
+	postData.myfeed = 'Y';
+	postData.follow = 'Y';
 <%  else %>
-	postData.limit_hit = 2;    
+	postData.limit_hit = 2;
 <%	end %>
     
-    if (searchYn){
-    	layer_open_loading("loading_pop_layer",5,"N");
-    	
-	    setTimeout( function() {
+	if (searchYn){
+		layer_open_loading("loading_pop_layer",5,"N");
+		
+		setTimeout( function() {
 		
 			// ajax post 에서 세션 유지 시키기 위함
 			$.ajaxSetup({
@@ -181,17 +279,213 @@ function itemList(){
 	}
 }
 
-// 좋아요
-function like(obj){
-<%	if @session_user_id && @session_user_id!="" %>
-		var item_type = "";
-		var id = obj.id;
-		var arrId = id.split("_");
-		if(arrId[0]=="pid") item_type = "P";
-		else if(arrId[0]=="cid") item_type = "C";
-		likeItem(item_type,arrId[1]);
-<%	else %>
-		login_pop(document.location.href);
-<%	end %>
+
+function followList(){
+	//$("#itemListDv").attr("class","image_grid portfolio_4col");
+	$("#itemListDv").removeClass();
+	
+	var list_type = $("#list_type").val();
+	
+	var order = "A.created_at DESC";
+	//if($("#order_by").val()=="1") order = "rank ASC, user_id DESC"; 
+	//else if($("#order_by").val()=="2") order = "created_at desc";
+
+	var postData = new Object();
+    postData.page = nextPage;
+    postData.per_page = 8;
+    postData.list_type = list_type;
+	postData.user_id = '<%=@session_user_id%>';
+	postData.user_type = '<%=@item_type%>';
+    postData.order = order;
+
+	if (searchYn){
+		layer_open_loading("loading_pop_layer",5,"N");
+		searchYn = false;	
+		setTimeout( function() {
+			// ajax post 에서 세션 유지 시키기 위함
+			$.ajaxSetup({
+			  beforeSend: function(xhr) {
+			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+			  }
+			});
+			
+			$.ajax({
+			    url     : '/follows/followListCallback',
+			    type    : 'post',
+			    dataType: 'json',
+			    data	: $.param(postData),
+			    async   : false,  
+			    success : function(json){
+			    	if(json.status){
+				    	users = json.user_list;
+	
+				    	layer_close_loading("loading_pop_layer");
+		
+						if(users.length>0) {
+							nextPage++;
+							
+							$.each(users, function (index, user_list) {
+								user = user_list[0];
+								collections = user_list[1];
+								follow_count = user_list[2];
+								var li = '';
+
+if (list_type=="L"){
+	li = '<li>'
+	+ '	<div style="width:100%;border-bottom:1px solid #cccccc;padding:10px;">'
+	+ '	 	<table style="width:100%;height:45px;">'
+	+ '	 		<tr>'
+	+ '	 			<td style="width:140px;text-align:left">';
+	if(user.img_file_name!="" && user.img_file_name != null){
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/data/user/medium/'+user.img_file_name+'" style="width:140px;height:140px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/data/user/medium/'+user.img_file_name+'" style="width:140px;height:140px;"></a>';
+<% end %>
+	} else {
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/images/common/profile_u.png" style="width:140px;height:140px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/images/common/profile_u.png" style="width:140px;height:140px;"></a>';
+<% end %>
+	}
+	
+	li += '	 			</td>'
+	+ '	 			<td valign="top" style="width:250px;text-align:left;padding:10px;">'
+	+ '	 				<a href="/mypage/'+user.profile_id+'"><strong style="font-size:17px">'+user.user_name+'</strong></a>'
+<% if @item_type=="U" %>
+	+ '<br/><br/>' + user.created_at_join_str + ' 전에 가입하였습니다.';
+<% else %>
+	+ '<br/>'
+	+ user.cnt_product + ' products,'
+	+ user.cnt_follower + ' followers';
+<% end %>
+/*	
+	if(follow_count>0){
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bGray small" style="cursor:pointer; width:100px;">팔로잉</div>';
+	} else {
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bBlue small" style="cursor:pointer; width:100px;">팔로우하기</div>';
+	}
+*/
+	li += '	 			</td>'
+	+ '	 			<td style="text-align:left;padding-left:10px;">';
+	+ '	 	<div style="padding-top:10px;">';
+	
+	$.each(collections, function (index, collection) {
+<% if @item_type=="S" %>		
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:140px; height:140px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/pshow/'+collection.id+'"><img src="/data/product/medium/'+collection.img_file_name+'" style="width:140px; height:140px;"></a>'
+		+ '</div>';
+<% else %>
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:140px; height:140px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/'+collection.id+'"><img src="/data/collection/thumb/'+collection.img_file_name+'" style="width:140px; height:140px;"></a>'
+		+ '</div>';
+<% end %>
+	});
+	
+	li += '	 		<div style="clear:both"></div>'
+	+ '	 	</div>'
+	+ '	 			</td>'
+	+ '	 		</tr>'
+	+ '	 	</table>'
+	+ '	</div>'
+	+ '</li>';
+} else {
+	$("#itemListDv").attr("class","image_grid portfolio_4col");
+	
+	li = '<li>'
+	+ '	<div style="width:480px;height:300px;border:1px solid #cccccc;padding:10px;">'
+	+ '	 	<table style="height:45px;">'
+	+ '	 		<tr>'
+	+ '	 			<td style="width:60px;text-align:left">';
+	
+	if(user.img_file_name!="" && user.img_file_name != null){
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/data/user/thumb/'+user.img_file_name+'" style="width:45px;height:45px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/data/user/thumb/'+user.img_file_name+'" style="width:45px;height:45px;"></a>';
+<% end %>
+	} else {
+<% if @item_type=="S" %>
+		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/images/common/profile_u_sm.png" style="width:45px;height:45px;"></a>';
+<% else %>
+		li += '<a href="/mypage/'+user.profile_id+'"><img src="/images/common/profile_u_sm.png" style="width:45px;height:45px;"></a>';
+<% end %>
+	}
+	
+	li += '	 			</td>'
+	+ '	 			<td style="width:320px;text-align:left">'
+	+ '	 				<a href="/mypage/'+user.profile_id+'"><strong style="font-size:17px">'+user.user_name+'</strong></a>'
+<% if @item_type=="U" %>
+	+ '<br/>' + user.created_at_join_str + ' 전에 가입하였습니다.';
+<% else %>
+	+ '<br/>'
+	+ user.cnt_product + ' products,'
+	+ user.cnt_follower + ' followers';
+<% end %>
+	+ '	 			</td>'
+	+ '	 			<td style="width:100px;text-align:right;padding-right:7px;">';
+/*	
+	if(follow_count>0){
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bGray small" style="cursor:pointer; width:100px;">팔로잉</div>';
+	} else {
+		li += '<div id="cnt_scrap_'+user.user_id+'" onclick="follow(\''+user.user_id+'\');" class="bBlue small" style="cursor:pointer; width:100px;">팔로우하기</div>';
+	}
+*/	
+	li += '	 			</td>'
+	+ '	 		</tr>'
+	+ '	 	</table>'
+	+ '	 	<div style="padding-top:10px;">';
+	
+	$.each(collections, function (index, collection) {
+<% if @item_type=="S" %>
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/pshow/'+collection.id+'"><img src="/data/product/medium/'+collection.img_file_name+'" style="width:110px; height:110px;"></a>'
+		+ '</div>';
+<% else %>
+		li += ''
+		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">'
+		+ '<a href="/collections/'+collection.id+'"><img src="/data/collection/thumb/'+collection.img_file_name+'" style="width:110px; height:110px;"></a>'
+		+ '</div>';
+<% end %>
+	});
+	
+	li += '	 		<div style="clear:both"></div>'
+	+ '	 	</div>'
+	+ '	</div>'
+	+ '</li>';
 }
+								$('#itemList').append(li);
+								searchYn = true;
+							});
+						} else {	// 결과값이 없을경우
+							searchYn = false;
+							if(nextPage==1){
+								$('#itemList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+							} else {
+								$('#itemeList').append('<li style="width:100%;padding-top:10px;font-weight:bold;font-size:15px;text-align:center;">The End</li>');
+							}
+						}
+						
+			    	} else {
+			    		searchYn = false;
+			    		notify('error', json.msg);
+			    	}
+			    },
+			    error   : function(e){
+			        searchYn = false;
+			        semafors['ajax'] = false;
+			        //notify('error', TranslationLabels['could_not_complete_request']);
+			    }
+			});
+		}, 10 );
+	}
+}
+
+
+
+
 </script>

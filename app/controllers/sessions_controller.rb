@@ -29,6 +29,7 @@ class SessionsController < ApplicationController
     session[:user_id] = user.id
     session[:provider] = user.provider
     session[:profile_id] = user.profile_id
+    session[:user_name] = user.user_name
     #redirect_to root_url
     respond_to do |format|
       format.html # fcreate.html.erb
@@ -42,6 +43,7 @@ class SessionsController < ApplicationController
     session[:user_id] = user.id
     session[:provider] = user.provider
     session[:profile_id] = user.profile_id
+    session[:user_name] = user.user_name
     
     respond_to do |format|
       #format.json { render json: @collection.to_json }
@@ -58,6 +60,8 @@ class SessionsController < ApplicationController
       session[:user_id] = user.id
       session[:provider] = user.provider
       session[:profile_id] = user.profile_id
+      session[:user_name] = user.user_name
+      
       redirect_to root_url, :notice => "로그인!"
     else
       flash.now.alert = "이메일주소 또는 비밀번호가 맞지 않아요"
@@ -74,6 +78,8 @@ class SessionsController < ApplicationController
       session[:user_id] = user.id
       session[:provider] = user.provider
       session[:profile_id] = user.profile_id
+      session[:user_name] = user.user_name
+      
       render "createpop"
     else
       flash.now.alert = "이메일주소 또는 비밀번호가 맞지 않아요"
@@ -101,7 +107,7 @@ class SessionsController < ApplicationController
   def sign_up_complete
     @user = User.new(params[:user])
     @user.user_type = "U"
-    @user.use_yn = "R"  # 대기
+    @user.use_yn = "Y"  # 대기
     @user.unique_key = @user.email
     
     @backurl = params[:backurl]
@@ -112,6 +118,7 @@ class SessionsController < ApplicationController
         session[:user_id] = @user.id
         session[:provider] = @user.provider
         session[:profile_id] = @user.profile_id
+        session[:user_name] = @user.user_name
         
         format.html # sign_up.html.erb
       else

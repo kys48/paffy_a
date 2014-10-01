@@ -146,6 +146,9 @@ puts("Complete!")
     img_url = itemData["image"]["sizes"][img_style]["url"]
     store_name = itemData["retailer"]["name"]
     profile_id = store_name.gsub(/ /,'')
+    profile_id = profile_id.gsub(/\'/,'’') 
+    profile_id = profile_id.gsub(/&/,'＆')
+    profile_id = profile_id.gsub(/\./,'·')
     
     # 스토어 확인
     cnt_store1 = User.where(profile_id: profile_id, user_type: 'S').count
@@ -355,6 +358,9 @@ puts("Complete!")
 	        
 	        store_name = product["retailer"]["name"]
 	        profile_id = store_name.gsub(/ /,'')
+	        profile_id = profile_id.gsub(/\'/,'’')
+	        profile_id = profile_id.gsub(/&/,'＆')
+	        profile_id = profile_id.gsub(/\./,'·')
 	        
 	        add_product.merchant = profile_id
 	        #product["alternateImages"] # 다른이미지 배열
@@ -366,25 +372,24 @@ puts("Complete!")
 	        
 	        
 	        if save_yn=="Y"
-	          
 	          # 스토어 확인
 	          cnt_store1 = User.where(profile_id: profile_id, user_type: 'S').count
 	          cnt_store2 = User.where(email: profile_id, user_type: 'S').count
-			    cnt_store3 = User.where(unique_key: email).count
+			    cnt_store3 = User.where(unique_key: profile_id).count
 			    cnt_store4 = User.where(profile_id: profile_id).count
-	
+
 	          if cnt_store1>0
 	            store = User.where(profile_id: profile_id, user_type: 'S').first
 	          elsif cnt_store2>0
 	            store = User.where(email: profile_id, user_type: 'S').first
 			    elsif cnt_store3>0
-			      store = User.where(unique_key: email).first
+			      store = User.where(unique_key: profile_id).first
 			    elsif cnt_store4>0
 			      store = User.where(profile_id: profile_id).first
 	          else
 	            store = User.addStore(profile_id,profile_id,'F','Y')
 	          end
-	
+
 	          add_product.user_id = store.id
 	  
 	          # 이미지 저장
@@ -431,7 +436,7 @@ puts("Complete!")
 	        
 	            bg.resize!(75,75)
 	            bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
-	      
+=begin
 	            # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
 	            #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
 	            %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
@@ -440,7 +445,7 @@ puts("Complete!")
 	            colors = Product.get_product_color(product_file_name)
 	            add_product.color_code_o = colors[0] 
 	            add_product.color_code_s = colors[1]
-	            
+=end
 	            add_product.img_file_name = product_file_name
 	            add_product.img_content_type = "image/png"
 	            add_product.img_file_size = 0
@@ -640,20 +645,6 @@ puts("Complete!")
       return isize
   end
   
-  def self.domain_name(url)
-    domain = url.split(".")
-    if domain.count > 2
-      domain[1]
-    else 
-      domain_names = domain[0].split("/")
-      if domain_names.count>2
-        domain[0].split("/")[2]
-      else
-        domain[0]
-      end    
-    end
-  end
-  
   # 원본 이미지의 색상표이미지를 만든다
   def self.sort_by_decreasing_frequency(img)
     hist = img.color_histogram
@@ -778,5 +769,23 @@ puts("Complete!")
 
     
   end
+
+
+	def self.domain_name(url)
+		domain = url.split(".")
+		chk_www = url.index("www.")||-1
+		retVal = ""
+		if chk_www.to_i>-1
+			retVal = domain[1]
+		else
+			domain_names = domain[0].split("/")
+			retVal	= domain_names[domain_names.count-1]
+		end
+		
+		retVal = retVal.gsub(/\'/,'’') 
+		retVal = retVal.gsub(/&/,'＆')
+		retVal = retVal.gsub(/\./,'·')
+		return retVal
+	end
     
 end

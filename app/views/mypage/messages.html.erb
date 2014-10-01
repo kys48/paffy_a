@@ -1,0 +1,283 @@
+<%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
+<div id="Profile" class="centerHolder" style="padding-top:20px;width:100%;">
+	<div class="userInfoBox">
+		<br/>
+		<div class="row-fluid" style="padding:0px 35px 0px 35px;">
+		<% if @user.img_file_name %>
+			<div class="span2">
+				<%= image_tag("/data/user/medium/"+@user.img_file_name, class: "img-polaroid") %>
+			</div>
+			<div class="span6">
+		<% else %>
+<%
+	if @user.user_type=="S"
+%>
+			<div class="span8">
+<%
+	else
+%>
+			<div class="span2">
+			<%= image_tag("/images/common/profile_u.png", class: "img-polaroid") %>
+			</div>
+			<div class="span6">
+<%
+	end
+%>
+
+		<% end %>
+				<span class="title_font" style="font-size:32px;"><%= @user.user_name%></span>
+<!--
+<%	if @user.introduce && @user.introduce!="" %>
+				<div><%=@user.introduce%></div>
+<%	end %>
+
+<%	if @user.url && @user.url!="" %>
+				<div>
+<%		if @user.user_type=="S" %>
+					<a href="javascript:goProductUrl('<%=@user.url%>','<%=@user.profile_id%>','store');"><%= @user.url%></a>
+<%		else %>
+					<a href="<%= @user.url%>" target="_blank"><%= @user.url%></a>
+<%		end %>
+				</div>
+<%	end %>
+
+<%	if @user.contents && @user.contents!="" %>
+				<div><%=@user.contents%></div>
+<%	end %>
+-->
+
+<%	if @session_user_id && @session_user_id!="" && @session_user_id == @user.id %>
+				<div style="padding-top:10px;">
+					<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="editProfile();" style="cursor:pointer;text-align:left;">
+						<i class="icon-cog"></i>
+						<span style="font-size:12px;">Edit Profile</span>
+					</button>	
+				</div>
+<%	end %>
+
+				<div style="padding-top:10px;">
+<% if @session_user_id != @user.id %>
+	<% if @follow_count>0 %>
+					<button id="followDv" type="button" class="btn btn-default btn-inverse disabled" onClick="follow();" style="cursor:pointer;width:150px;text-align:left;">
+						<i class="icon-user"></i>
+						<span style="font-size:12px; padding-left:10px;">Following</span>
+					</button>
+	<% else %>
+					<button id="followDv" type="button" class="btn btn-default btn-inverse" onClick="follow();" style="width:150px;text-align:left;">
+						<i class="icon-user"></i>
+						<span style="font-size:12px; padding-left:10px;">Follow</span>
+					</button>
+	<% end %>
+<% end %>
+				</div>
+
+			</div>
+			<div class="span3">
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:17px;">
+					<i class="icon-eye-open"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_view, :unit => "", :precision => 0)%> views</span>
+				</div>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-heart"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_like, :unit => "", :precision => 0)%> likes</span>
+				</div>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-user"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_follower, :unit => "", :precision => 0)%> followers</span>
+				</div>
+<%
+	if @user.user_type=="S"
+%>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-shopping-cart"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_product, :unit => "", :precision => 0)%> products</span>
+				</div>
+<%
+	else
+%>
+				<div style="border-bottom:1px solid #cccccc;height:25px;padding-top:7px;">
+					<i class="icon-user" style="color:#999999"></i>
+					<span style="padding-left:10px;"><%=number_to_currency(@cnt_following, :unit => "", :precision => 0)%> following</span>
+				</div>
+<%
+	end
+%>				
+			</div>
+			<div class="span1">
+			</div>
+			
+		</div>
+		
+	</div>
+</div>
+
+<input type="hidden" id="currency_usd" value="<%=@currency_usd%>">
+<input type="hidden" id="currency_jpy" value="<%=@currency_jpy%>">
+<input type="hidden" id="currency_eur" value="<%=@currency_eur%>">
+<input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
+<input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
+
+<input type="hidden" id="message_type" value="<%=@message_type%>">
+<input type="hidden" id="order_by" value="">
+
+	<div class="whiteHeader cf" style="text-align:left;margin-top:1px;">
+        <div style="padding:10px 75px 0px 65px;">
+	        <div class="navbar">
+	          <div class="navbar-inner">
+	            <div class="container">
+	              <ul class="nav">
+	                <li <% if @message_type!="F" && @message_type!="L" && @message_type!="C" %>class="active"<% end %>><a href="/mypage/messages">All</a></li>
+	                <li <% if @message_type=="F" %>class="active"<% end %>><a href="/mypage/messages?message_type=F">Follow</a></li>
+	                <li <% if @message_type=="L" %>class="active"<% end %>><a href="/mypage/messages?message_type=L">Like</a></li>
+	                <li <% if @message_type=="C" %>class="active"<% end %>><a href="/mypage/messages?message_type=C">Comment</a></li>
+	              </ul>
+	            </div>
+	          </div>
+	        </div>
+        </div>
+		
+		<div id="products" class="products">
+			<a name="top"></a>
+			<div class="freshdesignweb">
+			    <div style="padding-left:40px;padding-right:80px;">
+				    <ul id="msgList" class="portfolio_list">
+				    </ul>
+				    <div id="pagingDv" class="tabFoot"></div>
+			    </div>
+			</div>
+		</div>
+		
+		
+	</div>
+	
+	
+	<a href="#top" id="top-link" class="floatingLink">top</a>
+	
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$(function() {
+		$("#cmenu6").addClass("active");
+		msgList();
+	});
+});
+
+var cpage = 0;
+
+function init(){
+	cpage = 0;
+	$("#msgList").empty();
+}
+
+// 메시지 type 변경
+function changeMsgType(val){
+	init();
+	$("#message_type").val(val);
+	msgList();
+}
+
+function goPage(val){
+	init();
+	cpage = val-1;
+	msgList();
+}
+
+function msgList(){
+	var order = "created_at DESC";
+	
+	var postData = new Object();
+    postData.page		= cpage+1;;
+	postData.per_page	= 20;
+	postData.message_type	= $("#message_type").val();
+	postData.order		= order;
+	
+	layer_open_loading("loading_pop_layer",5,"N");
+    
+	// ajax post 에서 세션 유지 시키기 위함
+	$.ajaxSetup({
+	  beforeSend: function(xhr) {
+	    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+	  }
+	});
+	
+	$.ajax({
+	    url     : '/mypage/msgListCallback',
+	    type    : 'post',
+	    dataType: 'json',
+	    data	: $.param(postData),
+	    async   : false,  
+	    success : function(json){
+	    	messages = json.messages;
+	    	
+	    	layer_close_loading("loading_pop_layer");
+
+	    	if(json.status){
+				if(messages.length>0){
+					cpage++;
+
+					$.each(messages, function (index, message) {
+						var li = '<li style="width:100%;border-bottom:1px solid #cccccc;padding:5px;">'
+						+ '<table style="width:100%;">'
+						+ '	<tr>'
+						+ '		<td style="width:50px;text-align:left">';
+						
+						if (message.img_file_name!=""){
+							li += '<a href="/mypage/'+message.profile_id+'"><img src="/data/user/thumb/'+message.img_file_name+'" style="width:50px;height:50px;"></a>';
+						} else {
+							li += '<a href="/mypage/'+message.profile_id+'"><img src="/images/common/profile_u.png" style="width:50px;height:50px;"></a>';	
+						}
+						
+						li += '		</td>'
+						+ '		<td valign="top" style="text-align:left;padding:5px 0px 0px 10px;">'
+						+ '			<div style="float:left">';
+						
+						if(message.read_yn=='Y'){
+							li += message.contents;
+						} else {
+							li += '<strong>'+message.contents+'</strong>';
+						}
+						
+						li += ' 				<br>'
+						+ ' 				<strong>'+message.created_at_str+' 전</strong>'
+						+ '			</div>'
+						+ '			<div style="float:right;text-align:left; padding-top:10px; padding-right:10px;">';
+						if(message.ref_url!=""){
+							li += '<a href="'+message.ref_url+'">확인하러 가기</a>';
+						}
+						li += '			</div>'
+						+ '			<div style="clear:both"></div>'
+						+ '		</td>'
+						+ '	</tr>'
+						+ '</table>'
+						  
+						+ '</li>';
+						
+						$('#msgList').append(li);
+					});
+					
+					$('#pagingDv').html(json.page_str);
+					
+				} else {
+					$('#msgList').append('<li style="width:100%;height:300px;padding-top:100px;font-weight:bold;font-size:20px;text-align:center;">No results found</li>');
+				}
+				
+	    	} else {
+	    		notify('error', json.msg);
+	    	}
+	    	
+	    },
+	    error   : function(e){
+	        //notify('error', TranslationLabels['could_not_complete_request']);
+	    }
+	});
+
+
+}
+
+// 개인정보 설정
+function editProfile(){
+	document.location.href = "/mypage/setting";
+}
+
+
+</script>

@@ -28,7 +28,7 @@ class ClipController < ApplicationController
     @item_subject = params[:item_subject]
     @item_price = params[:item_price]
     @item_price_type = params[:item_price_type]
-    @item_merchant = domain_name(@item_domain)
+    @item_merchant = Product.domain_name(@item_domain)
     
     # 스토어 확인
     cnt_store1 = User.where(url: 'http://'+@item_domain, user_type: 'S').count
@@ -155,22 +155,6 @@ class ClipController < ApplicationController
       format.json { render json: @product }
     end
 
-  end
-
-  private
-  
-  def domain_name(url)
-    domain = url.split(".")
-    if domain.count > 2
-      domain[1]
-    else 
-      domain_names = domain[0].split("/")
-      if domain_names.count>2
-        domain[0].split("/")[2]
-      else
-        domain[0]
-      end    
-    end
   end
 
   

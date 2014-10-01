@@ -1,2 +1,9 @@
 <%= yield %>
+<input type="hidden" id="msg_type" value="">
+<input type="hidden" id="msg_user_id" value="">
+<input type="hidden" id="msg_ref_user_id" value="<%=session[:user_id]||''%>">
+<input type="hidden" id="msg_ref_user_name" value="<%=session[:user_name]||''%>">
+<input type="hidden" id="msg_ref_profile_id" value="<%=session[:profile_id]||''%>">
+<input type="hidden" id="msg_ref_url" value="">
+<input type="hidden" id="msg_contents" value="">
 <%= render :partial => '/common/footer' %>

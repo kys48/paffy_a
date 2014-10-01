@@ -18,12 +18,16 @@ PaffyA::Application.routes.draw do
   
   #get 'follows/put'
   match 'follows/put', to: 'follows#put'
+  match 'follows/followListCallback', to: 'follows#followListCallback'
 
   #get 'mypage/myfeed'
   match 'mypage/myfeed', to: 'mypage#myfeed'
   match 'mypage/setting', to: 'mypage#setting'
   match 'mypage/checkValidCallback', to: 'mypage#checkValidCallback'
   match 'mypage/editProfile', to: 'mypage#editProfile'
+  match 'mypage/messages', to: 'mypage#messages'
+  match 'mypage/msgListCallback', to: 'mypage#msgListCallback'
+  match 'mypage/msgCountCallback', to: 'mypage#msgCountCallback'
   
   #get 'admin/getNaverShopApi'
   match 'getNaverShopApi', to: 'admin#getNaverShopApi'
@@ -136,6 +140,7 @@ PaffyA::Application.routes.draw do
   resources :follows
   resources :user_ranks
   resources :board_comments
+  resources :messages
   
   # scope '(:locale)' do
     # root :to => 'products#index', as: 'products'
