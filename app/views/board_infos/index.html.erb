@@ -1,0 +1,29 @@
+<h1>Listing board_infos</h1>
+
+<table>
+  <tr>
+    <th>Bbs name</th>
+    <th>Bbs type</th>
+    <th>Subject</th>
+    <th>File yn</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @board_infos.each do |board_info| %>
+  <tr>
+    <td><%= board_info.bbs_name %></td>
+    <td><%= board_info.bbs_type %></td>
+    <td><%= board_info.subject %></td>
+    <td><%= board_info.file_yn %></td>
+    <td><%= link_to 'Show', board_info %></td>
+    <td><%= link_to 'Edit', edit_board_info_path(board_info) %></td>
+    <td><%= link_to 'Destroy', board_info, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Board info', new_board_info_path %>

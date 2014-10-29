@@ -241,7 +241,7 @@ function msgList(){
 						+ ' 				<strong>'+message.created_at_str+' 전</strong>'
 						+ '			</div>'
 						+ '			<div style="float:right;text-align:left; padding-top:10px; padding-right:10px;">';
-						if(message.ref_url!=""){
+						if(message.ref_url!=null && message.ref_url!=""){
 							li += '<a href="'+message.ref_url+'">확인하러 가기</a>';
 						}
 						li += '			</div>'

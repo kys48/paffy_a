@@ -1,5 +1,4 @@
 <%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
-<%#= javascript_include_tag "/js/collection/binds.js" %>
 <div id="Profile" class="centerHolder" style="padding-top:20px;width:100%;">
 	<div class="userInfoBox">
 		<br/>
@@ -117,12 +116,12 @@
 <input type="hidden" id="currency_gbp" value="<%=@currency_gbp%>">
 <input type="hidden" id="currency_cny" value="<%=@currency_cny%>">
 
-<input type="hidden" id="item_type" value="<%=@item_type%>">
+<input type="hidden" id="type" value="<%=@type%>">
 <input type="hidden" id="price_stat" value="">
 <input type="hidden" id="color_code" value="">
 <input type="hidden" id="cate_code" value="">
 <input type="hidden" id="order_by" value="2">
-<% if @item_type=="U" %>
+<% if @type=="U" %>
 <input type="hidden" id="list_type" value="L">
 <% else %>
 <input type="hidden" id="list_type" value="4">
@@ -132,26 +131,26 @@
 		
         <div style="padding:10px 75px 0px 65px;">
         	
-	        <div class="navbar"<% if @item_type=="P" %> style="margin-bottom:0px;"<% end %> >
+	        <div class="navbar"<% if @type=="P" %> style="margin-bottom:0px;"<% end %> >
 	          <div class="navbar-inner">
 	            <div class="container">
 	              <ul class="nav">
-	                <li <% if !@item_type || @item_type=="" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>">All</a></li>
-	                <li <% if @item_type=="P" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=P">Product</a></li>
+	                <li <% if !@type || @type=="" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>">All</a></li>
+	                <li <% if @type=="P" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=P">Product</a></li>
 <%	if @user.user_type=="U" %>
-	                <li <% if @item_type=="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=C">Set&collection</a></li>
+	                <li <% if @type=="C" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=C">Set&collection</a></li>
 <%	end %>
-	                <li <% if @item_type=="L" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=L">Like</a></li>
-	                <li <% if @item_type=="U" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=U">Following Members</a></li>
-	                <li <% if @item_type=="S" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=S">Following Stores</a></li>
-	                <li <% if @item_type=="F" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=F">Followers</a></li>
+	                <li <% if @type=="L" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=L">Like</a></li>
+	                <li <% if @type=="U" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=U">Following Members</a></li>
+	                <li <% if @type=="S" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=S">Following Stores</a></li>
+	                <li <% if @type=="F" %>class="active"<% end %>><a href="/mypage/<%=@profile_id%>?type=F">Followers</a></li>
 
 	              </ul>
 	              <ul class="nav pull-right">
                       <li class="dropdown">
                         <a id="list_type_nav" href="#" class="dropdown-toggle" data-toggle="dropdown">
                         	<i class="icon-th"></i> 
-                        	<% if @item_type=="U" %>
+                        	<% if @type=="U" %>
                         	List 보기
                         	<% else %>
                         	4단 보기
@@ -160,9 +159,9 @@
                         </a>
                         <ul class="dropdown-menu">
                           <!-- <li><a href="javascript:changeListType('5')"><i class="icon-th"></i> 5단보기</a></li> -->
-                          <li class="list_type_nav<% if @item_type!="U" %> active<% end %>" id="list_type_nav_4"><a href="javascript:changeListType('4')"><i class="icon-th"></i> 4단보기</a></li>
+                          <li class="list_type_nav<% if @type!="U" %> active<% end %>" id="list_type_nav_4"><a href="javascript:changeListType('4')"><i class="icon-th"></i> 4단보기</a></li>
                           <!-- <li><a href="javascript:changeListType('3')"><i class="icon-th-large"></i> 3단보기</a></li> -->
-                          <li class="list_type_nav<% if @item_type=="U" %> active<% end %>" id="list_type_nav_L"><a href="javascript:changeListType('L')"><i class="icon-th-list"></i> List보기</a></li>
+                          <li class="list_type_nav<% if @type=="U" %> active<% end %>" id="list_type_nav_L"><a href="javascript:changeListType('L')"><i class="icon-th-list"></i> List보기</a></li>
                         </ul>
                       </li>
                     </ul>
@@ -170,7 +169,7 @@
 	          </div>
 	        </div>
     
-<% if @item_type=="P" %>
+<% if @type=="P" %>
 	        
 			<div id="searchNavi">
 <div id="smenu0" class="btn-group" style="margin-top:0px;">
@@ -272,7 +271,7 @@ end
 $(document).ready(function(){
 	$(function() {
 		$("#cmenu7").addClass("active");
-<% if @item_type=="U" || @item_type=="S" || @item_type=="F" %>
+<% if @type=="U" || @type=="S" || @type=="F" %>
 		followList();
 <% else %>
 		itemList();
@@ -283,7 +282,7 @@ $(document).ready(function(){
 // scroll event
 $(window).scroll(function(){
 	if($(window).scrollTop() == $(document).height() - $(window).height() && nextPage>1 && searchYn){
-<% if @item_type=="U" || @item_type=="S" || @item_type=="F" %>
+<% if @type=="U" || @type=="S" || @type=="F" %>
 		followList();
 <% else %>
 		itemList();
@@ -311,7 +310,7 @@ function changeListType(val){
 	}
 	$('.list_type_nav').removeClass("active");
 	$('#list_type_nav_'+val).addClass('active');
-<% if @item_type=="U" || @item_type=="S" || @item_type=="F" %>
+<% if @type=="U" || @type=="S" || @type=="F" %>
 	followList();
 <% else %>
 	itemList();
@@ -387,16 +386,34 @@ function itemList(){
 	postData.currency_gbp = $("#currency_gbp").val();
 	postData.currency_cny = $("#currency_cny").val();
 	
-	postData.id = '<%= @profile_id%>';
-	postData.myfeed = 'Y'
-	postData.type = $("#item_type").val();
+	postData.profile_id = '<%= @profile_id%>';
+	postData.type = $("#type").val();
 	postData.search_key = "<%= @search_key%>";
 	postData.cate_code = $("#cate_code").val();
 	postData.price_stat = $("#price_stat").val();
 	postData.color_code = $("#color_code").val();
-<% if @session_user_id!="" && @session_user_id == @user.id %>
+<%
+	if @session_user_id!="" && @session_user_id == @user.id
+%>
+	postData.profile_id = '<%= @profile_id%>';
+	postData.myitem = 'Y';
+<%
+		if @type=='L'
+%>
+	postData.like = 'Y';
+<%
+		else
+			if @type=='P' || @type=='C' 
+%>
+	postData.item_type = '<%=@type%>';
+<%
+			end
+		end
+%>
 	postData.use_yn = "Y,R";
-<% end %>
+<%
+	end
+%>
 	postData.per_page = 16;
 	postData.order = order;
     
@@ -445,12 +462,12 @@ function itemList(){
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
 									+ '</div>'
 									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this,\''+collection.item_type+'\');"></span>'
+									+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 <% if @session_user_id!="" && @session_user_id == @user.id %>									
-									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\',\''+collection.item_type+'\','+collection.id+')"><i class="icon-trash"></i></span>'
+									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\','+collection.id+')"><i class="icon-trash"></i></span>'
 <% end %>
 									+ '</div>'
 								}else if(collection.item_type=='P'){
@@ -471,7 +488,7 @@ function itemList(){
 									var priceStr = getMoneyType(change_price,change_price_type);
 									
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/collections/pshow/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
 									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
 									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
@@ -479,12 +496,12 @@ function itemList(){
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
 									+ '</div>'
 									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this,\''+collection.item_type+'\');"></span>'
+									+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 <% if @session_user_id!="" && @session_user_id == @user.id %>
-									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\',\''+collection.item_type+'\','+collection.id+')"><i class="icon-trash"></i></span>'
+									+ ' <span class="view_remove" onClick="removeItem(\''+collection.get_yn+'\','+collection.id+')"><i class="icon-trash"></i></span>'
 <% end %>
 									+ '</div>';
 								}
@@ -533,12 +550,12 @@ function followList(){
     postData.page = nextPage;
     postData.per_page = 8;
     postData.list_type = list_type;
-<%	if @item_type=="F" %>
+<%	if @type=="F" %>
 	postData.user_id = '<%=@user.id%>';
 <%	else %>
 	postData.user_id = '<%=@session_user_id%>';
 <%	end %>
-	postData.user_type = '<%=@item_type%>';
+	postData.user_type = '<%=@type%>';
     postData.order = order;
 
 	if (searchYn){
@@ -580,13 +597,13 @@ if (list_type=="L"){
 	+ '	 		<tr>'
 	+ '	 			<td style="width:140px;text-align:left">';
 	if(user.img_file_name!="" && user.img_file_name != null){
-<% if @item_type=="S" %>
+<% if @type=="S" %>
 		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/data/user/medium/'+user.img_file_name+'" style="width:140px;height:140px;"></a>';
 <% else %>
 		li += '<a href="/mypage/'+user.profile_id+'"><img src="/data/user/medium/'+user.img_file_name+'" style="width:140px;height:140px;"></a>';
 <% end %>
 	} else {
-<% if @item_type=="S" %>
+<% if @type=="S" %>
 		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/images/common/profile_u.png" style="width:140px;height:140px;"></a>';
 <% else %>
 		li += '<a href="/mypage/'+user.profile_id+'"><img src="/images/common/profile_u.png" style="width:140px;height:140px;"></a>';
@@ -596,7 +613,7 @@ if (list_type=="L"){
 	li += '	 			</td>'
 	+ '	 			<td valign="top" style="width:250px;text-align:left;padding:10px;">'
 	+ '	 				<a href="/mypage/'+user.profile_id+'"><strong style="font-size:17px">'+user.user_name+'</strong></a>'
-<% if @item_type=="U" || @item_type=="F" %>
+<% if @type=="U" || @type=="F" %>
 	+ '<br/><br/>' + user.created_at_join_str + ' 전에 가입하였습니다.';
 <% else %>
 	+ '<br/>'
@@ -615,7 +632,7 @@ if (list_type=="L"){
 	+ '	 	<div style="padding-top:10px;">';
 	
 	$.each(collections, function (index, collection) {
-<% if @item_type=="S" %>		
+<% if @type=="S" %>		
 		li += ''
 		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:140px; height:140px; border:1px solid #CCCCCC;">'
 		+ '<a href="/collections/pshow/'+collection.id+'"><img src="/data/product/medium/'+collection.img_file_name+'" style="width:140px; height:140px;"></a>'
@@ -645,13 +662,13 @@ if (list_type=="L"){
 	+ '	 			<td style="width:60px;text-align:left">';
 	
 	if(user.img_file_name!="" && user.img_file_name != null){
-<% if @item_type=="S" %>
+<% if @type=="S" %>
 		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/data/user/thumb/'+user.img_file_name+'" style="width:45px;height:45px;"></a>';
 <% else %>
 		li += '<a href="/mypage/'+user.profile_id+'"><img src="/data/user/thumb/'+user.img_file_name+'" style="width:45px;height:45px;"></a>';
 <% end %>
 	} else {
-<% if @item_type=="S" %>
+<% if @type=="S" %>
 		li += '<a href="javascript:goUrl(\''+user.url+'\');"><img src="/images/common/profile_u_sm.png" style="width:45px;height:45px;"></a>';
 <% else %>
 		li += '<a href="/mypage/'+user.profile_id+'"><img src="/images/common/profile_u_sm.png" style="width:45px;height:45px;"></a>';
@@ -661,7 +678,7 @@ if (list_type=="L"){
 	li += '	 			</td>'
 	+ '	 			<td style="width:320px;text-align:left">'
 	+ '	 				<a href="/mypage/'+user.profile_id+'"><strong style="font-size:17px">'+user.user_name+'</strong></a>'
-<% if @item_type=="U" || @item_type=="F" %>
+<% if @type=="U" || @type=="F" %>
 	+ '<br/>' + user.created_at_join_str + ' 전에 가입하였습니다.';
 <% else %>
 	+ '<br/>'
@@ -683,7 +700,7 @@ if (list_type=="L"){
 	+ '	 	<div style="padding-top:10px;">';
 	
 	$.each(collections, function (index, collection) {
-<% if @item_type=="S" %>
+<% if @type=="S" %>
 		li += ''
 		+ '<div style="float:left;text-align:left; margin-right:8px; margin-bottom:8px; width:110px; height:110px; border:1px solid #CCCCCC;">'
 		+ '<a href="/collections/pshow/'+collection.id+'"><img src="/data/product/medium/'+collection.img_file_name+'" style="width:110px; height:110px;"></a>'
@@ -730,13 +747,10 @@ if (list_type=="L"){
 
 
 // 좋아요
-function like(obj){
+function like(obj,item_type){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = '';
 		var id = obj.id;
 		var arrId = id.split('_');
-		if(arrId[0]=='pid') item_type = 'P';
-		else if(arrId[0]=='cid') item_type = 'C';
 		
 		$('#msg_type').val('L');
 		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
@@ -751,7 +765,7 @@ function like(obj){
 			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
 		} 
 		
-		likeItem(item_type,arrId[1]);
+		likeItem(arrId[1]);
 <%	else %>
 		login_pop(document.location.href);
 <%	end %>
@@ -798,13 +812,12 @@ function follow(){
 <% end %>
 }
 
-function removeItem(get_yn,stat,id){
+function removeItem(get_yn,id){
 	if(confirm("정말 항목을 삭제하시겠습니까?")){
 	
 		var postData = new Object();
 		postData.get_yn = get_yn;
-		postData.stat = stat;
-		postData.ref_id = id;
+		postData.collection_id = id;
 	
 		// ajax post 에서 세션 유지 시키기 위함
 		$.ajaxSetup({

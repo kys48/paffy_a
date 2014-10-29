@@ -3,6 +3,8 @@
 class MainController < ApplicationController
   
   def index
+	#UserMailer.welcome_email("kys48@mediopia.co.kr","메일발송테스트","메일메일~날라가~!").deliver
+  	#sleep 2
     cmenu = params[:cmenu]||"1"
     cmenu_sub = params[:cmenu_sub]||"1"
     params[:cmenu] = cmenu
@@ -44,29 +46,68 @@ class MainController < ApplicationController
     @currency_gbp = 0
     @currency_cny = 0
 
-    if @store_type=="F"
+	if @item_type!="C"
+=begin
+		#느리다... 
+		xmlurl = "http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency=USD&ToCurrency=KRW"
+		xml = Nokogiri::XML(open(URI.parse(xmlurl)))
+		@currency_usd = xml.search("double").inner_html.to_s
+		
+		xmlurl = "http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency=JPY&ToCurrency=KRW"
+		xml = Nokogiri::XML(open(URI.parse(xmlurl)))
+		@currency_jpy = xml.search("double").inner_html.to_s
+		
+		xmlurl = "http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency=EUR&ToCurrency=KRW"
+		xml = Nokogiri::XML(open(URI.parse(xmlurl)))
+		@currency_eur = xml.search("double").inner_html.to_s
+		
+		xmlurl = "http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency=GBP&ToCurrency=KRW"
+		xml = Nokogiri::XML(open(URI.parse(xmlurl)))
+		@currency_gbp = xml.search("double").inner_html.to_s
+		
+		xmlurl = "http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency=CNY&ToCurrency=KRW"
+		xml = Nokogiri::XML(open(URI.parse(xmlurl)))
+		@currency_cny = xml.search("double").inner_html.to_s
+
+    	
       @currency_usd = GoogCurrency.usd_to_krw(1).to_i
       @currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
       @currency_eur = GoogCurrency.eur_to_krw(1).to_i
       @currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
       @currency_cny = GoogCurrency.cny_to_krw(1).to_i
+=end
+		# 환율정보를 가져온다
+		sysconfigs = Sysconfig.where(config_type: "currency", use_yn: "Y")
+		sysconfigs.each do |sysconfig|
+			if sysconfig.config_key=="USD"
+				@currency_usd = sysconfig.config_value 
+			elsif sysconfig.config_key=="JPY"
+				@currency_jpy = sysconfig.config_value
+			elsif sysconfig.config_key=="EUR"
+				@currency_eur = sysconfig.config_value
+			elsif sysconfig.config_key=="GBP"
+				@currency_gbp = sysconfig.config_value
+			elsif sysconfig.config_key=="CNY"
+				@currency_cny = sysconfig.config_value
+			end
+		end
+
     end
 
     # 찜한 상품, 콜렉션
     params[:session_user_id] = @session_user_id
     
-    if params[:cmenu_sub]=="2" || params[:cmenu_sub]=="3"
+    if params[:cmenu_sub]=="2" || params[:cmenu_sub]=="3" || params[:cmenu_sub]=="4"
     	params[:limit_hit] = 0  # hit수가 0이상인 상품만 뿌려준다
     else
     	params[:limit_hit] = 2  # hit수가 2이상인 상품만 뿌려준다
     end
     
     @limit_hit = params[:limit_hit]
-    
-    
-    @collections = Collection.itemList(params)
+    params[:use_yn] = "Y"
+    params[:order] = " A.hit DESC "
+    @collections = Collection.mainItemList(params)
     @collectionSize = @collections.size
-    
     @cateList = Cate.all()
 
     respond_to do |format|
@@ -83,29 +124,47 @@ class MainController < ApplicationController
     params[:per_page] = 16
 
     # 찜한 상품, 콜렉션
-    collectionList = Collection.itemList(params)
-    
+    collectionList = Collection.mainItemList(params)
+
     respond_to do |format|
       format.json { render :json => { status: true, collections: collectionList }.to_json }
     end
   end
   
-  # 통합검색
-  def search
-    @search_key = params[:search_key]
-    @currency_usd = GoogCurrency.usd_to_krw(1).to_i
-    @currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
-    @currency_eur = GoogCurrency.eur_to_krw(1).to_i
-    @currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
-    @currency_cny = GoogCurrency.cny_to_krw(1).to_i
+	# 통합검색
+	def search
+		@search_key = params[:search_key]
+		@session_user_id = session[:user_id]||""
     
-    @cateList = Cate.all()
+		@currency_usd = 0
+		@currency_jpy = 0
+		@currency_eur = 0
+		@currency_gbp = 0
+		@currency_cny = 0
+
+		# 환율정보를 가져온다
+		sysconfigs = Sysconfig.where(config_type: "currency", use_yn: "Y")
+		sysconfigs.each do |sysconfig|
+			if sysconfig.config_key=="USD"
+				@currency_usd = sysconfig.config_value 
+			elsif sysconfig.config_key=="JPY"
+				@currency_jpy = sysconfig.config_value
+			elsif sysconfig.config_key=="EUR"
+				@currency_eur = sysconfig.config_value
+			elsif sysconfig.config_key=="GBP"
+				@currency_gbp = sysconfig.config_value
+			elsif sysconfig.config_key=="CNY"
+				@currency_cny = sysconfig.config_value
+			end
+		end
     
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @collections }
-    end
-  end
+		@cateList = Cate.all()
+    
+		respond_to do |format|
+			format.html # index.html.erb
+			format.json { render json: @collections }
+		end
+	end
   
   
 end

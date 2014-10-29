@@ -4,6 +4,7 @@ require 'nokogiri'
 require 'uri'
 require 'erb'
 include ERB::Util
+include ApplicationHelper
 
 class AdminController < ApplicationController
   after_filter :cors_set_access_control_headers
@@ -60,7 +61,7 @@ puts("start~")
           shop_name = shops["shop_name"]
           shop_url  = shops["shop_url"]
           
-          domain = Product.domain_name(shop_url)
+          domain = ApplicationHelper.domain_name(shop_url)
           
           shop_url = shop_url.gsub(/http:\/\//,'')
           shop_url = shop_url.gsub(/https:\/\//,'')
@@ -167,7 +168,7 @@ puts("start~")
                 end
                 
                 # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-                ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+                ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
                 thumb = tmpimg.resize!(ipos[0],ipos[1])
                 bg = Magick::Image.new(thumbSize, thumbSize){
                   self.background_color = 'white'
@@ -187,7 +188,7 @@ puts("start~")
                 %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
                 
                 # 이미지 대표색상코드 추출
-                colors = Product.get_product_color(product_file_name)
+                colors = ApplicationHelper.get_product_color(product_file_name)
                 product.color_code_o = colors[0] 
                 product.color_code_s = colors[1]
               end
@@ -207,17 +208,8 @@ puts("start~")
               product.use_yn = "Y"
               product.merchant = domain
               
-              add_product = Product.addProduct(product)
-
-              # 스토어 상품 연결 정보 저장
-              cnt_store_item = UserItem.where(user_id: store.id, ref_id: add_product.id).count
-              if cnt_store_item==0
-                store_item = UserItem.new
-                store_item.user_id = store.id
-                store_item.ref_id = add_product.id
-                store_item.item_type = 'P'
-                store_item.save!
-              end
+              add_collection = Product.addProduct(product)
+              
               
               puts("INSERT~!!!")
               
@@ -371,7 +363,7 @@ puts("start!")
           product["productId"] = productId
           product["productType"] = productType
           
-          #merchant = Product.domain_name(ori_link)
+          #merchant = ApplicationHelper.domain_name(ori_link)
           merchant = searchDomain
           merchant_uri = URI(ori_link)
           merchant_domain = merchant_uri.host
@@ -439,7 +431,7 @@ puts("start!")
               end
               
               # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-              ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+              ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
               thumb = tmpimg.resize!(ipos[0],ipos[1])
               bg = Magick::Image.new(thumbSize, thumbSize){
                 self.background_color = 'white'
@@ -459,7 +451,7 @@ puts("start!")
               %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
               
               # 이미지 대표색상코드 추출
-              colors = Product.get_product_color(product_file_name)
+              colors = ApplicationHelper.get_product_color(product_file_name)
               add_product.color_code_o = colors[0] 
               add_product.color_code_s = colors[1]
             end
@@ -478,7 +470,7 @@ puts("start!")
             add_product.use_yn = "Y"
             add_product.merchant = merchant
             add_product.store_type = "I"
-            add_product.style_type = 'P'
+            add_product.style_type = 'S'
             add_product.save!
             
             # 스토어 상품 연결 정보 저장
@@ -610,7 +602,7 @@ puts(Time.zone.now)
         # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
         %x{sh remove_bg #{RAILS_ROOT}/public/data/product/original/ #{product.img_file_name} #{RAILS_ROOT}/public/data/product/removebg/ 7}
         
-        colors = Product.get_product_color(product.img_file_name)
+        colors = ApplicationHelper.get_product_color(product.img_file_name)
         product.color_code_o = colors[0] 
         product.color_code_s = colors[1]
         product.save!
@@ -682,7 +674,7 @@ puts(Time.zone.now)
     
     products.each_with_index do |product, i|
       if product.img_file_name && product.img_file_name!=''
-        colors = Product.get_product_color(product.img_file_name)
+        colors = ApplicationHelper.get_product_color(product.img_file_name)
         product.color_code_o = colors[0] 
         product.color_code_s = colors[1]
         product.save!
@@ -774,7 +766,7 @@ puts(Time.zone.now)
         end
         
         # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-        ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+        ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
         thumb = tmpimg.resize!(ipos[0],ipos[1])
         bg = Magick::Image.new(thumbSize, thumbSize){
           if img_type=="B"
@@ -827,24 +819,5 @@ puts(Time.zone.now)
   def cors_set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'
   end
-=begin  
-	def domain_name(url)
-		domain = url.split(".")
-		retVal = ""
-		if domain.count > 2
-			retVal = domain[1]
-		else
-			domain_names = domain[0].split("/")
-			if domain_names.count>2
-				retVal = domain[0].split("/")[2]
-			else
-				retVal = domain[0]
-			end
-		end
-		retVal = retVal.gsub(/\'/,'’') 
-		retVal = retVal.gsub(/&/,'＆')
-		return retVal
-	end
-=end  
   
 end

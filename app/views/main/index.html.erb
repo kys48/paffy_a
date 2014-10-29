@@ -223,8 +223,8 @@ end
 				class_like = "like_icon_on"
 			end
 %>
-							 		<span id="cid_<%=collection.id%>" class="<%=class_like%>"></span>
-							 		<span id="ccnt_<%=collection.id%>" class="like_count"><%=collection.cnt_like%></span>
+							 		<span id="id_<%=collection.id%>" class="<%=class_like%>"></span>
+							 		<span id="cnt_<%=collection.id%>" class="like_count"><%=collection.cnt_like%></span>
 							 		<span class="view_icon"></span>
 							 		<span class="view_count"><%=collection.hit%></span>
 							 	</div>
@@ -238,22 +238,22 @@ end
 			change_price = collection.price.to_f
 			
 			if collection.price_type=="USD"
-				change_price = @currency_usd*change_price;
+				change_price = @currency_usd.to_f*change_price;
 			elsif collection.price_type=="JPY"
-				change_price = @currency_jpy*change_price;
+				change_price = @currency_jpy.to_f*change_price;
 			elsif collection.price_type=="EUR"
-				change_price = @currency_eur*change_price;
+				change_price = @currency_eur.to_f*change_price;
 			elsif collection.price_type=="GBP"
-				change_price = @currency_gbp*change_price;
+				change_price = @currency_gbp.to_f*change_price;
 			elsif collection.price_type=="CNY"
-				change_price = @currency_cny*change_price;
+				change_price = @currency_cny.to_f*change_price;
 			end
 			
 			price_str = number_to_currency(change_price, :unit => price_type_str, :precision => 0)
 %>
 							<div class="thumbnail" style="width:230px;height:305px;display:table-cell;text-align:center;vertical-align:middle">
 							 	<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">
-							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/products/<%= collection.id%>'" style="cursor:pointer">
+							 		<img src="/data/product/medium/<%= collection.img_file_name%>" onClick="document.location.href='/collections/pshow/<%= collection.id%>'" style="cursor:pointer">
 							 	</div>
 							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">
 							 		<a href="javascript:goProductUrl('<%=collection.url%>','<%=collection.merchant%>','product')"><span style="color:#000000"><%= collection.subject%></span></a>
@@ -269,8 +269,8 @@ end
 				class_like = "like_icon_on"
 			end
 %>
-							 		<span id="pid_<%=collection.id%>" class="<%=class_like%>"></span>
-							 		<span id="pcnt_<%=collection.id%>" class="like_count"><%=collection.cnt_like%></span>
+							 		<span id="id_<%=collection.id%>" class="<%=class_like%>"></span>
+							 		<span id="cnt_<%=collection.id%>" class="like_count"><%=collection.cnt_like%></span>
 							 		<span class="view_icon"></span>
 							 		<span class="view_count"><%=collection.hit%></span>
 							 	</div>
@@ -377,27 +377,30 @@ function searchStoreType(stat){
 	itemList();
 }
 
+
+
 function itemList(){
 	var order = "hit desc";
 	if($("#order_by").val()=="1") order = "hit desc"; 
 	else if($("#order_by").val()=="2") order = "created_at desc";
 	
 	var postData = new Object();
-    postData.page = nextPage;
-    postData.currency_usd = $("#currency_usd").val();
+	postData.page = nextPage;
+	postData.currency_usd = $("#currency_usd").val();
 	postData.currency_jpy = $("#currency_jpy").val();
 	postData.currency_eur = $("#currency_eur").val();
 	postData.currency_gbp = $("#currency_gbp").val();
 	postData.currency_cny = $("#currency_cny").val();
 	
-    postData.type = '<%=@item_type%>';
-    postData.style_type = '<%=@style_type%>';
-    postData.cate_code = $("#cate_code").val();
+	postData.type = '<%=@item_type%>';
+	postData.style_type = '<%=@style_type%>';
+	postData.cate_code = $("#cate_code").val();
 	postData.price_stat = $("#price_stat").val();
 	postData.color_code = $("#color_code").val();
 	postData.store_type = $("#store_type").val();
-    postData.limit_hit = $("#limit_hit").val();
-    postData.order = order;
+	postData.limit_hit = $("#limit_hit").val();
+	postData.use_yn = "Y";
+	postData.order = order;
 	
 	if (searchYn){
 		layer_open_loading("loading_pop_layer",5,"N");
@@ -409,13 +412,14 @@ function itemList(){
 			    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
 			  }
 			});
-			
+
 			$.ajax({
 			    url     : '/main/itemListCallback',
+			    //contentType: 'application/json; charset=utf-8',
 			    type    : 'post',
 			    dataType: 'json',
 			    data	: $.param(postData),
-			    async   : false,  
+			    async   : true,  
 			    success : function(json){
 			    	collections = json.collections;
 			    	
@@ -435,6 +439,7 @@ function itemList(){
 								
 								var li = '<li>'
 								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle">';
+								
 								if(collection.item_type=='C'){
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
 									+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
@@ -444,8 +449,8 @@ function itemList(){
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
 									+ '</div>'
 									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 									+ '</div>';
@@ -468,7 +473,7 @@ function itemList(){
 									var priceStr = getMoneyType(change_price,change_price_type);
 									
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/collections/pshow/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
 									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
 									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
@@ -476,12 +481,13 @@ function itemList(){
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
 									+ '</div>'
 									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+									+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 									+ '</div>';
 								}
+								
 								li += '</div>'
 								+ '</li>';
 								
@@ -499,18 +505,23 @@ function itemList(){
 						
 			    	} else {
 			    		searchYn = false;
-			    		notify('error', json.msg);
+			    		//notify('error', json.msg);
 			    	}
 			    },
 			    error   : function(e){
 			        searchYn = false;
-			        semafors['ajax'] = false;
+			        //semafors['ajax'] = false;
 			        //notify('error', TranslationLabels['could_not_complete_request']);
 			    }
 			});
 		}, 10 );
 	}
 }
+
+
+
+
+
 
 
 // 좋아요
@@ -535,7 +546,7 @@ function like(obj){
 			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
 		} 
 		
-		likeItem(item_type,arrId[1]);
+		likeItem(arrId[1]);
 <%	else %>
 		login_pop(document.location.href);
 <%	end %>

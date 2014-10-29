@@ -1,3 +1,3 @@
 class Get < ActiveRecord::Base
-  attr_accessible :get_type, :item_type, :ref_id, :user_id
+  attr_accessible :user_id, :collection_id, :get_type 
 end

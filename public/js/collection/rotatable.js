@@ -7,7 +7,6 @@
     };
     
     $.rotatable = function(el, options) {
-        
         var base            = this;
         base.$el            = $(el);
         
@@ -17,7 +16,6 @@
         }
         
         base.setRotate = function(degree){
-            
             base.$el.css('-moz-transform', 'rotate(' + degree + 'deg)');
             base.$el.css('-moz-transform-origin', '50% 50%');
             base.$el.css('-webkit-transform', 'rotate(' + degree + 'deg)');
@@ -28,7 +26,6 @@
             base.$el.css('-ms-transform-origin', '50% 50%');
             
             base.$el.data('rotate', degree);
-            
         }
         
         if(typeof(options) == 'number'){
@@ -47,19 +44,14 @@
         base.degreeStart = 0;
         
         base.init  = function(){
-            
             base.rotatePoint = $('<div>').addClass('ui-rotatable-handle');
-            
             base.rotatePoint.appendTo(base.$el);
-            
             base.$el.addClass('ui-rotatable');
-            
-            base.rotatePoint.on('mousedown', base.setBasePoints); 
-            
-            
+            base.rotatePoint.on('mousedown', base.setBasePoints);
         }
         
         base.setBasePoints = function(e){
+            oPlatform.board.selectable('disable');
             base.dragging = true;
             base.$el.draggable('disable');
             base.degreeStart = base.$el.data('rotate');
@@ -71,7 +63,7 @@
         }
         
         base.release = function(){
-            
+            oPlatform.board.selectable('enable');
             base.dragging = false;
             base.$el.draggable('enable');
             $(document).unbind('mousemove.drag');
@@ -79,11 +71,9 @@
             
             if(base.options.end)
                 base.options.end(base.degreeStart, base.degree);
-            
         }
         
         base.calculate = function(e){
-            
             base.rotate.x   = e.pageX;
             base.rotate.y   = e.pageY;
             

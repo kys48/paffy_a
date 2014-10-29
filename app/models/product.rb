@@ -4,6 +4,8 @@ require 'shopsense'
 require 'json'
 require 'open-uri'
 
+include ApplicationHelper
+
 class Product < ActiveRecord::Base
   attr_accessible :cate_code, :subject, :price, :sale_price, :price_type, :url, :hit, :user_id,
                   :use_yn, :merchant, :cate_code, :img, :style_type
@@ -47,7 +49,7 @@ puts("[i:"+i.to_s+"]")
       product.price_type = "KRW"
       product.url = row["url"]
       product.user_id = store_id
-      product.merchant = domain_name(row["url"])
+      product.merchant = ApplicationHelper.domain_name(row["url"])
       product.hit = 1
       img_url = row["img_url"]
       
@@ -77,7 +79,7 @@ puts("[i:"+i.to_s+"]")
         end
         
         # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-        ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+        ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
         thumb = tmpimg.resize!(ipos[0],ipos[1])
         bg = Magick::Image.new(thumbSize, thumbSize){
           self.background_color = 'white'
@@ -201,7 +203,7 @@ puts("Complete!")
       end
       
       # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-      ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+      ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
       thumb = tmpimg.resize!(ipos[0],ipos[1])
       bg = Magick::Image.new(thumbSize, thumbSize){
         self.background_color = 'white'
@@ -221,7 +223,7 @@ puts("Complete!")
       %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
 
       # 이미지 대표색상코드 추출
-      colors = Product.get_product_color(product_file_name)
+      colors = ApplicationHelper.get_product_color(product_file_name)
       product.color_code_o = colors[0] 
       product.color_code_s = colors[1]
 
@@ -241,7 +243,7 @@ puts("Complete!")
     product.use_yn = "Y"
     product.merchant = store.profile_id
     product.store_type = "F"
-    #product.merchant = domain_name(itemData["clickUrl"])
+    #product.merchant = ApplicationHelper.domain_name(itemData["clickUrl"])
 
     product.save!
 
@@ -422,7 +424,7 @@ puts("Complete!")
 	            end
 	            
 	            # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-	            ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+	            ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
 	            thumb = tmpimg.resize!(ipos[0],ipos[1])
 	            bg = Magick::Image.new(thumbSize, thumbSize){
 	              self.background_color = 'white'
@@ -436,16 +438,16 @@ puts("Complete!")
 	        
 	            bg.resize!(75,75)
 	            bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
-=begin
+
 	            # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
 	            #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
 	            %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
 	      
 	            # 이미지 대표색상코드 추출
-	            colors = Product.get_product_color(product_file_name)
+	            colors = ApplicationHelper.get_product_color(product_file_name)
 	            add_product.color_code_o = colors[0] 
 	            add_product.color_code_s = colors[1]
-=end
+
 	            add_product.img_file_name = product_file_name
 	            add_product.img_content_type = "image/png"
 	            add_product.img_file_size = 0
@@ -480,11 +482,44 @@ puts("Complete!")
     
   end
   
-  def self.addProduct(product)
+	def self.addProduct(product)
+=begin
     add_product = Product.new
     add_product = product
     add_product.save!
-    return add_product
+=end
+		product.save!
+
+		#collections 저장
+		collection	= Collection.new
+		collection.item_type	= "P"
+		collection.user_id		= product.user_id
+		collection.subject		= product.subject
+		collection.hit			= 1
+		collection.use_yn		= product.use_yn
+		collection.img_file_name		= product.img_file_name
+		collection.img_content_type	= product.img_content_type
+		collection.img_file_size		= product.img_file_size
+		collection.img_updated_at		= product.img_updated_at
+		collection.product_id	= product.id	# 예비용
+		collection.save!
+		 
+		#collection_products 저장
+		collection_products = CollectionProduct.new
+		collection_products.collection_id	= collection.id
+		collection_products.product_id		= product.id
+		collection_products.save!
+ 
+		# 스토어 상품 연결 정보 저장
+		cnt_store_item = UserItem.where(user_id: product.user_id, collection_id: collection.id).count
+		if cnt_store_item==0
+			store_item = UserItem.new
+			store_item.user_id = product.user_id
+			store_item.collection_id = collection.id
+			store_item.save!
+		end
+    
+    return collection
   end
 
 
@@ -620,172 +655,7 @@ puts("Complete!")
     #milisec = DateTime.now.strftime("%s")
     extension = File.extname(img_file_name).downcase
     #self.img.instance_write(:file_name, "#{milisec}#{extension}")
-    self.img.instance_write(:file_name, "#{ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)}#{extension}")
+    self.img.instance_write(:file_name, "#{randomize_name}#{extension}")
   end
   
-  # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-  def self.get_resize_fit(rsize,iwidth,iheight)
-      isize = [] 
-      
-      iw = rsize
-      ih = rsize
-      if iwidth > iheight
-        iw = rsize
-        ih = (iheight*rsize)/iwidth
-      elsif iwidth < iheight
-        iw = (iwidth*rsize)/iheight
-        ih = rsize
-      end
-      
-      isize[0] = iw
-      isize[1] = ih
-      isize[2] = (rsize-isize[0].to_i)/2  # 정사각형 이미지배경에서 위치될 썸네일 left
-      isize[3] = (rsize-isize[1].to_i)/2  # 정사각형 이미지배경에서 위치될 썸네일 top
-      
-      return isize
-  end
-  
-  # 원본 이미지의 색상표이미지를 만든다
-  def self.sort_by_decreasing_frequency(img)
-    hist = img.color_histogram
-    # sort by decreasing frequency
-    sorted = hist.keys.sort_by {|p| -hist[p]}
-    new_img = Magick::Image.new(hist.size, 1)
-    
-    new_img.store_pixels(0, 0, hist.size, 1, sorted)
-  end
-   
-  # 색상표이미지에서 두번째 색상hex값을 넘겨준다
-  def self.get_pix(img)
-    pixels = img.get_pixels(0, 0, img.columns, 1)
-    color = ""
-    if pixels.size<2
-      color = pixels.first.to_color(Magick::AllCompliance, false, 8, true)
-    else
-      color = pixels.second.to_color(Magick::AllCompliance, false, 8, true)
-    end
-=begin
-    # 첫번째 색상이 ffffff면 두번째 색상을 가져옴(기본적으로 첫번째 색상)
-    color_hex=""
-    pixels.each_with_index do |p,i|
-      if i<2
-        hex = p.to_color(Magick::AllCompliance, false, 8, true)
-        puts hex
-        if i==0 && hex!="#ffffff"
-          color_hex = hex
-        end
-          
-        if i>0 && color_hex==""
-          color_hex = hex
-        end
-        
-      end
-    end
-=end
-    return color.gsub(/#/,'')
-    
-  end
-  
-  # 이미지의 대표 색상표와 가까운 값을 가져온다
-  def self.get_product_color(img_file_name)
-      colors = {}
-      
-      begin
-      
-        dataFilePath = "/public/data/product/"
-        original = Magick::Image.read(RAILS_ROOT+dataFilePath+"removebg/"+img_file_name).first
-        
-        if original
-    
-          bg = Magick::Image.new(original.columns, original.rows){
-            #self.background_color = '3366ff'
-            self.background_color = 'transparent'
-            self.format = 'PNG'
-          }
-           
-          # reduce number of colors
-          quantized = original.quantize(10, Magick::RGBColorspace)
-          
-          bg.composite!(quantized, 0, 0, Magick::OverCompositeOp)
-          #bg.write(RAILS_ROOT+dataFilePath+"tmp.png")
-          
-          # Create an image that has 1 pixel for each of the top_n colors.
-          normal = Product.sort_by_decreasing_frequency(bg)
-          #normal.write(RAILS_ROOT+dataFilePath+"tmp2.png")
-          color_hex = Product.get_pix(normal)
-          
-=begin  
-          # polyvore
-          base_palette = [
-          "660000", "de6318", "d3d100", "8c8c00", "293206", "34e3e5", "205260", "1c0946", "46008c", "33151a", "e30e5c", "3d1f00", "5e1800", "000000",
-          "980000", "ff7f00", "ffff00", "88ba41", "006700", "65f3c9", "318c8c", "31318c", "5e318c", "520f41", "ff59ac", "8c5e31", "8c4600", "505050",
-          "ff0000", "ffa000", "eed54f", "778c62", "00ae00", "77f6a7", "628c8c", "4a73bd", "77628c", "840e47", "ef8cae", "8e7032", "d1b45b", "828283",
-          "e32636", "ffc549", "ffff6d", "8c8c62", "00ff00", "b2ffff", "62778c", "589ad5", "ac59ff", "8c6277", "ead0cd", "8c7762", "e2db9a", "b5b5b6",
-          "fa624d", "ffc898", "ffffae", "96d28a", "a9ff00", "d8ffb2", "bdd6bd", "a1c4e9", "a297e9", "c6a5b6", "ffdfef", "c69c7b", "ffffff", "e7e7e7"
-          ]
-    
-          # polyvore - lite
-          base_palette = ["660000", "34e3e5", "46008c", "000000", "ffff00",
-                          "88ba41", "006700", "318c8c", "31318c", "ff59ac",
-                          "8c5e31", "8c4600", "ff0000", "ffa000", "840e47",
-                          "00ff00", "ac59ff", "b5b5b6","ffffff"]
-                          
-                          
-          # naver
-          base_palette = ["ee1919", "f4aa24", "f4d324", "f3f424", "a5dd0c", "37b300",
-                          "97d0e8", "3232ff", "1e2d87", "ffffff", "c6c6c6", "000000"]
-  
-=end
-  
-          base_palette = ["ff0000", "f49024", "ffff00", "a5dd0c", "009900",  
-                          "08d6d8", "3232ff", "31318c", "8d1bff", "8d0647",  
-                          "ff59ac", "772a00", "ffffff", "b5b5b5", "000000"]
-    
-          
-          color1 = Paleta::Color.new(:hex, color_hex)
-          pal = Array.new(base_palette.size) {Array.new(2,nil)}
-          
-          base_palette.each_with_index do |base_hex,i|
-            color2 = Paleta::Color.new(:hex, base_hex)
-            score = color1.similarity(color2)
-            pal[i][0] = score
-            pal[i][1] = base_hex
-          end
-          
-          # 가장 근접한 색상코드로 정렬
-          palette_sort = pal.sort_by{|x| x[0]}
-          
-          
-          colors[0] = color_hex.to_s  # 이미지에서 추출한 대표색상코드
-          colors[1] = palette_sort.first.second.to_s  # 기본 색상표랑 가장 근접한 색상코드
-          
-        end
-        
-      rescue
-        puts("error file : #{img_file_name}")
-      end
-      
-      return colors
-
-    
-  end
-
-
-	def self.domain_name(url)
-		domain = url.split(".")
-		chk_www = url.index("www.")||-1
-		retVal = ""
-		if chk_www.to_i>-1
-			retVal = domain[1]
-		else
-			domain_names = domain[0].split("/")
-			retVal	= domain_names[domain_names.count-1]
-		end
-		
-		retVal = retVal.gsub(/\'/,'’') 
-		retVal = retVal.gsub(/&/,'＆')
-		retVal = retVal.gsub(/\./,'·')
-		return retVal
-	end
-    
 end

@@ -1,7 +1,5 @@
 <%= render :partial => '/common/header_top' %>
-<%
-	request_host = "http://" + request.host_with_port
-%>
+<%	request_host = "http://" + request.host_with_port %>
 <%= stylesheet_link_tag    "http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css", :media => "screen" %>
 <%= stylesheet_link_tag    "/css/collection/cropping.css", :media => "screen" %>
 <%= stylesheet_link_tag    "/css/collection/datePicker.css", :media => "screen" %>
@@ -16,8 +14,8 @@
 <%= stylesheet_link_tag    "/css/collection/val.css", :media => "screen" %>
 <%= stylesheet_link_tag    "/css/collection/jquery.tagsinput.css", :media => "screen" %>
 
-<%= javascript_include_tag "http://code.jquery.com/jquery-1.9.1.js" %>
-<%= javascript_include_tag "http://code.jquery.com/ui/1.10.2/jquery-ui.js" %>
+<%= javascript_include_tag "http://code.jquery.com/jquery-1.11.1.js" %>
+<%= javascript_include_tag "http://code.jquery.com/ui/1.11.1/jquery-ui.js" %>
 <%= javascript_include_tag "/js/collection/jquerypp.custom.js" %>
 <%= javascript_include_tag "/js/collection/sprintf.min.js" %>
 <script type="text/javascript">
@@ -150,8 +148,19 @@ $(function() {
 		var itemId = $(this).find('input[name="itemId"]').val();
 		var itemOrigin = $(this).find('input[name="itemOrigin"]').val();
 		var itemImg = $(this).find('input[name="itemImg"]').val();
+//		alert("상품정보 띄우기");
 //		loadItem(itemId, itemOrigin, $(this), $(this).parent().parent(), true);	// 왼쪽 상품 클릭시 상품정보 레이어 띄우기
 //		loadItem(itemId, itemOrigin, itemImg, $(this), $(this).parent().parent(), true);	// 왼쪽 상품 클릭시 상품정보 레이어 띄우기
+	});
+	
+	$('.tabBody').on('mousewheel',function(e){
+		if (e.originalEvent.wheelDelta >= 0) {
+			cpage--;
+			if (cpage<1) cpage = 1;
+		} else {
+			cpage++;
+		}
+		goPage(cpage);
 	});
 
 	// 페이징
@@ -190,17 +199,13 @@ $(function() {
 	});
 
 	oPlatform = new platform('set');
-	oPlatform.cropURL = "/crop";
-	//oPlatform.productURL = "http://img.trickable.com/site/images/products/thumb_big/";
-	//oPlatform.embellishmentURL = "http://img.trickable.com/site/images/embellishments/thumb_big/";
+	oPlatform.cropURL = "/item/crop";
 	oPlatform.productURL = "<%=request_host%>/data/product/";	// 상품 이미지 폴더
 	oPlatform.embellishmentURL = "<%=request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
-	//oPlatform.productStyleDirectory = "/original/";
+	//oPlatform.productStyleDirectory = "original/";
 	//oPlatform.productURL = "";	// 상품 이미지 폴더
 	//oPlatform.embellishmentURL = "";	// 꾸민 이미지 폴더
 	oPlatform.productStyleDirectory = ""
-	//oPlatform.publishURL = "/create";
-	//oPlatform.searchTagsURL = "/create";
 	oPlatform.publishURL = "/collections/publish";
 	oPlatform.searchTagsURL = "/collections/publish";
 	oPlatform.minItems = _MINITEMS;
@@ -219,6 +224,21 @@ oPlatform.initData({
 <%
 	rcnt = 0
 	@collection_products.each_with_index do |item,i|
+		
+		cropPoints = "null"
+		if item.croptype!="" && item.croppoints!="" && item.croppoints!=nil
+			cropPoints = ""
+			points_list = item.croppoints.split(",")
+			
+			points_list.each_with_index do |point,i|
+				if i>0
+					cropPoints << ','
+				end
+				cropPoints << '"'+point+'"'
+			end
+			cropPoints = '['+cropPoints+']'
+		end
+		
 		if rcnt>0
 %>,<% 
 		end
@@ -226,7 +246,7 @@ oPlatform.initData({
 ,"itemURL":"<%=item.url%>","itemImg":"<%=item.img_file_name%>"
 ,"top":"<%=item.top%>","left":"<%=item.left%>","cssTop":"<%=item.csstop%>","cssLeft":"<%=item.cssleft%>","height":"<%=item.height%>"
 ,"whiteBck":<%=item.white_bck%>,"zIndex":"<%=item.zindex%>","flip":<%=item.flip%>,"flop":<%=item.flop%>,"rotate":"<%=item.rotate%>"
-,"cropType":null,"cropPoints":null,"cropHeight":null,"imagePath":null,"width":null,"hint":null,"displayWidth":null,"displayHeight":"<%=item.height%>"}
+,"cropType":"<%=item.croptype%>","cropPoints":<%=raw cropPoints%>,"cropHeight":"<%=item.cropheight%>","cropImg":"<%=item.cropimg%>","imagePath":null,"width":null,"hint":null,"displayWidth":null,"displayHeight":"<%=item.height%>"}
 <%
 		rcnt += 1
 	end
@@ -328,7 +348,7 @@ oPlatform.initData({
     <!-- 이미지 CROP 레이어 -->
     <div id="Crop" class="login-popup">
         <a href="#" class="close"></a>
-        <h3>image cropping</h3>
+        <h3>Crop Image</h3>
         <a href="#" id="PolygonalCrop" class="active"></a>
         <a href="#" id="RectangularCrop"></a>
         <div class="clear"></div>
@@ -341,12 +361,45 @@ oPlatform.initData({
             <input value="Crop" type="hidden" name="crop" />
             <input value="Prcessing..." type="hidden" name="processing" />
         </a>
-        <a href="#" class="bBlue btn" id="saveImgBtn">
+        <!--a href="#" class="bBlue btn" id="saveImgBtn">
             <span>Save</span>
             <input value="Save" type="hidden" name="save" />
             <input value="Saving..." type="hidden" name="saving" />
-        </a>
+        </a-->
         <a href="#" class="bGray btn" id="closeCropBtn">Cancel</a>
+    </div>
+    
+	<!-- 이미지 등록 레이어 -->
+    <div id="Upload" class="login-popup">
+        <form class="form" id="uploadSetForm">
+            <h3>이미지 등록</h3>
+            <a href="#" class="close"></a>
+            <label for="name">제목</label>
+            <input id="name" class="login-input" name="name" type="text" value="" />
+            <div class="space"></div>
+            
+            <!--label for="category_id">카테고리<span>*</span></label>
+            <select id="category_id" name="category_id" class="full">
+            	<option value="1">November</option>
+            	<option value="2">Bra</option>
+            	<option value="3">Skirt</option>
+            </select>
+            <span class="postTo">카테고리를 선택하세요</span>
+            <div class="space"></div>
+            
+            <label for="tags">태그</label>
+            <input id="tags" class="login-input" type="text" name="tags" />
+            <div class="space"></div-->
+
+            <div class="space"></div>
+            
+            <a href="#" id="UploadSubmit" class="bnt bBlue">
+                <span>이미지등록</span>
+                <input type="hidden" name="active" value="Upload Image" />
+                <input type="hidden" name="inactive" value="Loading..." />
+            </a>
+            <a href="#" id="UploadClose" class="bnt bGray">취소</a>
+        </form>
     </div>
     
     <!-- 오른쪽 상단 버튼 -->
@@ -371,10 +424,10 @@ oPlatform.initData({
             <div class="whiteBackground"></div>
             <i>white background</i>
         </div>
-        <!--div class="crop">
+        <div class="crop">
             <div class="mask"></div>
             <i>crop image</i>
-        </div-->
+        </div>
     </div>
         
         
@@ -602,9 +655,11 @@ function itemList(){
 	    async   : false,  
 	    success : function(json){
 	    	products = json.products;
+	    	
 	    	$('#itemList').html("");
 	    	if(products.length>0) {
 				cpage++;
+				cpage = json.cpage;
 				$.each(products, function (index, product) {
 					var item_api = "";
 					var item_img_url1 = "";
@@ -613,13 +668,13 @@ function itemList(){
 					var item_id = "";
 					var file_path = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 					var img_directory1 = "original/"
-					var img_directory2 = "medium/"
+					var img_directory2 = "thumb/"
 					
 					if(itemType==1){	// DB
 						oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 						oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
-						//oPlatform.productStyleDirectory = "/original/";
-						oPlatform.productStyleDirectory = "/removebg/";
+						//oPlatform.productStyleDirectory = "original/";
+						oPlatform.productStyleDirectory = "removebg/";
 						
 						item_api = "";
 						item_id = product.id;
@@ -639,8 +694,8 @@ function itemList(){
 					} else if(itemType==3){	// My items
 						oPlatform.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 						oPlatform.embellishmentURL = "<%= request_host%>/data/product/embellishments/";	// 꾸민 이미지 폴더
-						//oPlatform.productStyleDirectory = "/original/";
-						oPlatform.productStyleDirectory = "/removebg/";
+						//oPlatform.productStyleDirectory = "original/";
+						oPlatform.productStyleDirectory = "removebg/";
 						
 						item_api = "";
 						item_id = product.id;
@@ -716,9 +771,13 @@ function goSubmit(){
 		<div>
 <%= form_tag "#", name: "itemSearchFrm", method: "post", style: "padding:0px;margin:0px;", onsubmit: "return item_search(this)" do %>
 	<div class="input-append">
-		<input id="item_search_key" name="search_key" type="text" placeholder="Search products" style="width:50px;">
+		<input id="item_search_key" name="search_key" type="text" placeholder="Search products" style="width:300px;">
 		<button class="btn" type="submit">&nbsp;<i class="icon-search"></i>&nbsp;</button>
-	</div>	
+		<button class="btn btn-success" onClick="oPlatform.showPublish();">Publish</button>
+		<!--div class="btn-group" style="margin-left:50px;">
+		<button class="btn btn-info" onClick="oPlatform.showUpload();">Upload</button>
+		</div-->
+	</div>
 <% end %>
 		</div>
 		
@@ -769,9 +828,9 @@ end
 			<div class="btn-group">
 				<button class="btn" onClick="oPlatform.restart();">Refresh</button>
 			</div-->
-			<div class="btn-group" style="padding-left:170px;">
+			<!-- <div class="btn-group" style="padding-left:170px;">
 				<button class="btn btn-success" onClick="oPlatform.showPublish();">Publish</button>
-			</div>
+			</div> -->
 		</div>
 		
 		<div id="cateListDv" style="padding:10px;">
@@ -831,7 +890,6 @@ end
         </div>
         <div class="clear"></div>
     </div>
-    
     
     
 </div>

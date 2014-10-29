@@ -1,3 +1,7 @@
+#encoding: utf-8
+
+include ApplicationHelper
+
 class User < ActiveRecord::Base
   attr_accessible :email, :password, :profile_id, :user_name, :password_confirmation, :oauth_expires_at, 
   						:oauth_token, :provider, :uid, :img, :user_type, :use_yn, 
@@ -110,7 +114,7 @@ class User < ActiveRecord::Base
 				end
 	     
 				# 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-				ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+				ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
 				thumb = tmpimg.resize!(ipos[0],ipos[1])
 				bg = Magick::Image.new(thumbSize, thumbSize){
 					self.background_color = 'white'
@@ -212,7 +216,7 @@ class User < ActiveRecord::Base
     name = name.gsub(/ /,'')
 
     store_name = ""
-    domain_name = Product.domain_name(url)
+    domain_name = ApplicationHelper.domain_name(url)
     
     if name && name!=""
       store_name = name
@@ -334,7 +338,7 @@ class User < ActiveRecord::Base
     #milisec = DateTime.now.strftime("%s")
     extension = File.extname(img_file_name).downcase
     #self.img.instance_write(:file_name, "#{milisec}#{extension}")
-    self.img.instance_write(:file_name, "#{ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)}#{extension}")
+    self.img.instance_write(:file_name, "#{randomize_name}#{extension}")
   end
 
   def self.process_uri(uri)

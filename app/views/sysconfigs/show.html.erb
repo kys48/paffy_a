@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Config type:</b>
+  <%= @sysconfig.config_type %>
+</p>
+
+<p>
+  <b>Config key:</b>
+  <%= @sysconfig.config_key %>
+</p>
+
+<p>
+  <b>Config value:</b>
+  <%= @sysconfig.config_value %>
+</p>
+
+<p>
+  <b>Use yn:</b>
+  <%= @sysconfig.use_yn %>
+</p>
+
+
+<%= link_to 'Edit', edit_sysconfig_path(@sysconfig) %> |
+<%= link_to 'Back', sysconfigs_path %>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  bbs_name: MyString
+  bbs_type: MyString
+  subject: MyString
+  file_yn: MyString
+
+two:
+  bbs_name: MyString
+  bbs_type: MyString
+  subject: MyString
+  file_yn: MyString

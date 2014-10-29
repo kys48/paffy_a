@@ -1,0 +1,29 @@
+<h1>Listing sysconfigs</h1>
+
+<table>
+  <tr>
+    <th>Config type</th>
+    <th>Config key</th>
+    <th>Config value</th>
+    <th>Use yn</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @sysconfigs.each do |sysconfig| %>
+  <tr>
+    <td><%= sysconfig.config_type %></td>
+    <td><%= sysconfig.config_key %></td>
+    <td><%= sysconfig.config_value %></td>
+    <td><%= sysconfig.use_yn %></td>
+    <td><%= link_to 'Show', sysconfig %></td>
+    <td><%= link_to 'Edit', edit_sysconfig_path(sysconfig) %></td>
+    <td><%= link_to 'Destroy', sysconfig, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Sysconfig', new_sysconfig_path %>

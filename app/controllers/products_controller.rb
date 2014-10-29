@@ -129,7 +129,7 @@ class ProductsController < ApplicationController
         end
         
         # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-        ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+        ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
         thumb = tmpimg.resize!(ipos[0],ipos[1])
         bg = Magick::Image.new(thumbSize, thumbSize){
           self.background_color = 'white'
@@ -204,14 +204,21 @@ class ProductsController < ApplicationController
 		page = params[:page]||1
 		per_page = params[:per_page]||25
 		
-		products = Product.productList(params)
 		total_count = Product.productListCount(params)
+		total_page_count = (total_count.to_i / per_page.to_i) + 1
+		
+		if page.to_i>total_page_count
+			page = total_page_count
+		end
+		params[:page] = page
+		
+		products = Product.productList(params)
 		
 		page_str = getPagging("goPage",total_count.to_i,page.to_i,per_page.to_i,5)
 		
 		respond_to do |format|
 			#format.json { render json: @collections.to_json }
-			format.json { render :json => { status: true, products: products, total_count: total_count, page_str: page_str }.to_json }
+			format.json { render :json => { status: true, products: products, cpage: page, total_count: total_count, page_str: page_str }.to_json }
 		end
 	end
   

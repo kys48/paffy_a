@@ -27,6 +27,19 @@ class FollowsController < ApplicationController
 		else
 			follow.save!
 			follow_status = 'Y'
+			
+			# 나의 상품 or 콜렉션에 대한 like가 아닐경우 등록자에게 like알림추가
+			msg = Message.new
+			msg.user_id		= follow_id
+			msg.msg_type	= 'F'
+			msg.ref_user_id = user_id
+			msg.ref_id		= user_id
+			#msg.ref_url		= '/mypage/'+user_id.to_s
+			msg.read_yn		= 'N'
+			msg.contents	= '<strong><a href="/mypage/'+session[:profile_id].to_s+'">'+session[:user_name].to_s+'</a></strong>님이 팔로우 하였습니다.'
+			msg.save!
+		
+			
 		end
 
 		respond_to do |format|

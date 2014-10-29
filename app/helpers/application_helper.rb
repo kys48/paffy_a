@@ -15,7 +15,7 @@ module ApplicationHelper
   
   
   
-	def randomize_file_name
+	def randomize_name
 		return ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)
 	end
   
@@ -101,9 +101,9 @@ module ApplicationHelper
 				#bg.write(RAILS_ROOT+dataFilePath+"tmp.png")
 				 
 				# Create an image that has 1 pixel for each of the top_n colors.
-				normal = Product.sort_by_decreasing_frequency(bg)
+				normal = sort_by_decreasing_frequency(bg)
 				#normal.write(RAILS_ROOT+dataFilePath+"tmp2.png")
-				color_hex = Product.get_pix(normal)
+				color_hex = get_pix(normal)
 
 =begin  
           # polyvore

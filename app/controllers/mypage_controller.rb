@@ -3,120 +3,147 @@ include ApplicationHelper
 
 class MypageController < ApplicationController
   
-  def index
-    @session_user_id = session[:user_id]||""
-    
-    if @session_user_id && @session_user_id!=""
-      @user = User.find(@session_user_id)
-      redirect_to('/mypage/'+@user.profile_id)
-    else
-      redirect_to '/log_in'
-    end
-  end
+	def index
+		@session_user_id = session[:user_id]||""
+		 
+		if @session_user_id && @session_user_id!=""
+			@user = User.find(@session_user_id)
+			redirect_to('/mypage/'+@user.profile_id)
+		else
+			redirect_to '/log_in'
+		end
+	end
   
-  # 프로필 
-  def show
-    @session_user_id = session[:user_id]
-    @profile_id = params[:id]
-    @item_type = params[:type]
-    @user = User.where(profile_id: @profile_id).first
-    
-    if @user.user_type=='S'
-      @item_type = 'P'
-    end
-    
-    @currency_usd = GoogCurrency.usd_to_krw(1).to_i
-    @currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
-    @currency_eur = GoogCurrency.eur_to_krw(1).to_i
-    @currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
-    @currency_cny = GoogCurrency.cny_to_krw(1).to_i
-    
-    # 팔로우 여부 가져오기
-    @follow_count = Follow.where(user_id: @session_user_id, follow_id: @user.id).count
-    
-    # 조회 수 가져오기
-    cnt_view_product = Product.select("IFNULL(SUM(hit),0) AS hit").from("products").where(user_id: @user.id, use_yn: "Y").first
-    cnt_view_collection = Collection.select("IFNULL(SUM(hit),0) AS hit").from("collections").where(user_id: @user.id, use_yn: "Y").first
-    @cnt_view = cnt_view_product.hit + cnt_view_collection.hit
-    
-    # 좋아요 수 가져오기
-    cnt_like_product = Get.select("A.id")
-                          .from("gets A, products B")
-                          .where("A.ref_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
-                          .count
-                          
-    cnt_like_collection = Get.select("A.id")
-                          .from("gets A, collections B")
-                          .where("A.ref_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
-                          .count
-    
-    @cnt_like = cnt_like_product + cnt_like_collection
-    
-    # follower 수 가져오기
-    @cnt_follower = Follow.select("id").from("follows").where(follow_id: @user.id).count
-    
-    # following 수 가져오기
-    @cnt_following = Follow.select("id").from("follows").where(user_id: @user.id).count
-    
-    # 상품 수 가져오기
-    @cnt_product = Product.select("id").from("products").where(user_id: @user.id, use_yn: "Y").count
-    
-    @cateList = Cate.all()
-    
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @collections }
-    end
-  end
-  
-  # 프로필 ajax
-  def itemListCallback
-    params[:session_user_id] = session[:user_id]||""
-    profile_id = params[:id]
-    page = params[:page]||1
-    item_type = params[:type]
-    
-    #user = User.where(profile_id: @profile_id).first
+	# 프로필 
+	def show
+		@session_user_id = session[:user_id]
+		@profile_id = params[:id]
+		@type = params[:type]
+		@user = User.where(profile_id: @profile_id).first
+		
+		@item_type = ''
 
-    # 찜한 상품, 콜렉션
-    collectionList = Collection.itemList(params)
+		if @user.user_type=='S'
+			@item_type = 'P'
+		end
+		 
+		@currency_usd = 0
+		@currency_jpy = 0
+		@currency_eur = 0
+		@currency_gbp = 0
+		@currency_cny = 0
     
-    respond_to do |format|
-      format.json { render :json => { status: true, collections: collectionList }.to_json }
-    end
+		# 환율정보를 가져온다
+		sysconfigs = Sysconfig.where(config_type: "currency", use_yn: "Y")
+		sysconfigs.each do |sysconfig|
+			if sysconfig.config_key=="USD"
+				@currency_usd = sysconfig.config_value 
+			elsif sysconfig.config_key=="JPY"
+				@currency_jpy = sysconfig.config_value
+			elsif sysconfig.config_key=="EUR"
+				@currency_eur = sysconfig.config_value
+			elsif sysconfig.config_key=="GBP"
+				@currency_gbp = sysconfig.config_value
+			elsif sysconfig.config_key=="CNY"
+				@currency_cny = sysconfig.config_value
+			end
+		end
+		 
+		# 팔로우 여부 가져오기
+		@follow_count = Follow.where(user_id: @session_user_id, follow_id: @user.id).count
+		 
+		# 조회 수 가져오기
+		cnt_view_product = Product.select("IFNULL(SUM(hit),0) AS hit").from("products").where(user_id: @user.id, use_yn: "Y").first
+		cnt_view_collection = Collection.select("IFNULL(SUM(hit),0) AS hit").from("collections").where(user_id: @user.id, use_yn: "Y").first
+		@cnt_view = cnt_view_product.hit + cnt_view_collection.hit
+		 
+		# 좋아요 수 가져오기
+		cnt_like_product = Get.select("A.id")
+										.from("gets A, products B")
+										.where("A.collection_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
+										.count
+		                       
+		cnt_like_collection = Get.select("A.id")
+										.from("gets A, collections B")
+										.where("A.collection_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
+										.count
+		 
+		@cnt_like = cnt_like_product + cnt_like_collection
+		 
+		# follower 수 가져오기
+		@cnt_follower = Follow.select("id").from("follows").where(follow_id: @user.id).count
+		 
+		# following 수 가져오기
+		@cnt_following = Follow.select("id").from("follows").where(user_id: @user.id).count
+		 
+		# 상품 수 가져오기
+		@cnt_product = Product.select("id").from("products").where(user_id: @user.id, use_yn: "Y").count
+
+		@cateList = Cate.all()
+		 
+		respond_to do |format|
+			format.html # show.html.erb
+			format.json { render json: @collections }
+		end
   end
   
-  # Mypage 
-  def myfeed
-    @session_user_id = session[:user_id]||""
-    params[:cmenu] = "4"
+	# Mypage 
+	def myfeed
+		@session_user_id = session[:user_id]||""
+		params[:cmenu] = "4"
     
-    @currency_usd = GoogCurrency.usd_to_krw(1).to_i
-    @currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
-    @currency_eur = GoogCurrency.eur_to_krw(1).to_i
-    @currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
-    @currency_cny = GoogCurrency.cny_to_krw(1).to_i
-    
-#    if @session_user_id && @session_user_id!=""
-      @profile_id = session[:profile_id]
-      @item_type = params[:type]
-      params[:id] = @profile_id
-      params[:per_page] = 16
-      params[:myfeed] = "Y"
-  
-      # 찜한 상품, 콜렉션
-      #@collections = Collection.itemList(params)
+		#if @session_user_id && @session_user_id!=""
+			@currency_usd = 0
+			@currency_jpy = 0
+			@currency_eur = 0
+			@currency_gbp = 0
+			@currency_cny = 0
+	    
+			# 환율정보를 가져온다
+			sysconfigs = Sysconfig.where(config_type: "currency", use_yn: "Y")
+			sysconfigs.each do |sysconfig|
+				if sysconfig.config_key=="USD"
+					@currency_usd = sysconfig.config_value 
+				elsif sysconfig.config_key=="JPY"
+					@currency_jpy = sysconfig.config_value
+				elsif sysconfig.config_key=="EUR"
+					@currency_eur = sysconfig.config_value
+				elsif sysconfig.config_key=="GBP"
+					@currency_gbp = sysconfig.config_value
+				elsif sysconfig.config_key=="CNY"
+					@currency_cny = sysconfig.config_value
+				end
+			end
+	    
+	
+			@profile_id = session[:profile_id]
+			@type = params[:type]
+			params[:id] = @profile_id
+			params[:per_page] = 16
+	  
+			respond_to do |format|
+				format.html # myfeed.html.erb
+				format.json { render json: @collections }
+			end
       
-      respond_to do |format|
-        format.html # myfeed.html.erb
-        format.json { render json: @collections }
-      end
-      
-      
-#    else
-#      redirect_to '/log_in'
-#    end
-  end
+		#else
+		#	redirect_to '/log_in'
+		#end
+		
+	end
+
+	# 프로필 ajax
+	def itemListCallback
+		params[:session_user_id] = session[:user_id]||""
+		page = params[:page]||1
+		
+		# 찜한 상품, 콜렉션
+		collectionList = Collection.itemList(params)
+		 
+		respond_to do |format|
+			format.json { render :json => { status: true, collections: collectionList }.to_json }
+		end
+	end
 
 	# 개인정보 설정  
 	def setting
@@ -186,12 +213,12 @@ class MypageController < ApplicationController
 			# 좋아요 수 가져오기
 			cnt_like_product = Get.select("A.id")
 									.from("gets A, products B")
-									.where("A.ref_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
+									.where("A.collection_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
 									.count
 			                       
 			cnt_like_collection = Get.select("A.id")
 									.from("gets A, collections B")
-									.where("A.ref_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
+									.where("A.collection_id = B.id AND B.user_id=#{@user.id} AND A.get_type='L'")
 									.count
 			
 			@cnt_like = cnt_like_product + cnt_like_collection

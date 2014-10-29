@@ -43,8 +43,8 @@ class CollectionsController < ApplicationController
     #@collection_products = CollectionProduct.paginate(page: params[:page], per_page: 10).order('created_at DESC')
     
     str_select = "A.product_id, A.white_bck, A.flip, A.flop
-                , A.height, A.top, A.left, A.cssleft, A.csstop
-                , A.zindex, A.rotate, A.caption, B.id, B.subject, B.price
+                , A.width, A.height, A.top, A.left, A.cssleft, A.csstop
+                , A.zindex, A.rotate, A.caption, B.id, B.collection_id, B.subject, B.price
                 , B.price_type, B.img_file_name, B.url, B.user_id
                 , B.merchant, B.hit, C.profile_id, C.user_name
                 , F_COUNT_GETS(A.product_id,'L') AS cnt_like
@@ -57,52 +57,36 @@ class CollectionsController < ApplicationController
       str_select += ", 0 AS cnt_like_user"
     end
     
+    str_from = "collection_products A, ( 
+     					SELECT B3.id AS collection_id, B1.* 
+						  FROM products B1, collection_products B2, collections B3
+						 WHERE B1.id = B2.product_id AND B2.collection_id=B3.id AND B3.item_type='P'
+    					) B
+    				, users C"
+    
     @collection_products = CollectionProduct
     .select(str_select)
-    .from( "collection_products A, products B, users C")
+    .from(str_from)
     .where("A.product_id = B.id AND B.user_id=C.id
-        AND collection_id = "+collection_id)
-
-    # 시간 오래 걸림... 해결방법 찾아라
-=begin    
-    @collection_products.each_with_index do |collection,i|
-      price = 0.0
-      
-      if collection.price_type!='KRW'
-        case collection.price_type
-          when 'USD'
-            price = GoogCurrency.usd_to_krw(collection.price).to_i
-          when 'JPY'
-            price = GoogCurrency.jpy_to_krw(collection.price).to_i
-          when 'EUR'
-            price = GoogCurrency.eur_to_krw(collection.price).to_i
-          when 'GBP'
-            price = GoogCurrency.gbp_to_krw(collection.price).to_i
-          when 'CNY'
-            price = GoogCurrency.eur_to_krw(collection.price).to_i
-        end
-        collection.price = price
-        collection.price_type = 'KRW'
-      end
-    end
-=end    
+        AND A.collection_id = "+collection_id)
+ 
     # 좋아요 수 가져오기
-    @cnt_like = Get.where(get_type: 'L', item_type: 'C', ref_id: collection_id).count
+    @cnt_like = Get.where(get_type: 'L', collection_id: collection_id).count
 
     #get = Get.find_by_sql "SELECT COUNT(id) AS count FROM gets WHERE get_type='L' AND item_type='C'"
     
     # 스크랩 수 가져오기
-    @cnt_scrap = Get.where(get_type: 'S', item_type: 'C', ref_id: collection_id).count
+    @cnt_scrap = Get.where(get_type: 'S', collection_id: collection_id).count
     
     # 찜 수 가져오기
-    #@cnt_wish = Wish.where(item_type: 'C', ref_id: collection_id).count
+    #@cnt_wish = Wish.where(item_type: 'C', collection_id: collection_id).count
     
     # 조회수 증가
     @collection.hit += 1
     @collection.save! 
 
     # 로그인 사용자의 좋아요 가져오기
-    @cnt_like_user = Get.where(get_type: 'L', item_type: 'C', ref_id: collection_id, user_id: @session_user_id).count
+    @cnt_like_user = Get.where(get_type: 'L', collection_id: collection_id, user_id: @session_user_id).count
 
     respond_to do |format|
       format.html # show.html.erb
@@ -113,7 +97,11 @@ class CollectionsController < ApplicationController
 	# 상품 상세정보
 	def pshow
 		@session_user_id = session[:user_id]||""
-		product_id = params[:id]
+		@collection_id = params[:id]
+		collection = Collection.find(@collection_id)
+		
+		product_id = collection.product_id 
+		
 		@product = Product.find(product_id)
 		@user = User.new
     
@@ -133,37 +121,48 @@ class CollectionsController < ApplicationController
 		@currency_eur = 0
 		@currency_gbp = 0
 		@currency_cny = 0
-		@currency_usd = GoogCurrency.usd_to_krw(1).to_i
-		@currency_jpy = GoogCurrency.jpy_to_krw(1).to_i
-		@currency_eur = GoogCurrency.eur_to_krw(1).to_i
-		@currency_gbp = GoogCurrency.gbp_to_krw(1).to_i
-		@currency_cny = GoogCurrency.cny_to_krw(1).to_i
-		  
+		
+		# 환율정보를 가져온다
+		sysconfigs = Sysconfig.where(config_type: "currency", use_yn: "Y")
+		sysconfigs.each do |sysconfig|
+			if sysconfig.config_key=="USD"
+				@currency_usd = sysconfig.config_value 
+			elsif sysconfig.config_key=="JPY"
+				@currency_jpy = sysconfig.config_value
+			elsif sysconfig.config_key=="EUR"
+				@currency_eur = sysconfig.config_value
+			elsif sysconfig.config_key=="GBP"
+				@currency_gbp = sysconfig.config_value
+			elsif sysconfig.config_key=="CNY"
+				@currency_cny = sysconfig.config_value
+			end
+		end
+
 		# 좋아요 수 가져오기
-		@cnt_like = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id).count
+		@cnt_like = Get.where(get_type: 'L', collection_id: @collection_id).count
 		
 		# 팔로우 여부 가져오기
 		@follow_count = Follow.where(user_id: @session_user_id, follow_id: @user.id).count
 		 
 		# 스크랩 수 가져오기
-		@cnt_scrap = Get.where(get_type: 'S', item_type: 'P', ref_id: product_id).count
+		@cnt_scrap = Get.where(get_type: 'S', collection_id: @collection_id).count
 		 
 		# 찜 수 가져오기
-		#@cnt_wish = Wish.where(item_type: 'P', ref_id: product_id).count
+		#@cnt_wish = Wish.where(collection_id: product_id).count
 		 
 		# 조회수 증가
 		@product.hit += 1
 		@product.save! 
 		 
 		# 로그인 사용자의 좋아요 가져오기
-		@cnt_like_user = Get.where(get_type: 'L', item_type: 'P', ref_id: product_id, user_id: session[:user_id]).count
+		@cnt_like_user = Get.where(get_type: 'L', collection_id: @collection_id, user_id: session[:user_id]).count
 
-		# linkprice 변환 url 가져오기
+		# linkprice 변환 url 가져오기 (1~1초정도 걸림)
 		xmlurl = "http://ac.linkprice.com/service/custom_link_xml/a_id/"+LINKPRICE_KEY+"/url/"+url_encode(@product.url)
 		xml = Nokogiri::XML(open(URI.parse(xmlurl)))
 		result = xml.search("result").inner_html.to_s
 		link_url = xml.search("url").inner_html.to_s
-	
+
 		@product_url = @product.url 
 		
 		if result=='S'
@@ -190,8 +189,9 @@ class CollectionsController < ApplicationController
     	
     	@collection_products	= CollectionProduct
     	.select("A.collection_id, A.product_id, A.white_bck, A.flip, A.flop
-					, A.height, A.top, A.left, A.cssleft, A.csstop
-					, A.zindex, A.rotate, A.caption
+					, A.width, A.height, A.top, A.left, A.cssleft, A.csstop
+					, A.zindex, A.rotate, A.croptype, A.croppoints
+					, A.cropheight, A.cropimg, A.caption
 					, B.cate_code, B.subject, B.price, B.url, B.style_type
 					, B.merchant, B.img_file_name")
 		.from("collection_products A, products B")
@@ -225,8 +225,9 @@ class CollectionsController < ApplicationController
     	
     	@collection_products	= CollectionProduct
     	.select("A.collection_id, A.product_id, A.white_bck, A.flip, A.flop
-					, A.height, A.top, A.left, A.cssleft, A.csstop
-					, A.zindex, A.rotate, A.caption
+					, A.width, A.height, A.top, A.left, A.cssleft, A.csstop
+					, A.zindex, A.rotate, A.croptype, A.croppoints
+					, A.cropheight, A.cropimg, A.caption
 					, B.cate_code, B.subject, B.price, B.url, B.style_type
 					, B.merchant, B.img_file_name")
 		.from("collection_products A, products B")
@@ -324,7 +325,9 @@ class CollectionsController < ApplicationController
   	
     #info (name, description, category_id, tages, share, contestId, oauth_providers)
     @collection = Collection.new
-    
+    @collection.item_type = 'C'
+    @collection.hit = 1
+    @collection.use_yn = 'R'
     if collection_id && collection_id!=""
     	@collection = Collection.find(collection_id)
     	CollectionProduct.where(collection_id: collection_id).destroy_all
@@ -398,8 +401,6 @@ class CollectionsController < ApplicationController
     @collection.img_file_name = collection_file_name
     @collection.img_content_type = 'image/png'
     @collection.img_file_size = bg.filesize
-    @collection.hit = 1
-    @collection.use_yn = 'R'
     @collection.save!
     
     # collections_products 저장
@@ -460,29 +461,33 @@ class CollectionsController < ApplicationController
   end
   
   
-  # set 등록
-  def drowSet(params)
-    items = params[:items] 
-    info  = params[:info]
-    collection_id = params[:id]||""
-    
-    #info (name, description, category_d, tages, share, contestId, oauth_providers)
-    @collection = Collection.new
-    if collection_id && collection_id!=""
-    	@collection = Collection.find(collection_id)
-    	CollectionProduct.where(collection_id: collection_id).destroy_all
-    end
-    
-    imgStyle = "original"
-    collectionFilePath = "/public/data/collection/"
-    productFilePath = "/public/data/product/"
-    
-    bg = Magick::Image.new(650, 650){
-      self.background_color = 'white'
-      self.format = 'PNG'
-    }
-    
-    items = items.sort_by{|t| t[1][:zIndex].to_i} 
+	# set 등록
+	def drowSet(params)
+		items = params[:items] 
+		info  = params[:info]
+		collection_id = params[:id]||""
+		 
+		#info (name, description, category_d, tages, share, contestId, oauth_providers)
+		@collection = Collection.new
+		@collection.item_type = 'C'
+		@collection.hit = 1
+		@collection.use_yn = 'R'
+		
+		if collection_id && collection_id!=""
+			@collection = Collection.find(collection_id)
+			CollectionProduct.where(collection_id: collection_id).destroy_all
+		end
+		 
+		imgStyle = "original"
+		collectionFilePath = "/public/data/collection/"
+		productFilePath = "/public/data/product/"
+		 
+		bg = Magick::Image.new(650, 650){
+			self.background_color = 'white'
+			self.format = 'PNG'
+		}
+ 
+		items = items.sort_by{|t| t[1][:zIndex].to_i} 
 
     items.each_with_index do |img, i|
       itemAPI    = img[1][:itemAPI]||""
@@ -492,6 +497,7 @@ class CollectionsController < ApplicationController
       flip       = img[1][:flip]
       flop       = img[1][:flop]
       itemOrigin = img[1][:itemOrigin]
+      width      = img[1][:width]
       height     = img[1][:height]
       top        = img[1][:top]
       left       = img[1][:left]
@@ -499,6 +505,12 @@ class CollectionsController < ApplicationController
       cssTop     = img[1][:cssTop]
       zIndex     = img[1][:zIndex]
       rotate     = img[1][:rotate]
+		cropImg    = img[1][:cropImg];
+		cropType    = img[1][:cropType]||"" 
+		cropPoints  = img[1][:cropPoints] 
+		cropHeight  = img[1][:cropHeight]
+      
+
       
       if whiteBck == 'true'
         imgStyle = "original"
@@ -506,15 +518,15 @@ class CollectionsController < ApplicationController
         imgStyle = "removebg"
       end
       
-      image_tmp = nil;
+      image_tmp = nil
+      image1_tmp	= nil
       
-      if itemAPI=="shopstyle"
-        #image1_tmp = Magick::Image.read(itemImg).first
-        r = open(itemImg)
-        bytes = r.read
-        image1_tmp = Magick::Image.from_blob(bytes).first
+      
+      if cropType=="polygonal" || cropType=="rectangular"
+      	itemCropImg = cropImg[cropImg.rindex("/")+1..cropImg.length]
+      	image1_tmp = Magick::Image.read(RAILS_ROOT+productFilePath+'crop/'+itemCropImg).first
       else
-        image1_tmp = Magick::Image.read(RAILS_ROOT+productFilePath+imgStyle+'/'+itemImg).first
+      	image1_tmp = Magick::Image.read(RAILS_ROOT+productFilePath+imgStyle+'/'+itemImg).first
       end
 
       if image1_tmp
@@ -545,11 +557,11 @@ class CollectionsController < ApplicationController
         
         #convert image1.png -fuzz 20% -transparent white result.png (배경제거명령어)
         
-        bg.composite!(image1.resize_to_fit(height.to_i).rotate!(rotate.to_i), left.to_i, top.to_i, Magick::OverCompositeOp)
+        bg.composite!(image1.resize_to_fit(width.to_i,height.to_i).rotate!(rotate.to_i), left.to_i, top.to_i, Magick::OverCompositeOp)
       end
     end
     
-    
+
     collection_file_name = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ActiveSupport::SecureRandom', ::SecureRandom).hex(16)+".png"
 
     bg.write(RAILS_ROOT+collectionFilePath+'original/'+collection_file_name)
@@ -576,8 +588,7 @@ class CollectionsController < ApplicationController
     @collection.img_file_name = collection_file_name
     @collection.img_content_type = 'image/png'
     @collection.img_file_size = bg.filesize
-    @collection.hit = 1
-    @collection.use_yn = 'R'
+    
     @collection.save!
     
     # collections_products 저장
@@ -590,6 +601,7 @@ class CollectionsController < ApplicationController
       flip       = img[1][:flip]
       flop       = img[1][:flop]
       itemOrigin = img[1][:itemOrigin]
+      width      = img[1][:width]
       height     = img[1][:height]
       top        = img[1][:top]
       left       = img[1][:left]
@@ -597,6 +609,23 @@ class CollectionsController < ApplicationController
       cssTop     = img[1][:cssTop]
       zIndex     = img[1][:zIndex]
       rotate     = img[1][:rotate]
+      cropImg    = img[1][:cropImg];
+		cropType    = img[1][:cropType]||"" 
+		cropPoints  = img[1][:cropPoints] 
+		cropHeight  = img[1][:cropHeight]
+		
+		crop_points = ""
+		itemCropImg = ""
+		if cropType=="polygonal" || cropType=="rectangular"
+			itemCropImg = cropImg[cropImg.rindex("/")+1..cropImg.length]
+			cropPoints.each_with_index do |point,i|
+				if i>0
+					crop_points += ","+point
+				else
+					crop_points += point
+				end
+			end
+		end
 
       # 상품등록
       if itemAPI=="shopstyle"
@@ -617,6 +646,7 @@ class CollectionsController < ApplicationController
       @collection_product.white_bck = whiteBck
       @collection_product.flip = flip
       @collection_product.flop = flop
+      @collection_product.width = width.to_i
       @collection_product.height = height.to_i
       @collection_product.top = top
       @collection_product.left = left
@@ -624,9 +654,14 @@ class CollectionsController < ApplicationController
       @collection_product.csstop = cssTop
       @collection_product.zindex = zIndex.to_i
       @collection_product.rotate = rotate.to_f
+      @collection_product.cropimg = itemCropImg
+      @collection_product.croptype = cropType
+      @collection_product.croppoints = crop_points
+      @collection_product.cropheight = cropHeight
         
       @collection_product.save! 
     end
+
     
   end
   

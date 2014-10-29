@@ -155,6 +155,16 @@ $(function() {
 //		loadItem(itemId, itemOrigin, itemImg, $(this), $(this).parent().parent(), true);	// 왼쪽 상품 클릭시 상품정보 레이어 띄우기
 	});
 
+	$('.tabBody').on('mousewheel',function(e){
+		if (e.originalEvent.wheelDelta >= 0) {
+			cpage--;
+			if (cpage<1) cpage = 1;
+		} else {
+			cpage++;
+		}
+		goPage(cpage);
+	});
+
 	// 페이징
 /*	
 	$('#Products').on('click', '.pagging a', function(e) {
@@ -545,6 +555,7 @@ function itemList(goPage){
 	    	$('#itemList').html("");
 	    	if(products.length>0) {
 				cpage++;
+				cpage = json.cpage;
 				$.each(products, function (index, product) {
 					var item_api = "";
 					var item_img_url1 = "";
@@ -553,7 +564,7 @@ function itemList(goPage){
 					var item_id = "";
 					var file_path = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
 					var img_directory1 = "original/"
-					var img_directory2 = "medium/"
+					var img_directory2 = "thumb/"
 					
 					if(itemType==1){	// DB
 						oCollection.productURL = "<%= request_host%>/data/product/";	// 상품 이미지 폴더
@@ -654,8 +665,9 @@ function goSubmit(){
 		<div>
 <%= form_tag "#", name: "itemSearchFrm", method: "post", style: "padding:0px;margin:0px;", onsubmit: "return item_search(this)" do %>
 	<div class="input-append">
-		<input id="item_search_key" name="search_key" type="text" placeholder="Search products" style="width:50px;">
+		<input id="item_search_key" name="search_key" type="text" placeholder="Search products" style="width:300px;">
 		<button class="btn" type="submit">&nbsp;<i class="icon-search"></i>&nbsp;</button>
+		<button class="btn btn-success" onClick="oCollection.showPublish();">Publish</button>
 	</div>	
 <% end %>
 		</div>
@@ -706,10 +718,10 @@ end
 			</div>
 			<div class="btn-group">
 				<button class="btn" onClick="oCollection.restart();">Refresh</button>
-			</div-->
+			</div>
 			<div class="btn-group" style="padding-left:170px;">
 				<button class="btn btn-success" onClick="oCollection.showPublish();">Publish</button>
-			</div>
+			</div-->
 		</div>
 		
 		<div id="cateListDv" style="padding:10px;">

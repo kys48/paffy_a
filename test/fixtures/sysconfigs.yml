@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  config_type: MyString
+  config_key: MyString
+  config_value: MyString
+  use_yn: MyString
+
+two:
+  config_type: MyString
+  config_key: MyString
+  config_value: MyString
+  use_yn: MyString

@@ -50,6 +50,16 @@ PaffyA::Application.configure do
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:        "mail.smtp.host",
+    port:           587, 
+    domain:         "paffy.co.kr",
+    authentication: "plain",
+    user_name:      "root",
+    password:       "1234",
+    enable_starttls_auto: true
+  }
 
   # Enable threaded mode
   # config.threadsafe!

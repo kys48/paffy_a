@@ -112,7 +112,7 @@ $(function(){
 
 <script type="text/javascript">
 // 스크랩, 좋아요
-function getItem(get_type,item_type,ref_id){
+function getItem(get_type,collection_id){
     if (get_type == 'S'){
 	    var doc = document.body.createTextRange();
 	    doc.moveToElementText(document.getElementById("itemCaption"));
@@ -124,9 +124,8 @@ function getItem(get_type,item_type,ref_id){
 
 <%	if @session_user_id && @session_user_id!="" %>
 	var postData = new Object();
-	postData.ref_id		= ref_id;
+	postData.collection_id		= collection_id;
 	postData.get_type	= get_type;
-	postData.item_type	= item_type;
 	if (get_type == 'L'){
 		postData.msg_type		= 'L';
 		//postData.msg_user_id	= '<%= @collection.user_id%>';
@@ -183,7 +182,7 @@ function getItem(get_type,item_type,ref_id){
 }
 
 // 찜하기
-function getItemWish(item_type,ref_id){
+function getItemWish(collection_id){
     if(semafors['ajax'] == true)
         return;
         
@@ -201,7 +200,7 @@ function getItemWish(item_type,ref_id){
 	});
 
     $.ajax({
-        url     : '/wishes/put?ref_id='+ref_id+'&item_type='+item_type,
+        url     : '/wishes/put?collection_id='+collection_id,
         type    : 'post',
         dataType: 'json',
         data	: $.param(postData),
@@ -259,7 +258,7 @@ function like_pop(dv_id){
 		var arrId = dv_id.split("_");
 		
 	    $.ajax({
-	        url     : '/gets/put?ref_id='+arrId[1]+'&get_type=L&item_type=P',
+	        url     : '/gets/put?collection_id='+arrId[1]+'&get_type=L',
 	        type    : 'get',
 	        dataType: 'json',
 	        async   : false,  
@@ -281,26 +280,17 @@ function like_pop(dv_id){
 
 function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = '';
 		var id = obj.id;
 		var arrId = id.split('_');
-		if(arrId[0]=='pid') item_type = 'P';
-		else if(arrId[0]=='cid') item_type = 'C';
 		
 		$('#msg_type').val('L');
 		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
 		$('#msg_ref_user_name').val('<%=session[:user_name]||""%>');
 		$('#msg_ref_profile_id').val('<%=session[:profile_id]||""%>');
-
-		if(item_type=='P'){
-			$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
-			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
-		} else if(item_type=='C'){
-			$('#msg_ref_url').val('/collections/'+arrId[1]);
-			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
-		} 
+		$('#msg_ref_url').val('/collections/'+arrId[1]);
+		$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
 		
-		likeItem(item_type,arrId[1]);
+		likeItem(arrId[1]);
 <%	else %>
 		login_pop(document.location.href);
 <%	end %>
@@ -374,41 +364,23 @@ function getItemList(){
 								}
 								
 								var li = '<li>'
-								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle;">';
+								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle;">'
 								
-								if(collection.item_type=='C'){
-									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-									+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
-									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
-									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
-									+ '</div>'
-									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
-									+ '	<span class="view_icon"></span>'
-									+ '	<span class="view_count">'+collection.hit+'</span>'
-									+ '</div>';
-								}else if(collection.item_type=='P'){
-									var priceStr = getMoneyType(collection.price,collection.price_type);
+								+ '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+								+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
+								+ '</div>'
+								+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
+								+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
+								+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
+								+ '</div>'
+								+ '<div style="text-align:right;padding-right:10px;">'
+								+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+								+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+								+ '	<span class="view_icon"></span>'
+								+ '	<span class="view_count">'+collection.hit+'</span>'
+								+ '</div>'
 
-									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
-									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
-									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
-									+ priceStr + "&nbsp;"
-									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-									+ '</div>'
-									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
-									+ '	<span class="view_icon"></span>'
-									+ '	<span class="view_count">'+collection.hit+'</span>'
-									+ '</div>';
-								}
-								li += '</div>'
+								+ '</div>'
 								+ '</li>';
 								
 								$('#itemList').append(li);
@@ -783,7 +755,7 @@ function shareKakao(){
 <div style='padding-top:15px;'>
 <% @collection_products.each do |product| %>
 <div style='float:left;width:80px;height:80px;text-align:center;'>
-	<a href='<%= request_host%>/products/<%= product.id%>' target='_blank'><img src='<%= request_host%><%= product.img.url(:thumb)%>'></a>
+	<a href='<%= request_host%>/collections/pshow/<%= product.collection_id%>' target='_blank'><img src='<%= request_host%><%= product.img.url(:thumb)%>'></a>
 </div>
 <% end %>
 <div style='clear:both'></div>
@@ -795,7 +767,7 @@ function shareKakao(){
 		<div class="socialBtnsHolder">
 			<div>
 				<a href="#" class="bBlue create submitButton"
-				 onclick="getItem('S','C',<%= @collection.id%>); return false;"
+				 onclick="getItem('S',<%= @collection.id%>); return false;"
 				 id="btnCopy"> <span>클립보드에복사</span>
 				</a>&nbsp;&nbsp;&nbsp;
 				<a class="bGray" onclick="$('#popupContainerScrap').fadeOut(300); return false;" href="#">닫기</a>
@@ -821,7 +793,7 @@ function shareKakao(){
 		<div class="socialBtnsHolder">
 			<div>
 				<a href="#" class="bBlue create submitButton"
-				 onclick="getItemWish('C',<%= @collection.id%>); return false;"
+				 onclick="getItemWish(<%= @collection.id%>); return false;"
 				 id="btnCopy"> <span>찜하기</span>
 				</a>&nbsp;&nbsp;&nbsp;
 				<a class="bGray" onclick="$('#popupContainerWish').fadeOut(300); return false;" href="#">닫기</a>
@@ -867,7 +839,7 @@ function shareKakao(){
 =end
 %>
 
-<button type="button" class="btn btn-small btn-default" onClick="getItem('L','C',<%= @collection.id%>); return false;">
+<button type="button" class="btn btn-small btn-default" onClick="getItem('L',<%= @collection.id%>); return false;">
 <% if @cnt_like_user>0 %>
 	<i id="likeDv" class="icon-heart" style="color:red"></i>
 <% else %>
@@ -929,7 +901,7 @@ function shareKakao(){
                 	<div class="items" style="text-align:center;">
 						<%= image_tag @collection.img.url(:original), id: "set#{@collection.id}", class: "setImage" %>
 <% @collection_products.each do |product| %>
-						<div class="setItem item_<%= @collection.id%>_<%= product.id%> product" style="top: <%= product.top%>px; left: <%= product.left%>px; width: <%= product.height%>px; height: <%= product.height%>px; z-index: <%= product.zindex%>;"></div>
+						<div class="setItem item_<%= @collection.id%>_<%= product.id%> product" style="top: <%= product.top%>px; left: <%= product.left%>px; width: <%= product.width%>px; height: <%= product.height%>px; z-index: <%= product.zindex%>;"></div>
 <% end %>
 <% @collection_products.each do |product| %>
 <%
@@ -959,7 +931,7 @@ function shareKakao(){
 						<div class="popup product small" id="productPopup_<%= @collection.id%>_<%= product.id%>" style="text-align:left">
 							<a href="#" class="close" onclick="$(this).parent().fadeOut(300); return false;"></a>
 							<div class="image">
-								<%= link_to image_tag(product.img.url(:medium)), product_path(product), style: "width:140px;height:140px" %>
+								<%= link_to image_tag(product.img.url(:medium)), "/collections/pshow/#{product.collection_id}", style: "width:140px;height:140px" %>
 							</div>
 							<div class="details" style="line-height:110%;color:#000;">
 								<h5>
@@ -1115,7 +1087,7 @@ function shareKakao(){
 						<li>
 							<div class="thumbnail" style="width:180px;height:285px;display:table-cell;text-align:center;vertical-align:middle">
 							 	<div style="width:180px;height:180px;display:table-cell;text-align:center;vertical-align:middle;">
-							 		<img src="/data/product/medium/<%= product.img_file_name%>" onClick="document.location.href='/products/<%= product.id%>'" style="cursor:pointer; width:170px; height:170px;">
+							 		<img src="/data/product/medium/<%= product.img_file_name%>" onClick="document.location.href='/collections/pshow/<%= product.collection_id%>'" style="cursor:pointer; width:170px; height:170px;">
 							 	</div>
 							 	<div style="text-align:left; padding:5px 0px 0px 5px; width:170px; height:70px;">
 							 		<a href="javascript:goProductUrl('<%=product.url%>','<%=product.merchant%>','product')"><span style="color:#000000"><%= product.subject%></span></a>
@@ -1131,8 +1103,8 @@ function shareKakao(){
 				class_like = "like_icon_on"
 			end
 %>
-							 		<span id="pid_<%=product.id%>" class="<%=class_like%>"></span>
-							 		<span id="pcnt_<%=product.id%>" class="like_count"><%=product.cnt_like%></span>
+							 		<span id="id_<%=product.id%>" class="<%=class_like%>"></span>
+							 		<span id="cnt_<%=product.id%>" class="like_count"><%=product.cnt_like%></span>
 							 		<span class="view_icon"></span>
 							 		<span class="view_count"><%=product.hit%></span>
 							 	</div>

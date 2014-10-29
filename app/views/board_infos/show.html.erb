@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Bbs name:</b>
+  <%= @board_info.bbs_name %>
+</p>
+
+<p>
+  <b>Bbs type:</b>
+  <%= @board_info.bbs_type %>
+</p>
+
+<p>
+  <b>Subject:</b>
+  <%= @board_info.subject %>
+</p>
+
+<p>
+  <b>File yn:</b>
+  <%= @board_info.file_yn %>
+</p>
+
+
+<%= link_to 'Edit', edit_board_info_path(@board_info) %> |
+<%= link_to 'Back', board_infos_path %>

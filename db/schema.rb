@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140925052433) do
+ActiveRecord::Schema.define(:version => 20141023132955) do
 
   create_table "board_comments", :force => true do |t|
     t.string   "comment_type"
@@ -23,14 +23,29 @@ ActiveRecord::Schema.define(:version => 20140925052433) do
   end
 
   create_table "board_contents", :force => true do |t|
+    t.integer  "bbs_id"
     t.string   "subject"
     t.text     "contents"
-    t.decimal  "hit_no",     :precision => 10, :scale => 0
+    t.decimal  "hit_no",                     :precision => 10, :scale => 0
     t.string   "reg_id"
     t.string   "reg_name"
     t.string   "reg_passwd"
+    t.string   "use_yn",       :limit => 5
+    t.string   "file_name"
+    t.string   "content_type", :limit => 20
+    t.integer  "file_size"
+    t.string   "remote_ip",    :limit => 20
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "board_infos", :force => true do |t|
+    t.string   "bbs_name"
+    t.string   "bbs_type",   :limit => 10
+    t.string   "subject"
+    t.string   "file_yn",    :limit => 10
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
   end
 
   create_table "cates", :force => true do |t|
@@ -48,6 +63,7 @@ ActiveRecord::Schema.define(:version => 20140925052433) do
     t.string   "white_bck"
     t.string   "flip"
     t.string   "flop"
+    t.integer  "width"
     t.integer  "height"
     t.string   "top"
     t.string   "left"
@@ -55,25 +71,33 @@ ActiveRecord::Schema.define(:version => 20140925052433) do
     t.string   "csstop"
     t.integer  "zindex"
     t.float    "rotate"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.string   "croptype",      :limit => 20
+    t.string   "croppoints",    :limit => 1000
+    t.string   "cropheight",    :limit => 20
+    t.string   "cropimg"
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.string   "caption"
   end
 
+  add_index "collection_products", ["collection_id", "product_id"], :name => "IDX_CID_PID"
+
   create_table "collections", :force => true do |t|
+    t.string   "item_type",        :limit => 10
     t.string   "user_id"
     t.string   "collection_type"
     t.string   "subject"
     t.text     "contents"
     t.integer  "hit"
     t.string   "use_yn",           :limit => 10
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
     t.string   "img_file_name"
     t.string   "img_content_type"
     t.integer  "img_file_size"
     t.datetime "img_updated_at"
     t.string   "view_main"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.integer  "product_id"
   end
 
   create_table "follows", :force => true do |t|
@@ -85,24 +109,25 @@ ActiveRecord::Schema.define(:version => 20140925052433) do
   end
 
   create_table "gets", :force => true do |t|
-    t.string   "get_type"
-    t.string   "item_type"
-    t.integer  "ref_id"
     t.string   "user_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "collection_id"
+    t.string   "get_type"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
+
+  add_index "gets", ["get_type", "collection_id"], :name => "IDX_GET_TYPE_REF_ID"
 
   create_table "messages", :force => true do |t|
     t.integer  "user_id"
-    t.string   "msg_type"
-    t.string   "ref_user_id"
-    t.string   "ref_id"
-    t.string   "ref_url"
-    t.string   "read_yn"
+    t.string   "msg_type",    :limit => 10
+    t.string   "ref_user_id", :limit => 50
+    t.string   "ref_id",      :limit => 50
+    t.string   "ref_url",     :limit => 500
+    t.string   "read_yn",     :limit => 10
     t.text     "contents"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
   end
 
   create_table "products", :force => true do |t|
@@ -132,12 +157,20 @@ ActiveRecord::Schema.define(:version => 20140925052433) do
     t.string   "view_main"
   end
 
+  create_table "sysconfigs", :force => true do |t|
+    t.string   "config_type"
+    t.string   "config_key"
+    t.string   "config_value"
+    t.string   "use_yn"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
   create_table "user_items", :force => true do |t|
     t.integer  "user_id"
-    t.integer  "ref_id"
-    t.string   "item_type"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "collection_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   create_table "user_ranks", :force => true do |t|

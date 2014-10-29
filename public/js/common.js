@@ -62,21 +62,13 @@ function goProductUrl(url,merchant,type){
 }
 
 // 좋아요
-function likeItem(item_type,ref_id){
-    var likeId = "";
-    var likeCntId = "";
-    if(item_type=="P"){
-    	likeId		= "pid_"+ref_id;
-    	likeCntId	= "pcnt_"+ref_id;
-    }else if(item_type=="C"){
-    	likeId		= "cid_"+ref_id;
-    	likeCntId	= "ccnt_"+ref_id;
-    }
+function likeItem(collection_id){
+    var likeId		= "id_"+collection_id;
+    var likeCntId	= "cnt_"+collection_id;
     
 	var postData = new Object();
-	postData.ref_id		= ref_id;
-	postData.get_type	= 'L';
-	postData.item_type	= item_type;
+	postData.collection_id	= collection_id;
+	postData.get_type		= 'L';
 	
 	postData.msg_type		= $('#msg_type').val();
 	postData.msg_user_id	= $('#msg_user_id').val();

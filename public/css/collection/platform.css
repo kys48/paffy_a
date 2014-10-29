@@ -430,8 +430,8 @@
 }
 
 #Create #Crop #CropDashboard img {
-    height: inherit;
-    max-width: 500px; 
+    max-height: 380px;
+    max-width: 500px;
 }
 
 #Create #Crop .devider {
@@ -458,7 +458,6 @@
 }
 
 #Create #Products input:not(.jquery-color-picker-input) {
-    width: 100% !important;
     line-height: 22px;
     display: block;
     float: left;
@@ -618,6 +617,7 @@
 
 #Board .selected {
     border: 1px solid #999999 !important;
+    opacity: 0.8;
 }
 
 #Board .ui-resizable-handle {

@@ -1,3 +1,7 @@
+#encoding: utf-8
+
+include ApplicationHelper
+
 class ClipController < ApplicationController
   
   
@@ -28,8 +32,8 @@ class ClipController < ApplicationController
     @item_subject = params[:item_subject]
     @item_price = params[:item_price]
     @item_price_type = params[:item_price_type]
-    @item_merchant = Product.domain_name(@item_domain)
-    
+    @item_merchant = ApplicationHelper.domain_name(@item_domain)
+
     # 스토어 확인
     cnt_store1 = User.where(url: 'http://'+@item_domain, user_type: 'S').count
     cnt_store2 = User.where(email: @item_domain, user_type: 'S').count
@@ -81,33 +85,32 @@ class ClipController < ApplicationController
         end
       end
       
-      
       # 썸네일 이미지 사이즈,left,top 구하기 (이미지 가로세로 비율 맞춰서)
-      ipos = Product.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+      ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
+      tmpimg.resize!(ipos[0],ipos[1])
+      tmpimg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
+      tmpimg.write(RAILS_ROOT+dataFilePath+'removebg/'+product_file_name)
+      
+      thumbSize = 220
+      ipos = ApplicationHelper.get_resize_fit(thumbSize,tmpimg.columns,tmpimg.rows)
       thumb = tmpimg.resize!(ipos[0],ipos[1])
-      bg = Magick::Image.new(thumbSize, thumbSize){
+      bg = Magick::Image.new(thumbSize,thumbSize){
         self.background_color = 'white'
         self.format = 'PNG'
       }
       bg.composite!(thumb, ipos[2], ipos[3], Magick::OverCompositeOp)
-      bg.write(RAILS_ROOT+dataFilePath+'original/'+product_file_name)
-      
-      bg.write(RAILS_ROOT+dataFilePath+'removebg/'+product_file_name)
-  
-      bg.resize!(220,220)
       bg.write(RAILS_ROOT+dataFilePath+'medium/'+product_file_name)
-  
-      bg.resize!(75,75)
+      
+      thumbSize = 75
+      bg.resize!(thumbSize,thumbSize)
       bg.write(RAILS_ROOT+dataFilePath+'thumb/'+product_file_name)
       
       # 이미지 배경제거 (remove_bg.bat 원본디렉토리 원본이미지 target디렉토리 배경제거비율)
       #%x{remove_bg.bat #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
       %x{sh remove_bg #{RAILS_ROOT+dataFilePath}original/ #{product_file_name} #{RAILS_ROOT+dataFilePath}removebg/ 7}
       
-      
-      
       # 이미지 대표색상코드 추출
-      colors = Product.get_product_color(product_file_name)
+      colors = ApplicationHelper.get_product_color(product_file_name)
       @product.color_code_o = colors[0] 
       @product.color_code_s = colors[1]
       
@@ -125,29 +128,18 @@ class ClipController < ApplicationController
       @product.merchant   = @item_merchant
 
       # 상품정보 저장
-      add_product = Product.addProduct(@product)
+      add_collection = Product.addProduct(@product)
     end
     
-    @product = add_product
+    @product = add_collection
     
-    # 회원 상품 연결 정보 저장
-    cnt_user_item = UserItem.where(user_id: session[:user_id], ref_id: add_product.id).count
+    # 회원 상품 연결 정보 추가 저장
+    cnt_user_item = UserItem.where(user_id: session[:user_id], collection_id: add_collection.id).count
     if cnt_user_item==0
       user_item = UserItem.new
       user_item.user_id = session[:user_id]
-      user_item.ref_id = add_product.id
-      user_item.item_type = 'P'
+      user_item.collection_id = add_collection.id
       user_item.save!
-    end
-
-    # 스토어 상품 연결 정보 저장
-    cnt_store_item = UserItem.where(user_id: store.id, ref_id: add_product.id).count
-    if cnt_store_item==0
-      store_item = UserItem.new
-      store_item.user_id = store.id
-      store_item.ref_id = add_product.id
-      store_item.item_type = 'P'
-      store_item.save!
     end
 
     respond_to do |format|

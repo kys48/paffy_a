@@ -31,7 +31,7 @@ production:
   database: "paffy"
   pool: 5
   username: "paffy"
-#  password: "paffy123"
-#  host: "localhost"
-  password: "#o#lepdlxj48"
-  host: "175.126.74.122"
+  password: "paffy123"
+  host: "localhost"
+#  password: "#o#lepdlxj48"
+#  host: "175.126.74.122"

@@ -13,9 +13,12 @@ $.staticVars = {
     ignoreFurtherTags: false
 };
 
+
 function platform(platformType){
     var self = this;
-    
+    var $currentlySelected = null;	// mouse multi select 에 사용(현재 선택된 item)
+	var selected = [];	// mouse multi select 에 사용(선택된 item list)
+	
     /**
      * Bool check whether platform mode is
      * template_create or template_create_draft
@@ -53,6 +56,7 @@ function platform(platformType){
     self.Crop           = $('#Crop');
     self.Publish        = $('#Publish');
     self.QuickCrop      = $('#QuickCrop');
+    self.Upload         = $('#Upload');
     
     // URLS
     self.loadSetURL         = false;
@@ -62,11 +66,13 @@ function platform(platformType){
     self.productStyleDirectory = false;
     self.embellishmentURL   = false;
     self.publishURL         = false;
+    self.uploadURL          = false;
     self.searchTagsURL      = false;
     
     // Buttons
     self.draftBtn       = self.Navigator.find('.draft');
     self.publishBtn     = self.Navigator.find('.publish');
+    self.uploadBtn      = self.Navigator.find('.upload');
     self.restartBtn     = self.Navigator.find('.restart');
     self.undoBtn        = self.Navigator.find('.undo');
     self.redoBtn        = self.Navigator.find('.redo');
@@ -83,7 +89,9 @@ function platform(platformType){
     self.cropPolyBtn    = self.Crop.find('#PolygonalCrop');
     self.cropRectBtn    = self.Crop.find('#RectangularCrop');
     self.publishSubmit  = self.Publish.find('#PublishSubmit');
+    self.uploadSubmit   = self.Upload.find('#UploadSubmit');
     self.publishClose   = self.Publish.find('#PublishClose, .close');
+    self.uploadClose    = self.Upload.find('#UploadClose, .close');
 
     if(self.inTemplateCreate()){
         self.HintNavigator  = $('#HintNavigator');
@@ -111,7 +119,7 @@ function platform(platformType){
      * settings and delegates navigation binds
      */
     self.init = function(){
-    
+
         self.semaphoreCrop      = false;
         self.semaphoreSave      = false;
         self.semaphoreGetCrops  = false;
@@ -141,7 +149,6 @@ function platform(platformType){
         self.board.droppable({
             accept: ".ui-draggable",
             drop: function( event, ui ) {
-                //alert(1);
                 if(!ui.draggable.hasClass('image') && !ui.draggable.hasClass('ui-rotatable-handle')){
                     var dragOrigin = ui.draggable.find('input[name="itemOrigin"]').val();
                    
@@ -213,7 +220,7 @@ function platform(platformType){
     */
     //self.ajaxLoadData = function(id, type){
     self.ajaxLoadData = function(itemId, itemOrigin, itemImg, itemAPI, itemURL){
-alert(111);
+alert("self.ajaxLoadData");
         $.ajax({
             url         : '/create/'+itemOrigin+'/'+itemId,
             dataType    : 'json',
@@ -364,7 +371,6 @@ alert(111);
     * Send ajax data for draft
     */
     self.draft = function(){
-        
         if(semafors['ajax'])
             return;
         
@@ -509,9 +515,7 @@ alert(111);
         });
     }
     
-    /**
-    * Displays publish popup box
-    */
+    // publish 팝업레이어 띄우기
     self.showPublish = function() {
     	if ($("#session_chk").val()=="Y"){
     		layer_close();
@@ -521,16 +525,27 @@ alert(111);
     	}
     }
     
-    /**
-    * Hides publish popup box
-    */
+    // publish 팝업레이어 닫기
     self.hidePublish = function(){
         $('#mask').click();
     }
     
-    /**
-    * Hides sharing popup box
-    */
+    // upload 팝업레이어 띄우기
+    self.showUpload = function() {
+    	if ($("#session_chk").val()=="Y"){
+    		layer_close();
+    		showPopup(self.Upload, false, true);
+    	} else {
+    		login_pop_stay();
+    	}
+    }
+    
+    // upload 팝업레이어 닫기
+    self.hideUpload = function(){
+        $('#mask').click();
+    }
+    
+    // 공유 팝업레이어 닫기
     self.hideShare = function(share){
         $('#mask').click();
     }
@@ -566,6 +581,7 @@ alert(111);
                 postData[index].itemAPI      	= item.data('itemAPI');
                 postData[index].itemURL      	= item.data('itemURL');
                 postData[index].whiteBck        = item.hasClass('whiteBackground');
+                postData[index].width           = item.width();
                 postData[index].height          = item.height();
                 postData[index].cssLeft         = parseInt(item.css('left'));
                 postData[index].cssTop          = parseInt(item.css('top'));
@@ -586,6 +602,7 @@ alert(111);
                     postData[index].flip        = $(this).hasClass('flip');
                     postData[index].flop        = $(this).hasClass('flop');
                     if($(this).data('cropType')){
+						postData[index].cropImg		= $(this).find('img').attr('src');
                         postData[index].cropType    = $(this).data('cropType'); 
                         postData[index].cropPoints  = $(this).data('cropPoints'); 
                         postData[index].cropHeight  = $(this).data('cropHeight');
@@ -594,6 +611,7 @@ alert(111);
                 postData[index].itemOrigin  = $(this).data('itemOrigin');
                 postData[index].itemAPI     = $(this).data('itemAPI');
                 postData[index].itemURL     = $(this).data('itemURL');
+                postData[index].width       = $(this).width();
                 postData[index].height      = $(this).height();
                 postData[index].top         = $(this).position().top;
                 postData[index].left        = $(this).position().left;
@@ -602,7 +620,7 @@ alert(111);
                 postData[index].zIndex      = $(this).zIndex();
                 postData[index].rotate      = $(this).data('rotate');
             }  
-        
+
             index++;
             
         });
@@ -611,14 +629,38 @@ alert(111);
         
     }
     
+    
+    
     /**
      * Performes all platform binds
      */
     self.binds = function(){
-        self.board.on('click', '.image:not(.unselectable)', function(){
-            self.selectImage($(this));
+        self.board.on('click', '.image:not(.unselectable)', function(event){
+            self.selectImage($(this),event);
         });
         
+        self.board.selectable({ 
+        	filter: ".image",
+        	start: function(event, ui) {
+	        		$currentlySelected = $('#Board .ui-selected');
+	        		selected = [];
+        	},
+        	stop: function(event, ui){
+        		self.deselectImage();
+        		for(var i=0; i<selected.length; i++){
+        			self.selectImage($(selected[i]),"add");
+        			if ($.inArray(selected[i], $currentlySelected) >= 0) {
+        				$(selected[i]).removeClass("ui-selected");
+        			}
+        		}
+        	},
+        	selected: function(event, ui){
+        		selected.push(ui.selected);
+        	}
+        } );
+        
+
+
         $(document).on('keyup', function(event){
             if(event.keyCode == 46)
                 self.removeItem();
@@ -657,6 +699,9 @@ alert(111);
         
         self.publishSubmit.on('click', function(e){ e.preventDefault(); self.submitPublish()});
         self.publishClose.click(function(e){ e.preventDefault(); self.hidePublish()});
+        
+        self.uploadSubmit.on('click', function(e){ e.preventDefault(); self.submitUpload()});
+        self.uploadClose.click(function(e){ e.preventDefault(); self.hideUpload()});
         
         self.Create.find('#postToEdit').on('click', function(e){
             e.preventDefault(); 
@@ -741,16 +786,23 @@ alert(111);
         }
     }
     
-    // 이미지 선택
-    self.selectImage = function(element){
-       
-        if(element.hasClass('selected'))
-            return;
-        
+    // item 선택
+    self.selectImage = function(element,event){
         if(element.hasClass('unselectable'))
-            return;
+        	return;
+	            
+        if(event!=null && (event=='add' || event.ctrlKey || event.shiftKey)){
+        	if(element.hasClass('selected')){
+        		self.deselectImageItem(element);
+        		return;
+        	}
+        } else {
+	        if(element.hasClass('selected'))
+	            return;
+	            
+        	self.deselectImage();
+        }
         
-        self.deselectImage();
         
         var aspectRatio;
         
@@ -796,19 +848,53 @@ alert(111);
         else if(self.hasTemplate)
             element.parent().addClass('childSelected');
         
-        self.applyItemNavigation(element);
+        
+        var el = self.board.find('.selected');
+        
+        if(el.length>1){
+        	self.applyItemNavigation(false);
+        } else {
+        	self.applyItemNavigation(element);
+        }
+        
         
     }
     
-    /**
-     * Deselects active image and sets
-     * and deactivates resize and item
-     * specific actions.
-     */
+    // 선택된 item 선택해제(all)
     self.deselectImage = function(){
         self.applyItemNavigation(false);
         
         var el = self.board.find('.selected');
+        
+        if(el.length == 0)
+            return;
+        
+        el.removeClass('selected');
+        el.removeClass("ui-selected");
+            
+        if(!self.hasTemplate)
+            el.resizable("destroy").rotatable("destroy");
+        else
+            el.parent().removeClass('childSelected');
+    
+        if(self.inTemplateCreate() && el.hasClass('placeholder')){
+            var hintEnd = el.find('.hint').html();
+            if(self.hintStart != hintEnd){
+                self.recordHistory({
+                    event   : 'hint',
+                    element : el.attr('id'),
+                    start   : self.hintStart,
+                    end     : hintEnd
+                });
+            }
+        }
+        
+    }
+    
+
+    // 선택된 item 선택해제(개별)
+    self.deselectImageItem = function(el){
+        self.applyItemNavigation(false);
         
         if(el.length == 0)
             return;
@@ -821,7 +907,6 @@ alert(111);
             el.parent().removeClass('childSelected');
     
         if(self.inTemplateCreate() && el.hasClass('placeholder')){
-
             var hintEnd = el.find('.hint').html();
             if(self.hintStart != hintEnd){
                 self.recordHistory({
@@ -831,13 +916,11 @@ alert(111);
                     end     : hintEnd
                 });
             }
-
         }
         
     }
     
     self.addDefaultItem = function(itemId,itemImg){
-        
         var imgPointer = new Image();
         
         var position = self.board.position();
@@ -847,12 +930,10 @@ alert(111);
         
         /*
         //imgPointer.src = self.productURL+itemId+'.png'; //원래있던것
-        //imgPointer.src = self.productURL+'/original/'+itemImg; // 이렇게 해야되는것 아닌가??
+        //imgPointer.src = self.productURL+'original/'+itemImg; // 이렇게 해야되는것 아닌가??
         */
         //imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;	// DB에 있는 상품
         imgPointer.src = self.productURL+self.productStyleDirectory+itemImg;
-        
-//alert(imgPointer.src)
         
         imgPointer.onload = function(){
             self.board.find('.message').hide();
@@ -928,7 +1009,7 @@ alert(111);
 
         imageWrapper.data({
             imageURL   : image.src,
-            imageOriginURL   : self.productURL+'/original/'+itemImg,
+            imageOriginURL   : self.productURL+'original/'+itemImg,
             itemId     : itemId,
             itemOrigin : itemOrigin,
             itemImg    : itemImg,
@@ -980,12 +1061,11 @@ alert(111);
             data        : imageWrapper.data()
         });
  
-        self.selectImage(imageWrapper);
+        self.selectImage(imageWrapper,null);
     }
 
     // 아이템 개별 배치(이미지로드)
     self.addImageOnInit = function(initData, target){
-//alert(self.productURL+'original/'+initData.itemURL);
 		var imgStyle = "removebg";
 /*		
 		if (!initData.whiteBck){
@@ -1020,12 +1100,11 @@ alert(111);
     
     // 아이템 개별 배치(이미지배치)
     self.addPreoloadedImageOnInit = function(image, itemId, itemOrigin, itemImg, itemAPI, itemURL, initData, target) {
-//alert('addPreoloadedImageOnInit');
         var imageWrapper = $('<div class="image"><img src="'+image.src+'"></div>');
 
         imageWrapper.data({
             imageURL   : image.src,
-            imageOriginURL   : self.productURL+'/original/'+itemImg,
+            imageOriginURL   : self.productURL+'original/'+itemImg,
             itemId     : itemId,
             itemOrigin : itemOrigin,
             itemImg    : itemImg,
@@ -1062,7 +1141,7 @@ alert(111);
             imageWrapper.addClass('flop');
 
         if(initData.cropType)
-            self.cropImageInit(imageWrapper, initData.cropType, initData.cropPoints, initData.cropHeight);
+            self.cropImageInit(imageWrapper, initData.cropType, initData.cropPoints, initData.cropHeight, initData.cropImg);
         else
             imageWrapper.show();
         
@@ -1108,7 +1187,7 @@ alert('addPlaceHolder');
             object      : placeHolder[0].outerHTML
         });
         
-        self.selectImage(placeHolder);
+        self.selectImage(placeHolder,null);
         
         beforeLeave(true);
         
@@ -1137,12 +1216,7 @@ alert('addPlaceHolder');
         
     }
     
-    /**
-     * Removes active or specific item
-     * from dashboard. This method also
-     * deselects item and records action
-     * to history stack
-     */
+    // item 삭제
     self.removeItem = function(elementId, recordHistory){
         var el;
         if(elementId)
@@ -1199,15 +1273,9 @@ alert('addPlaceHolder');
         
     }
     
-    /**
-     * Zooms in active or specific item
-     * with prespecified zoom koef. Method
-     * records action to history stack
-     */
+    // 이미지 확대
     self.zoomIn = function(elementId){
-        
         var el;
-        
         if(elementId)
             el = self.board.find('#'+elementId);
         else
@@ -1219,7 +1287,6 @@ alert('addPlaceHolder');
         el.width(el.width() * self.zoomFactor);
         el.height(el.height() * self.zoomFactor);
         
-        
         if(!elementId){
             self.recordHistory({
                 event   : 'zoomIn',
@@ -1229,15 +1296,9 @@ alert('addPlaceHolder');
         
     }
     
-    /**
-     * Zooms out active or specific item
-     * with prespecified zoom koef. Method
-     * records action to history stack
-     */
+    // 이미지 축소
     self.zoomOut = function(elementId){
-        
         var el;
-        
         if(elementId)
             el = self.board.find('#'+elementId);
         else
@@ -1258,14 +1319,9 @@ alert('addPlaceHolder');
         
     }
     
-    /**
-     * Flips active or specific item. Method
-     * records action to history stack
-     */
+    // 상하반전
     self.flip = function(elementId) {
-        
         var el;
-        
         if(elementId)
             el = self.board.find('#'+elementId);
         else
@@ -1285,14 +1341,9 @@ alert('addPlaceHolder');
         
     }
     
-    /**
-     * Flops active or specific item. Method
-     * records action to history stack
-     */
+    // 좌우반전
     self.flop = function(elementId) {
-        
         var el;
-        
         if(elementId)
             el = self.board.find('#'+elementId);
         else
@@ -1309,18 +1360,11 @@ alert('addPlaceHolder');
                 element : el.attr('id')
             });
         }
-        
     }
     
-    /**
-     * Switches zIndex of active or specific item
-     * and with the element with above to its zIndex.
-     * Method records action to history stack
-     */
+    // item 순서 앞으로
     self.moveForward = function(elementId){
-        
         var el;
-        
         if(elementId)
             el = self.board.children('#'+elementId);
         else
@@ -1348,15 +1392,9 @@ alert('addPlaceHolder');
           
     }
     
-    /**
-     * Switches zIndex of active or specific item
-     * and with the element with below to its zIndex.
-     * Method records action to history stack
-     */
+    // item 순서 뒤로
     self.moveBackward = function(elementId) {
-        
         var el;
-        
         if(elementId)
             el = self.board.children('#'+elementId);
         else
@@ -1384,7 +1422,7 @@ alert('addPlaceHolder');
             
     }
     
-    // 배경제거
+    // 배경제거 이미지 사용
     self.noBackground = function(elementId){
         var el;
 
@@ -1411,7 +1449,7 @@ alert('addPlaceHolder');
         }    
     }
     
-    // 원본이미지 쓰기
+    // 원본이미지 사용
     self.whiteBackground = function(elementId){
         var el;
         
@@ -1429,6 +1467,8 @@ alert('addPlaceHolder');
         el.addClass('whiteBackground');	// 배경흰색으로 채우기
 
 		el.find('img').attr("src", el.data('imageOriginURL'));	// 원본 이미지로 교체
+//el.data('imageURL')
+		
 
         if(!elementId){
             self.recordHistory({
@@ -1438,12 +1478,8 @@ alert('addPlaceHolder');
         }
     }
     
-    /**
-     * Executes history undo. Deslects active
-     * element if needed.
-     */
+    // 작업취소
     self.undo = function() {
-        
         if(!self.history[self.historyCurrentPointer])
             return;
         
@@ -1506,7 +1542,7 @@ alert('addPlaceHolder');
             
             if($('#'+history.element).hasClass('selected')){
                 self.deselectImage();
-                self.selectImage($('#'+history.element));
+                self.selectImage($('#'+history.element),null);
             }
         }else if( self.inTemplateCreate() && history.event == 'hint'){
             var el = $('#'+history.element);
@@ -1527,12 +1563,8 @@ alert('addPlaceHolder');
                 
     }
     
-    /**
-     * Executes history redo. Deslects active
-     * element if needed.
-     */
+    // 작업 되돌리기
     self.redo = function() {
-        
         if(!self.history[self.historyCurrentPointer+1])
             return;                             
         
@@ -1591,7 +1623,7 @@ alert('addPlaceHolder');
             
             if($('#'+history.element).hasClass('selected')){
                 self.deselectImage();
-                self.selectImage($('#'+history.element));
+                self.selectImage($('#'+history.element),null);
             }
             
         }else if( self.inTemplateCreate() && history.event == 'hint'){
@@ -1620,32 +1652,45 @@ alert('addPlaceHolder');
      * undo and redo methods.
      */
     self.makeDraggable = function(element){
-        
         var startX, startY, startLeft, startTop;
         element.draggable({
             start: function(event, ui){
-                self.selectImage(element);
+                self.selectImage(element,event);
                 startLeft   = parseInt(element.css('left'));
                 startTop    = parseInt(element.css('top'));
                 startX = event.clientX;
                 startY = event.clientY;
                 ui.position.left = startLeft;
                 ui.position.top = startTop;
+                
+				posTopArray = [];
+				posLeftArray = [];
+				if ($(this).hasClass("selected")) {  // Loop through each element and store beginning start and left positions
+				     $(".selected").each(function(i) {
+				          thiscsstop = $(this).css('top');
+				          if (thiscsstop == 'auto') thiscsstop = 0; // For IE
+				
+				          thiscssleft = $(this).css('left');
+				          if (thiscssleft == 'auto') thiscssleft = 0; // For IE
+				
+				          posTopArray[i] = parseInt(thiscsstop);
+				          posLeftArray[i] = parseInt(thiscssleft);
+				     });
+				}
+
+				begintop = $(this).offset().top; // Dragged element top position
+				beginleft = $(this).offset().left; // Dragged element left position
+		          
             },
             drag: function(event, ui){
-                
                 var endX, endY, distX, distY, calcX, calcY;
-                
                 endX = event.clientX;
                 endY = event.clientY;
-                
                 distX = endX - startX;
                 distY = endY - startY;
                 
                 if( self.hasTemplate ){
-                    
                     var radians;
-                
                     if(!element.parent().data('rotate'))
                         radians = 0;
                     else
@@ -1661,7 +1706,17 @@ alert('addPlaceHolder');
                 
                 ui.position.left    = startLeft + calcX;
                 ui.position.top     = startTop + calcY;
+
                 
+				var topdiff = $(this).offset().top - begintop;  // Current distance dragged element has traveled vertically
+				var leftdiff = $(this).offset().left - beginleft; // Current distance dragged element has traveled horizontally
+				
+				if ($(this).hasClass("selected")) {
+				     $(".selected").each(function(i) {
+				          $(this).css('top', posTopArray[i] + topdiff); // Move element veritically - current css top + distance dragged element has travelled vertically
+				          $(this).css('left', posLeftArray[i] + leftdiff); // Move element horizontally - current css left + distance dragged element has travelled horizontally
+				     });
+				}
             },
             stop: function(event, ui){
                 self.recordHistory({
@@ -1675,13 +1730,9 @@ alert('addPlaceHolder');
             }
         });   
     }
+	
     
-    /**
-     * Activates or deactivates
-     * item specific navigations.
-     * Used when item is selected,
-     * added, removed from dashboard.
-     */
+    // item 네비게이션 버튼 정의
     self.applyItemNavigation = function(element){
         if(element !== false){
             
@@ -1695,7 +1746,6 @@ alert('addPlaceHolder');
                 self.ItemNavigator.hide();
                 
             }else if(! self.inTemplateCreate() || !$(element).hasClass('placeholder')){
-//alert(element.data('imageURL'));
                 self.zoomInBtn.removeClass('inactive');
                 self.zoomOutBtn.removeClass('inactive');
                 self.forwardBtn.removeClass('inactive');
@@ -1704,10 +1754,9 @@ alert('addPlaceHolder');
             
                 self.ItemNavigator.show();
                 self.noBckgBtn.html('<img src="'+element.data('imageURL')+'" />');
-                //self.whiteBckgBtn.html('<img src="'+element.data('imageURL')+'" />');
                 self.whiteBckgBtn.html('<img src="'+element.data('imageOriginURL')+'" />');
                 self.cropBtn.find('img').remove();
-                self.cropBtn.show().append('<img src="'+element.data('imageURL')+'" />');
+                self.cropBtn.show().append('<img src="'+element.data('imageOriginURL')+'" />');
                 
                 self.flipBtn.removeClass('inactive');
                 self.flopBtn.removeClass('inactive');
@@ -1740,15 +1789,11 @@ alert('addPlaceHolder');
         
     }
     
-    /**
-     * Starts dialog modal popup that
-     * performes polygonal and rectangular crop.
-     */
+    // Crop 레이어를 띄운다
     self.startCrop = function(defaultCropType){
-        
         var el = self.getActive();
         
-        if(el.lenght == 0)
+        if(el.length == 0)
             return;
         
         showPopup(self.Crop, false, true);
@@ -1770,14 +1815,20 @@ alert('addPlaceHolder');
             self.cropRectBtn.removeClass('active');
             self.cropPolyBtn.addClass('active'); 
         }
-        
+
+
+		var cropURL = el.data('imageURL');
+		if(el.hasClass('whiteBackground')){
+			cropURL = el.data('imageOriginURL');
+		}
+
         self.Crop.find('#CropDashboard').html('')
                                         .crop({
-                                            url         : el.data('imageURL'), 
+                                            url         : cropURL, 
                                             cropPoints  : cropPoints,
                                             cropType    : cropType
                                         });
-                                        
+
         self.getTopCrops(el);
         
     }
@@ -1789,183 +1840,227 @@ alert('addPlaceHolder');
         $('#mask').click();
     }
     
-    /**
-     * Activates cropping and reloads image from
-     * croppingURL source passing crop parameters.
-     */
-    self.cropImage = function(cropType, cropPoints, cropHeight){
+	/**
+	 * Activates cropping and reloads image from
+	 * croppingURL source passing crop parameters.
+	 */
+	self.cropImage = function(cropType, cropPoints, cropHeight){
+		if(self.semaphoreCrop === true)
+			return;
+		
+		self.semaphoreCrop = true;
+		
+		$('#cropImgBtn').addClass('inactive').find('span').html($('#cropImgBtn').find('input[name^="processing"]').val());
+		
+		var el = self.getActive();
+		
+		if(el.length == 0)
+			return;
+		
+		var startWidth  = el.width();
+		var startHeight = el.height();
+		
+		var startUrl = el.find('img').attr('src');
 
-        if(self.semaphoreCrop === true)
-            return;
-        
-        self.semaphoreCrop = true;
-        
-        $('#cropImgBtn').addClass('inactive').find('span').html($('#cropImgBtn').find('input[name^="processing"]').val());
-        
-        var el = self.getActive();
+		var zoomKoef = el.width() / el.find('img')[0].naturalWidth;
 
-        if(el.length == 0)
-            return;
-        
-        var startWidth  = el.width();
-        var startHeight = el.height();
-        
-        var startUrl = el.find('img').attr('src');
-        
-        var zoomKoef = el.width() / el.find('img')[0].naturalWidth;
-        
-        el.find('img').on('load', function(){
-        
-            $(this).unbind('load').unbind('error');
-            self.closeCrop();
-            
-            $('#cropImgBtn').removeClass('inactive').find('span').html($('#cropImgBtn').find('input[name="crop"]').val());
-            
-            var ratio       = $(this)[0].naturalWidth / $(this)[0].naturalHeight;
-            var newHeight   = $(this)[0].naturalHeight * zoomKoef;
-            var newWidth    = newHeight * ratio;
-            
-            self.recordHistory({
-                event           : 'crop',
-                element         : el.attr('id'),
-                startWidth      : startWidth,
-                startHeight     : startHeight,
-                startUrl        : startUrl,
-                startCropType   : el.data('cropType'),
-                startCropPoints : el.data('cropPoints'),
-                startCropHeight : el.data('cropHeight'),   
-                endWidth        : newWidth,
-                endHeight       : newHeight,
-                endUrl          : $(this).attr('src'),
-                endCropType     : cropType,
-                endCropPoints   : cropPoints,
-                endCropHeight   : cropHeight
-            });
-            
-            el.css({
-                width: newWidth,
-                height: newHeight
-            });
-            
-            self.clearCropData(el);
-            self.recordCropData(el, cropType, cropPoints, cropHeight);
-            
-            self.deselectImage();
-            self.selectImage(el);
-                        
-            self.semaphoreCrop = false;
-            
-        }).on('error', function(){
-            $(this).unbind('load').unbind('error').attr('src',startUrl);
-            notify('error', TranslationLabels['cannot_load_image']);
-            self.semaphoreCrop = false;
-            $('#cropImgBtn').removeClass('inactive').find('span').html($('#cropImgBtn').find('input[name="crop"]').val());
-        });
-        
-        el.find('img').attr('src', self.cropURL+'?'+decodeURIComponent($.param({itemId: el.data('itemId'), itemOrigin: el.data('itemOrigin'), cropHeight: cropHeight, cropType: cropType, cropPoints: cropPoints})));
-        
-    }
+		var itemStyle = "original";
+		if(el.hasClass('whiteBackground')){
+			itemStyle = "original"; 
+		} else{
+			itemStyle = "removebg";
+		}
+
+		var postData = new Object();
+	    postData.itemId		= el.data('itemId');
+	    postData.itemStyle	= itemStyle;
+	    postData.itemOrigin	= el.data('itemOrigin');
+	    postData.cropHeight	= cropHeight;
+	    postData.cropType	= cropType;
+	    postData.cropPoints	= cropPoints;
+	    
+		// ajax post 에서 세션 유지 시키기 위함
+		$.ajaxSetup({
+		  beforeSend: function(xhr) {
+		    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		  }
+		});
+
+		$.ajax({
+		    url     : self.cropURL,
+		    type    : 'post',
+		    dataType: 'json',
+		    data	: $.param(postData),
+		    async   : false,  
+		    success : function(json){
+		    	img_src = json.img_src;
+		    	cropImg	= json.cropImg;
+	
+		    	if(json.status){
+		    		el.find('img').attr('src',img_src);
+		    	} else {
+		    		notify('error', json.msg);
+		    	}
+		    },
+		    error   : function(e){
+		        //notify('error', TranslationLabels['could_not_complete_request']);
+		    }
+		});
+
+		el.find('img').on('load', function(){
+			$(this).unbind('load').unbind('error');
+			self.closeCrop();
+			
+			$('#cropImgBtn').removeClass('inactive').find('span').html($('#cropImgBtn').find('input[name="crop"]').val());
+
+			var ratio       = $(this)[0].naturalWidth / $(this)[0].naturalHeight;
+			var newHeight   = $(this)[0].naturalHeight * zoomKoef;
+			var newWidth    = newHeight * ratio;
+
+			self.recordHistory({
+				event           : 'crop',
+				element         : el.attr('id'),
+				startWidth      : startWidth,
+				startHeight     : startHeight,
+				startUrl        : startUrl,
+				startCropType   : el.data('cropType'),
+				startCropPoints : el.data('cropPoints'),
+				startCropHeight : el.data('cropHeight'),   
+				endWidth        : newWidth,
+				endHeight       : newHeight,
+				endUrl          : $(this).attr('src'),
+				endCropType     : cropType,
+				endCropPoints   : cropPoints,
+				endCropHeight   : cropHeight
+			});
+
+			el.css({
+				width: newWidth,
+				height: newHeight
+			});
+
+			self.clearCropData(el);
+			self.recordCropData(el, cropType, cropPoints, cropHeight);
+
+			self.deselectImage();
+			self.selectImage(el,null);
+
+			self.semaphoreCrop = false;
+		}).on('error', function(){
+			$(this).unbind('load').unbind('error').attr('src',startUrl);
+			notify('error', TranslationLabels['cannot_load_image']);
+			self.semaphoreCrop = false;
+			$('#cropImgBtn').removeClass('inactive').find('span').html($('#cropImgBtn').find('input[name="crop"]').val());
+		});
+
+
+
+		// 이미지 crop 짜기... imagemagick crop 기능...
+/*		
+		el.find('img').attr('src', 
+				self.cropURL+'?'+decodeURIComponent(
+									$.param({
+										itemId: el.data('itemId'), 
+										itemStyle: itemStyle,
+										itemOrigin: el.data('itemOrigin'), 
+										cropHeight: cropHeight, 
+										cropType: cropType, 
+										cropPoints: cropPoints
+									})
+								)
+		);
+*/
+	}
     
-    /**
-     * Saves cropping to database,
-     * appends new crop to QuickCrop window to the right
-     */
-    self.saveImage = function(cropType, cropPoints, cropHeight){
-        
-        if(self.semaphoreSave === true || self.semaphoreGetCrops === true)
-            return;
-        
-        self.semaphoreSave = true;
-        
-        var el = self.getActive();
+	/**
+	 * Saves cropping to database,
+	 * appends new crop to QuickCrop window to the right
+	 */
+	self.saveImage = function(cropType, cropPoints, cropHeight){
+		if(self.semaphoreSave === true || self.semaphoreGetCrops === true)
+			return;
 
-        if(el.length == 0)
-            return;
-        
-        $('#saveImgBtn').addClass('inactive').find('span').html($('#saveImgBtn').find('input[name^="saving"]').val());
-        
-        $('<img src="'+self.cropURL+'?'+decodeURIComponent($.param({itemId: el.data('itemId'), itemOrigin: el.data('itemOrigin'), cropHeight: cropHeight, cropType: cropType, cropPoints: cropPoints}))+'" />').on('load', function(){
-            
-            var image = $(this);
-            
-            $.ajax({
-                url     : self.cropURL,
-                type    : 'get',
-                data    : decodeURIComponent($.param({save: 1, itemId: el.data('itemId'), itemOrigin: el.data('itemOrigin'), cropHeight: cropHeight, cropType: cropType, cropPoints: cropPoints})),
-                cache   : false,
-                dataType: 'json',  
-                success : function(data){
-                    
-                    $('#saveImgBtn').removeClass('inactive').find('span').html($('#saveImgBtn').find('input[name="save"]').val());
-                    
-                    if(data.status == 1){
-                        
-                        var holder = $('<div id="'+data.msg+'" />').append(image);
-                        
-                        holder.prependTo(self.QuickCrop);
-                        
-                        holder.on('click', function(){
-                            $.ajax({
-                                url     : self.cropURL,
-                                type    : 'get',
-                                data    : $.param({hit: 1, itemId: $(this).prop('id')}),
-                                cache   : false,
-                                dataType: 'json',  
-                                success : function(data){
-                                    if(data.status == 1){
-                                                
-                                    }
-                                }
-                            });
+		self.semaphoreSave = true;
+		var el = self.getActive();
+		if(el.length == 0)
+			return;
+
+		$('#saveImgBtn').addClass('inactive').find('span').html($('#saveImgBtn').find('input[name^="saving"]').val());
+
+		$('<img src="'+self.cropURL+'?'+decodeURIComponent($.param({itemId: el.data('itemId'), itemOrigin: el.data('itemOrigin'), cropHeight: cropHeight, cropType: cropType, cropPoints: cropPoints}))+'" />').on('load', function(){
+			var image = $(this);
+
+			$.ajax({
+				url     : self.cropURL,
+				type    : 'get',
+				data    : decodeURIComponent($.param({save: 1, itemId: el.data('itemId'), itemOrigin: el.data('itemOrigin'), cropHeight: cropHeight, cropType: cropType, cropPoints: cropPoints})),
+				cache   : false,
+				dataType: 'json',  
+				success : function(data){
+					$('#saveImgBtn').removeClass('inactive').find('span').html($('#saveImgBtn').find('input[name="save"]').val());
+
+					if(data.status == 1){
+						var holder = $('<div id="'+data.msg+'" />').append(image);
+						holder.prependTo(self.QuickCrop);
+
+						holder.on('click', function(){
+							$.ajax({
+							    url     : self.cropURL,
+							    type    : 'get',
+							    data    : $.param({hit: 1, itemId: $(this).prop('id')}),
+							    cache   : false,
+							    dataType: 'json',  
+							    success : function(data){
+							        if(data.status == 1){
+alert("save~!!!");
+							        }
+							    }
+							});
                             
-                            self.Crop.find('#CropDashboard').html('')
-                                                            .crop({
-                                                                url         : el.data('imageURL'), 
-                                                                cropPoints  : cropPoints,
-                                                                cropType    : cropType
-                                                            });
-                                    
-                        });
-                        
-                        self.semaphoreSave = false;
-                        
-                        notify('success', TranslationLabels['crop_saved']);
-                             
-                    } else {
-                        notify('error', data.msg);
-                        self.semaphoreSave = false;
-                        return;
-                    }
-                },
-                error   : function(e){
-                    notify('error', TranslationLabels['could_not_complete_request']);
-                    self.semaphoreSave = false;
-                    $('#saveImgBtn').removeClass('inactive').find('span').html($('#saveImgBtn').find('input[name="save"]').val());
-                    return;
-                }
-            });
-            
-            
-            //must bind click events on images to register hits for popularity    
-            
-        }).on('error', function(){
-            notify('error', TranslationLabels['cannot_load_image']);
-            self.semaphoreSave = false;
-            return;
-        });    
-    }
-    
+							self.Crop.find('#CropDashboard').html('')
+								.crop({
+									url         : el.data('imageURL'), 
+									cropPoints  : cropPoints,
+									cropType    : cropType
+								});
+						});
+
+						self.semaphoreSave = false;
+						notify('success', TranslationLabels['crop_saved']);
+
+					} else {
+						notify('error', data.msg);
+						self.semaphoreSave = false;
+						return;
+					}
+				},
+				error   : function(e){
+					notify('error', TranslationLabels['could_not_complete_request']);
+					self.semaphoreSave = false;
+					$('#saveImgBtn').removeClass('inactive').find('span').html($('#saveImgBtn').find('input[name="save"]').val());
+					return;
+				}
+			});
+			
+			//must bind click events on images to register hits for popularity    
+		}).on('error', function(){
+			notify('error', TranslationLabels['cannot_load_image']);
+			self.semaphoreSave = false;
+			return;
+		});    
+	}
+
+	// Crop 레이어 띄운 다음... 해당item으로 만든 다른 crop item list를 보여준다
     self.getTopCrops = function(el){
-        
         if(self.semaphoreGetCrops === true)
             return;
         
         self.semaphoreGetCrops = true;
-        
         var actionButtons = self.Crop.find('a.btn');
+        //actionButtons.addClass('hidden');
         
-        actionButtons.addClass('hidden');
-        
+
+/* ............................................
         $.ajax({
             url     : self.publishURL+'/'+self.platformType+'/'+el.data('itemId'),
             type    : 'get',
@@ -1975,8 +2070,7 @@ alert('addPlaceHolder');
             success : function(data){
                 
                 if(data.status == 1){
-                    
-                    self.QuickCrop.html('<img src="'+imgURL+'images/flat/ajax-loader-round.gif" id="qickCropLoader" class="hidden" />');
+                    self.QuickCrop.html('<img src="'+imgURL+'images/common/loading4.gif" id="qickCropLoader" class="hidden" />');
                     
                     var len = data.msg.length;
                     
@@ -1988,6 +2082,7 @@ alert('addPlaceHolder');
                     if(data.msg.length == 0)
                         self.semaphoreGetCrops = false;
                     
+                    // crop에서 save한 이미지 리스트 표시
                     $.each(data.msg, function(index, value){
                         
                         var obj = jQuery.parseJSON(value);
@@ -2048,15 +2143,14 @@ alert('addPlaceHolder');
                 return;
             }
         });
-            
+*/            
     }
     
     /**
      * Activates cropping and reloads image from
      * croppingURL source passing crop parameters.
      */
-    self.cropImageInit = function(el, cropType, cropPoints, cropHeight){
-
+    self.cropImageInit = function(el, cropType, cropPoints, cropHeight, cropImg){
         if(el.length == 0)
             return;
         
@@ -2065,8 +2159,10 @@ alert('addPlaceHolder');
         
         var zoomKoef = el.width() / oldImage.width;
         
-        el.find('img').on('load', function(){
+        //el.find('img').attr('src', self.cropURL+'?'+decodeURIComponent($.param({itemId: el.data('itemId'), itemOrigin: el.data('itemOrigin'), cropHeight: cropHeight, cropType: cropType, cropPoints: cropPoints})));
+        el.find('img').attr('src', self.productURL+'crop/'+cropImg);
         
+        el.find('img').on('load', function(){
             $(this).unbind('load').unbind('error');
             
             el.show();
@@ -2078,8 +2174,6 @@ alert('addPlaceHolder');
             notify('error', TranslationLabels['cannot_load_image']);
         });
         
-        el.find('img').attr('src', self.cropURL+'?'+decodeURIComponent($.param({itemId: el.data('itemId'), itemOrigin: el.data('itemOrigin'), cropHeight: cropHeight, cropType: cropType, cropPoints: cropPoints})));
-        
     }
     
     /**
@@ -2089,13 +2183,8 @@ alert('addPlaceHolder');
         return self.board.find('.selected');
     }
     
-    /**
-     * Records passed data to history stack.
-     * Clears history if steps are more than
-     * the history buffer.
-     */
+    // history 기록
     self.recordHistory = function(event){
-        
         self.undoBtn.removeClass('inactive');
         self.redoBtn.addClass('inactive');
         
@@ -2121,7 +2210,6 @@ alert('addPlaceHolder');
     */
     self.clearCropData = function(element){
         var el;
-        
         if(typeof(element) == 'object')
             el = element;
         else
@@ -2132,12 +2220,8 @@ alert('addPlaceHolder');
         el.removeData("cropHeight");
     }
     
-    /**
-    * Records element data
-    * containing crop data
-    */
+    // crop data 저장
     self.recordCropData = function(element, cropType, cropPoints, cropHeight){
-        
         var el;
         
         if(typeof(element) == 'object')

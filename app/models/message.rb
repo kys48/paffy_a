@@ -26,7 +26,7 @@ class Message < ActiveRecord::Base
 
 		msg_list = Message.paginate(page: page, per_page: per_page)
 							.select("A.id, A.user_id, A.msg_type, A.ref_user_id
-									, A.ref_id, A.ref_url, A.read_yn, A.contents
+									, A.ref_id, IFNULL(A.ref_url,'') AS ref_url, A.read_yn, A.contents
 									, A.created_at, B.user_name, B.profile_id, IFNULL(B.img_file_name,'') AS img_file_name
 									, '' AS created_at_str")
 							.from("messages A, users B")

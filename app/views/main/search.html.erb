@@ -242,6 +242,7 @@ function itemList(){
 	postData.store_type = $("#store_type").val();
 	postData.per_page = 16;
 	postData.type = "P";
+	postData.use_yn = "Y";
 	postData.order = order;
 
 	if (searchYn){
@@ -288,8 +289,8 @@ function itemList(){
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
 									+ '</div>'
 									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this,\'C\');"></span>'
+									+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 									+ '</div>';
@@ -311,7 +312,7 @@ function itemList(){
 									var priceStr = getMoneyType(change_price,change_price_type);
 
 									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
+									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/collections/pshow/'+ collection.id+'\'" style="cursor:pointer">'
 									+ '</div>'
 									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
 									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
@@ -319,8 +320,8 @@ function itemList(){
 									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
 									+ '</div>'
 									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+									+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this,\'P\');"></span>'
+									+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
 									+ '	<span class="view_icon"></span>'
 									+ '	<span class="view_count">'+collection.hit+'</span>'
 									+ '</div>';
@@ -357,13 +358,10 @@ function itemList(){
 }
 
 // 좋아요
-function like(obj){
+function like(obj,item_type){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = '';
 		var id = obj.id;
 		var arrId = id.split('_');
-		if(arrId[0]=='pid') item_type = 'P';
-		else if(arrId[0]=='cid') item_type = 'C';
 		
 		$('#msg_type').val('L');
 		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
@@ -378,7 +376,7 @@ function like(obj){
 			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
 		} 
 		
-		likeItem(item_type,arrId[1]);
+		likeItem(arrId[1]);
 <%	else %>
 		login_pop(document.location.href);
 <%	end %>

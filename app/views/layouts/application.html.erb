@@ -8,8 +8,10 @@
   <%= stylesheet_link_tag    "/css/style.css", :media => "all" %>
   <%= stylesheet_link_tag    "/css/layer.css", :media => "all" %>
   <%= javascript_include_tag "application" %>
-  <%= javascript_include_tag "/js/jquery.pageless.js" %>
-  <%= javascript_include_tag "/js/jquery-v1.7.1.js" %>
+  <%#= javascript_include_tag "/js/jquery.pageless.js" %>
+  <%#= javascript_include_tag "/js/jquery-v1.7.1.js" %>
+  <%= javascript_include_tag "/js/jquery-1.11.1.min.js" %>
+  <%#= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" %>
   <%= javascript_include_tag "/js/checkMobile.js" %>
   <%= javascript_include_tag "/js/common.js" %>
   <%= javascript_include_tag "/js/layer.js" %>
@@ -41,5 +43,15 @@
   <% end %>
 </div>
 
+<!-- skim links -->
+<script type="text/javascript" src="//s.skimresources.com/js/69974X1518369.skimlinks.js"></script>
+
+<!-- naver analytics -->
+<script type="text/javascript" src="http://wcs.naver.net/wcslog.js"></script>
+<script type="text/javascript">
+if(!wcs_add) var wcs_add = {};
+wcs_add["wa"] = "155900a9ad2cef0";
+wcs_do();
+</script>
 </body>
 </html>

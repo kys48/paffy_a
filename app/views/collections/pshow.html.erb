@@ -2,26 +2,24 @@
 <%
 	request_host = "http://" + request.host_with_port
 %>
-<%= stylesheet_link_tag    "http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css", :media => "screen" %>
-<%= stylesheet_link_tag    "/css/collection/cropping.css", :media => "screen" %>
-<%= stylesheet_link_tag    "/css/collection/datePicker.css", :media => "screen" %>
-<%= stylesheet_link_tag    "/css/collection/platform.css", :media => "screen" %>
-<%= stylesheet_link_tag    "/css/collection/jquery.Jcrop.css", :media => "screen" %>
-<%= stylesheet_link_tag    "/css/collection/jquery.colourPicker.css", :media => "screen" %>
-<%= stylesheet_link_tag    "/css/collection/jquery.selectbox.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/cropping.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/datePicker.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/platform.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/jquery.Jcrop.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/jquery.colourPicker.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/jquery.selectbox.css", :media => "screen" %>
 <%= stylesheet_link_tag    "/css/collection/flat.css", :media => "screen" %>
 <%= stylesheet_link_tag    "/css/collection/flat-simo.css", :media => "screen" %>
 <%= stylesheet_link_tag    "/css/collection/flat-slav.css", :media => "screen" %>
-<!--link href='http://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400italic,400,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'-->
-<%= stylesheet_link_tag    "/css/collection/val.css", :media => "screen" %>
-<%= stylesheet_link_tag    "/css/collection/jquery.tagsinput.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/val.css", :media => "screen" %>
+<%#= stylesheet_link_tag    "/css/collection/jquery.tagsinput.css", :media => "screen" %>
 
-<%= javascript_include_tag "http://code.jquery.com/jquery-1.9.1.js" %>
-<%= javascript_include_tag "http://code.jquery.com/ui/1.10.2/jquery-ui.js" %>
-<%= javascript_include_tag "/js/collection/jquerypp.custom.js" %>
-<%= javascript_include_tag "/js/collection/sprintf.min.js" %>
+<%= javascript_include_tag "/js/jquery-1.11.1.min.js" %>
+<%#= javascript_include_tag "http://code.jquery.com/ui/1.10.2/jquery-ui.js" %>
+<%#= javascript_include_tag "/js/collection/jquerypp.custom.js" %>
+<%#= javascript_include_tag "/js/collection/sprintf.min.js" %>
 <%= javascript_include_tag "/js/kakao-1.0.8.min.js" %>
-<!--script type="text/javascript" src="/vassets/b263/javascripts/tool/restapi.tool.js"></script-->
 
 <script type="text/javascript">
 siteURL = '<%= request_host%>/';
@@ -146,7 +144,7 @@ function follow(){
 
 
 // 스크랩, 좋아요
-function getItem(get_type,item_type,ref_id){
+function getItem(get_type,collection_id){
 	if (get_type == 'S'){
 		var doc = document.body.createTextRange();
 		doc.moveToElementText(document.getElementById("itemCaption"));
@@ -158,18 +156,17 @@ function getItem(get_type,item_type,ref_id){
 
 <%	if @session_user_id && @session_user_id!="" %>	
 	var postData = new Object();
-	postData.ref_id		= ref_id;
+	postData.collection_id		= collection_id;
 	postData.get_type	= get_type;
-	postData.item_type	= item_type;
 	if (get_type == 'L'){
 		postData.msg_type		= 'L';
 		//postData.msg_user_id	= '<%= @product.user_id%>';
-		postData.msg_ref_url	= '/collections/pshow/<%= @product.id%>';
+		postData.msg_ref_url	= '/collections/pshow/<%= @collection_id%>';
 		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.';
 	} else if (get_type == 'S'){
 		postData.msg_type		= 'S';
 		//postData.msg_user_id	= '<%= @product.user_id%>';
-		postData.msg_ref_url	= '/collections/pshow/<%= @product.id%>';
+		postData.msg_ref_url	= '/collections/pshow/<%= @collection_id%>';
 		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 스크랩하였습니다.';
 	}
 
@@ -188,7 +185,6 @@ function getItem(get_type,item_type,ref_id){
 		async   : false,  
 		success : function(json){
 			//notify('success', json.msg);
-			
 			if (get_type == 'S'){
 				$('#cnt_scrap').html(json.cnt_item);
 			} else if (get_type == 'L'){
@@ -217,7 +213,7 @@ function getItem(get_type,item_type,ref_id){
 }
 
 // 찜하기
-function getItemWish(item_type,ref_id){
+function getItemWish(collection_id){
     if(semafors['ajax'] == true)
         return;
         
@@ -235,7 +231,7 @@ function getItemWish(item_type,ref_id){
 	});
 
     $.ajax({
-        url     : '/wishes/put?ref_id='+ref_id+'&item_type='+item_type,
+        url     : '/wishes/put?collection_id='+collection_id,
         type    : 'post',
         dataType: 'json',
         data	: $.param(postData),
@@ -262,26 +258,17 @@ function getItemWish(item_type,ref_id){
 
 function like(obj){
 <%	if @session_user_id && @session_user_id!="" %>
-		var item_type = '';
 		var id = obj.id;
 		var arrId = id.split('_');
-		if(arrId[0]=='pid') item_type = 'P';
-		else if(arrId[0]=='cid') item_type = 'C';
 		
 		$('#msg_type').val('L');
 		$('#msg_ref_user_id').val('<%=session[:user_id]||""%>');
 		$('#msg_ref_user_name').val('<%=session[:user_name]||""%>');
 		$('#msg_ref_profile_id').val('<%=session[:profile_id]||""%>');
-
-		if(item_type=='P'){
-			$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
-			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
-		} else if(item_type=='C'){
-			$('#msg_ref_url').val('/collections/'+arrId[1]);
-			$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 콜렉션을 좋아합니다.');
-		} 
+		$('#msg_ref_url').val('/collections/pshow/'+arrId[1]);
+		$('#msg_contents').val('<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품을 좋아합니다.');
 		
-		likeItem(item_type,arrId[1]);
+		likeItem(arrId[1]);
 <%	else %>
 		login_pop(document.location.href);
 <%	end %>
@@ -318,7 +305,7 @@ function getItemList(){
 	postData.page = nextPage;
 	postData.per_page = 16;
 	postData.type = "P";
-	postData.search_key = '<%= strip_tags(@product.subject)%>';
+	//postData.search_key = '<%= strip_tags(@product.subject)%>';
 	postData.cate_code = '<%=@product.cate_code%>';
 	postData.color_code = '<%=@product.color_code_s%>';
 	postData.order = order;
@@ -354,57 +341,42 @@ function getItemList(){
 								if(cnt_like_user>0){
 									class_like = "like_icon_on"
 								}
+
+								var change_price = collection.price;
+								var change_price_type = "KRW";
+								if (collection.price_type=="USD") {
+									change_price = $('#currency_usd').val()*change_price;
+								} else if (collection.price_type=="JPY") {
+									change_price = $('#currency_jpy').val()*change_price;
+								} else if (collection.price_type=="EUR") {
+									change_price = $('#currency_eur').val()*change_price;
+								} else if (collection.price_type=="GBP") {
+									change_price = $('#currency_gbp').val()*change_price;
+								} else if (collection.price_type=="CNY") {
+									change_price = $('#currency_cny').val()*change_price;
+								}
+								
+								var priceStr = getMoneyType(change_price,change_price_type);
 								
 								var li = '<li>'
-								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle;">';
+								+ '<div class="thumbnail" style="width:230px;height:300px;display:table-cell;text-align:center;vertical-align:middle;">'
 								
-								if(collection.item_type=='C'){
-									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-									+ ' <img src="/data/collection/thumb/'+collection.img_file_name+'" onClick="document.location.href=\'/collections/'+collection.id+'\'" style="cursor:pointer">'
-									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
-									+ '	<span style="color:#000000">'+collection.subject+'</span><br/>'
-									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.user_name+'</a>'
-									+ '</div>'
-									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="cid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="ccnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
-									+ '	<span class="view_icon"></span>'
-									+ '	<span class="view_count">'+collection.hit+'</span>'
-									+ '</div>';
-								}else if(collection.item_type=='P'){
-									var change_price = collection.price;
-									var change_price_type = "KRW";
-									if (collection.price_type=="USD") {
-										change_price = $('#currency_usd').val()*change_price;
-									} else if (collection.price_type=="JPY") {
-										change_price = $('#currency_jpy').val()*change_price;
-									} else if (collection.price_type=="EUR") {
-										change_price = $('#currency_eur').val()*change_price;
-									} else if (collection.price_type=="GBP") {
-										change_price = $('#currency_gbp').val()*change_price;
-									} else if (collection.price_type=="CNY") {
-										change_price = $('#currency_cny').val()*change_price;
-									}
-									
-									var priceStr = getMoneyType(change_price,change_price_type);
-
-									li += '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
-									+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/products/'+ collection.id+'\'" style="cursor:pointer">'
-									+ '</div>'
-									+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
-									+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
-									+ priceStr + "&nbsp;"
-									+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
-									+ '</div>'
-									+ '<div style="text-align:right;padding-right:10px;">'
-									+ '	<span id="pid_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
-									+ '	<span id="pcnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
-									+ '	<span class="view_icon"></span>'
-									+ '	<span class="view_count">'+collection.hit+'</span>'
-									+ '</div>';
-								}
-								li += '</div>'
+								+ '<div style="width:230px;height:230px;display:table-cell;text-align:center;vertical-align:middle;">' 
+								+ '	<img src="/data/product/medium/'+ collection.img_file_name+'" onClick="document.location.href=\'/collections/pshow/'+ collection.id+'\'" style="cursor:pointer">'
+								+ '</div>'
+								+ '<div style="text-align:left; padding:5px 0px 0px 5px; width:220px; height:45px; ">'
+								+ '	<a href="javascript:goProductUrl(\''+collection.url+'\',\''+collection.merchant+'\',\'product\')"><span style="color:#000000">'+collection.subject+'</span></a><br/>'
+								+ priceStr + "&nbsp;"
+								+ '	<a href="/mypage/'+collection.profile_id+'" style="color:#0088cc">'+collection.profile_id+'</a>'
+								+ '</div>'
+								+ '<div style="text-align:right;padding-right:10px;">'
+								+ '	<span id="id_'+collection.id+'" class="'+class_like+'" onClick="like(this);"></span>'
+								+ '	<span id="cnt_'+collection.id+'" class="like_count">'+collection.cnt_like+'</span>'
+								+ '	<span class="view_icon"></span>'
+								+ '	<span class="view_count">'+collection.hit+'</span>'
+								+ '</div>'
+								
+								+ '</div>'
 								+ '</li>';
 								
 								$('#itemList').append(li);
@@ -445,10 +417,10 @@ function writeComment(){
 
 		var postData = new Object();
 		postData.comment_type	= 'P';
-		postData.ref_id			= '<%= @product.id%>';
+		postData.ref_id			= '<%= @collection_id%>';
 		postData.msg_type		= 'P';
 		postData.msg_user_id	= '<%= @product.user_id%>';
-		postData.msg_ref_url	= '/collections/pshow/<%= @product.id%>';
+		postData.msg_ref_url	= '/collections/pshow/<%= @collection_id%>';
 		postData.msg_contents	= '<strong><a href="/mypage/<%=session[:profile_id]%>"><%=session[:user_name]%></a></strong>님이 회원님의 상품에 댓글을 남겼습니다.';
 		postData.contents		= comment_contents;
 	
@@ -532,7 +504,7 @@ function getCommentList(){
 	var postData = new Object();
 	postData.page = comment_cpage;
 	postData.comment_type = "P";
-	postData.ref_id = '<%= @product.id%>';
+	postData.ref_id = '<%= @collection_id%>';
 	postData.per_page = 5;
 	postData.order = order;
 
@@ -624,7 +596,7 @@ window.fbAsyncInit = function() {
 
 //stream publish method
 function streamPublish(){
-	var itemLink = "<%= request_host%>/collections/<%= @product.id%>";
+	var itemLink = "<%= request_host%>/collections/pshow/<%= @collection_id%>";
 	var imgLink = "<%= request_host%>/data/collection/thumb/<%= @product.img_file_name%>";
     FB.ui(
     {
@@ -750,15 +722,15 @@ function shareKakaoLink(){
 	change_price = @product.price.to_f
 
 	if @product.price_type=="USD"
-		change_price = @currency_usd*change_price;
+		change_price = @currency_usd.to_f*change_price;
 	elsif @product.price_type=="JPY"
-		change_price = @currency_jpy*change_price;
+		change_price = @currency_jpy.to_f*change_price;
 	elsif @product.price_type=="EUR"
-		change_price = @currency_eur*change_price;
+		change_price = @currency_eur.to_f*change_price;
 	elsif @product.price_type=="GBP"
-		change_price = @currency_gbp*change_price;
+		change_price = @currency_gbp.to_f*change_price;
 	elsif @product.price_type=="CNY"
-		change_price = @currency_cny*change_price;
+		change_price = @currency_cny.to_f*change_price;
 	end
 
 	price_str = number_to_currency(change_price, :unit => price_type_str, :precision => 0)
@@ -776,7 +748,7 @@ function shareKakaoLink(){
 <div style='font-size:9pt;margin: 0px auto; width: 650px; text-align:center;'>
 <h3><%= strip_tags(@product.subject)%></h3>
 <div>
-<a href='<%= request_host%>/products/<%= @product.id%>' target='_blank'><img src='<%= request_host%><%= @product.img.url(:original)%>'></a>
+<a href='<%= request_host%>/collections/pshow/<%= @collection_id%>' target='_blank'><img src='<%= request_host%><%= @product.img.url(:original)%>'></a>
 <br />
 <h5>가격 : <%= price_str%></h5>
 <br />
@@ -789,7 +761,7 @@ function shareKakaoLink(){
 		<div class="socialBtnsHolder">
 			<div>
 				<a href="#" class="bBlue create submitButton"
-				 onclick="getItem('S','P',<%= @product.id%>); return false;"
+				 onclick="getItem('S',<%= @collection_id%>); return false;"
 				 id="btnCopy"> <span>클립보드에복사</span>
 				</a>&nbsp;&nbsp;&nbsp;
 				<a class="bGray" onclick="$('#popupContainerScrap').fadeOut(300); return false;" href="#">닫기</a>
@@ -815,7 +787,7 @@ function shareKakaoLink(){
 		<div class="socialBtnsHolder">
 			<div>
 				<a href="#" class="bBlue create submitButton"
-				 onclick="getItemWish('P',<%= @product.id%>); return false;"
+				 onclick="getItemWish(<%= @product.id%>); return false;"
 				 id="btnCopy"> <span>찜하기</span>
 				</a>&nbsp;&nbsp;&nbsp;
 				<a class="bGray" onclick="$('#popupContainerWish').fadeOut(300); return false;" href="#">닫기</a>
@@ -851,7 +823,7 @@ function shareKakaoLink(){
 	<span id="cnt_scrap"><%= @cnt_scrap%></span>
 </button>
 
-<button type="button" class="btn btn-small btn-default" onClick="getItem('L','P',<%= @product.id%>); return false;">
+<button type="button" class="btn btn-small btn-default" onClick="getItem('L',<%= @product.id%>); return false;">
 <% if @cnt_like_user>0 %>
 	<i id="likeDv" class="icon-heart" style="color:red"></i>
 <% else %>
